@@ -1,20 +1,269 @@
-/*
- * ------------------------------------------------------------
- * IMPORTANT: The contents of this file are auto-generated.
- *
- * This file may be updated by the Shopify admin theme editor
- * or related systems. Please exercise caution as any changes
- * made to this file may be overwritten.
- * ------------------------------------------------------------
- */
 {
   "sections": {
-    "main": {
-      "type": "hello-world",
+    "hero_diagnostic_1": {
+      "type": "hero-diagnostic",
+      "settings": {}
+    },
+    "vitals_strip_2": {
+      "type": "vitals-strip",
+      "settings": {},
+      "blocks": {
+        "block_1": {
+          "type": "stat",
+          "settings": {
+            "text": "2,400 MEMBERS"
+          }
+        },
+        "block_2": {
+          "type": "stat",
+          "settings": {
+            "text": "847 CLASSES/MONTH"
+          }
+        },
+        "block_3": {
+          "type": "stat",
+          "settings": {
+            "text": "94% RETENTION"
+          }
+        },
+        "block_4": {
+          "type": "stat",
+          "settings": {
+            "text": "AVG FIRST PR: WEEK 6"
+          }
+        },
+        "block_5": {
+          "type": "stat",
+          "settings": {
+            "text": "HYROX CERTIFIED"
+          }
+        },
+        "block_6": {
+          "type": "stat",
+          "settings": {
+            "text": "NSF TESTED"
+          }
+        }
+      },
+      "block_order": [
+        "block_1",
+        "block_2",
+        "block_3",
+        "block_4",
+        "block_5",
+        "block_6"
+      ]
+    },
+    "membership_tiers_3": {
+      "type": "membership-tiers",
+      "settings": {},
+      "blocks": {
+        "block_1": {
+          "type": "tier",
+          "settings": {
+            "name": "Starter",
+            "gauge_fill": 40,
+            "price_monthly": "$49",
+            "price_annual": "$37",
+            "billed_annual": "Save $144 billed annually",
+            "cta_label": "Start Starter",
+            "accent": "mid",
+            "is_popular": false,
+            "features": "<ul><li>Live recovery + strain dashboard</li><li>2 coached programs / month</li><li>Community access</li><li>Mobile app</li></ul>"
+          }
+        },
+        "block_2": {
+          "type": "tier",
+          "settings": {
+            "name": "Performance",
+            "gauge_fill": 75,
+            "price_monthly": "$89",
+            "price_annual": "$67",
+            "billed_annual": "Save $264 billed annually",
+            "cta_label": "Go Performance",
+            "accent": "acid",
+            "is_popular": true,
+            "features": "<ul><li>Everything in Starter</li><li>Unlimited coached programs</li><li>Weekly 1:1 check-ins</li><li>Personalized nutrition protocol</li><li>Priority class booking</li></ul>"
+          }
+        },
+        "block_3": {
+          "type": "tier",
+          "settings": {
+            "name": "Elite",
+            "gauge_fill": 100,
+            "price_monthly": "$149",
+            "price_annual": "$112",
+            "billed_annual": "Save $444 billed annually",
+            "cta_label": "Apply for Elite",
+            "accent": "ink",
+            "is_popular": false,
+            "features": "<ul><li>Everything in Performance</li><li>Dedicated performance coach</li><li>Quarterly lab + InBody testing</li><li>Recovery suite access</li><li>Member events + retreats</li></ul>"
+          }
+        }
+      },
+      "block_order": [
+        "block_1",
+        "block_2",
+        "block_3"
+      ]
+    },
+    "product_grid_4": {
+      "type": "product-grid",
+      "settings": {}
+    },
+    "performance_stats_5": {
+      "type": "performance-stats",
+      "settings": {},
+      "blocks": {
+        "block_1": {
+          "type": "stat",
+          "settings": {
+            "value": "2,400+",
+            "label": "Active members"
+          }
+        },
+        "block_2": {
+          "type": "stat",
+          "settings": {
+            "value": "94%",
+            "label": "Retention rate"
+          }
+        },
+        "block_3": {
+          "type": "stat",
+          "settings": {
+            "value": "847",
+            "label": "Classes per month"
+          }
+        },
+        "block_4": {
+          "type": "stat",
+          "settings": {
+            "value": "6.2T",
+            "label": "Avg strain goal"
+          }
+        }
+      },
+      "block_order": [
+        "block_1",
+        "block_2",
+        "block_3",
+        "block_4"
+      ]
+    },
+    "editorial_statement_6": {
+      "type": "editorial-statement",
+      "settings": {}
+    },
+    "marquee_7": {
+      "type": "marquee",
+      "settings": {},
+      "blocks": {
+        "block_1": {
+          "type": "item",
+          "settings": {
+            "text": "TRAIN WITH INTENTION"
+          }
+        },
+        "block_2": {
+          "type": "item",
+          "settings": {
+            "text": "MEASURE EVERYTHING"
+          }
+        },
+        "block_3": {
+          "type": "item",
+          "settings": {
+            "text": "NO JUNK VOLUME"
+          }
+        },
+        "block_4": {
+          "type": "item",
+          "settings": {
+            "text": "RECOVER LIKE IT MATTERS"
+          }
+        }
+      },
+      "block_order": [
+        "block_1",
+        "block_2",
+        "block_3",
+        "block_4"
+      ]
+    },
+    "how_it_works_8": {
+      "type": "how-it-works",
+      "settings": {},
+      "blocks": {
+        "block_1": {
+          "type": "step",
+          "settings": {
+            "label": "Phase 01",
+            "title": "Pre-workout",
+            "body": "<p>Prime the nervous system. Five-minute mobility ramp plus a measured caffeine and electrolyte load, timed to your training window for clean, jitter-free output.</p>"
+          }
+        },
+        "block_2": {
+          "type": "step",
+          "settings": {
+            "label": "Phase 02",
+            "title": "Training",
+            "body": "<p>Execute the day's block. Strain and heart-rate zones stream live to your dashboard so every set lands inside the target stimulus, not above it.</p>"
+          }
+        },
+        "block_3": {
+          "type": "step",
+          "settings": {
+            "label": "Phase 03",
+            "title": "Recovery",
+            "body": "<p>Close the loop. Protein timing, sleep targets, and an HRV check the next morning confirm the session was absorbed before the next one is programmed.</p>"
+          }
+        }
+      },
+      "block_order": [
+        "block_1",
+        "block_2",
+        "block_3"
+      ]
+    },
+    "before_after_9": {
+      "type": "before-after",
+      "settings": {},
+      "blocks": {
+        "block_1": {
+          "type": "testimonial",
+          "settings": {}
+        },
+        "block_2": {
+          "type": "testimonial",
+          "settings": {}
+        },
+        "block_3": {
+          "type": "testimonial",
+          "settings": {}
+        }
+      },
+      "block_order": [
+        "block_1",
+        "block_2",
+        "block_3"
+      ]
+    },
+    "newsletter_diagnostic_10": {
+      "type": "newsletter-diagnostic",
       "settings": {}
     }
   },
   "order": [
-    "main"
+    "hero_diagnostic_1",
+    "vitals_strip_2",
+    "membership_tiers_3",
+    "product_grid_4",
+    "performance_stats_5",
+    "editorial_statement_6",
+    "marquee_7",
+    "how_it_works_8",
+    "before_after_9",
+    "newsletter_diagnostic_10"
   ]
 }

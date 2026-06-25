@@ -1,0 +1,500 @@
+{%- liquid
+  assign show_countdown = section.settings.show_countdown
+  assign countdown_end = section.settings.countdown_end_date
+-%}
+
+<style>
+  #shopify-section-{{ section.id }} .mt-toggle__pill{
+    transition: transform var(--dur-med) var(--ease);
+  }
+</style>
+
+<section class="section mt-section" data-billing="monthly">
+  <div class="section-inner">
+
+    <div class="section-head mt-head" data-animate>
+      <div class="mt-head__text">
+        {%- if section.settings.eyebrow != blank -%}
+          <p class="eyebrow">{{ section.settings.eyebrow }}</p>
+        {%- endif -%}
+        {%- if section.settings.heading != blank -%}
+          <h2 class="h2 mt-head__heading">{{ section.settings.heading }}</h2>
+        {%- endif -%}
+        {%- if section.settings.body != blank -%}
+          <p class="body muted mt-head__body">{{ section.settings.body }}</p>
+        {%- endif -%}
+      </div>
+
+      <div class="mt-toggle" role="group" aria-label="{{ 'sections.membership_tiers.billing_toggle_label' | t }}">
+        <span class="mt-toggle__pill" aria-hidden="true"></span>
+        <button type="button" class="mt-toggle__btn is-active label" data-billing-set="monthly" aria-pressed="true">
+          {{ 'sections.membership_tiers.monthly' | t }}
+        </button>
+        <button type="button" class="mt-toggle__btn label" data-billing-set="annual" aria-pressed="false">
+          {{ 'sections.membership_tiers.annually' | t }}
+          <span class="data mt-toggle__save">{{ 'sections.membership_tiers.save_badge' | t }}</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="mt-grid">
+      {%- for block in section.blocks -%}
+        {%- assign accent = block.settings.accent | default: 'mid' -%}
+        {%- assign delay = forloop.index0 | times: 100 -%}
+        <article
+          class="card mt-card mt-card--{{ accent }}{% if block.settings.is_popular %} mt-card--popular{% endif %}"
+          data-animate
+          {% if delay > 0 %}data-animate-delay="{{ delay }}"{% endif %}
+          {{ block.shopify_attributes }}
+        >
+          {%- if block.settings.is_popular -%}
+            <span class="badge badge--acid mt-card__pop">{{ 'sections.membership_tiers.most_popular' | t }}</span>
+          {%- endif -%}
+
+          <header class="mt-card__head">
+            <h3 class="h3 mt-card__name">{{ block.settings.name }}</h3>
+            {%- if block.settings.is_popular and show_countdown and countdown_end != blank -%}
+              <countdown-timer class="mt-card__countdown data" data-end="{{ countdown_end }}">
+                <span class="mt-card__countdown-pre label muted">{{ 'sections.membership_tiers.offer_ends' | t }}</span>
+                <span class="mt-card__countdown-clock" data-clock>--:--:--:--</span>
+              </countdown-timer>
+            {%- endif -%}
+          </header>
+
+          <div class="mt-card__gauge">
+            <volt-gauge
+              data-value="{{ block.settings.gauge_fill }}"
+              data-label="{{ block.settings.gauge_fill }}"
+              data-sub="{{ 'sections.membership_tiers.intensity' | t }}"
+              {% if block.settings.is_popular %}data-color="acid"{% else %}data-color="mid"{% endif %}
+            ></volt-gauge>
+          </div>
+
+          <div class="mt-card__pricing">
+            <div class="mt-price mt-price--monthly">
+              <span class="h1 mt-price__amount">{{ block.settings.price_monthly }}</span>
+              <span class="data muted mt-price__per">{{ 'sections.membership_tiers.per_mo' | t }}</span>
+            </div>
+            <div class="mt-price mt-price--annual" hidden>
+              <span class="h1 mt-price__amount">{{ block.settings.price_annual }}</span>
+              <span class="data muted mt-price__per">{{ 'sections.membership_tiers.per_mo' | t }}</span>
+            </div>
+            {%- if block.settings.billed_annual != blank -%}
+              <p class="data acid mt-price__save mt-price__save--annual" hidden>{{ block.settings.billed_annual }}</p>
+            {%- endif -%}
+            <p class="data muted mt-price__save mt-price__save--monthly">{{ 'sections.membership_tiers.billed_monthly' | t }}</p>
+          </div>
+
+          {%- if block.settings.cta_label != blank -%}
+            <a
+              href="{{ block.settings.cta_link | default: '#' }}"
+              class="btn btn--full mt-card__cta {% if block.settings.is_popular %}btn--acid{% else %}btn--outline{% endif %}"
+            >
+              {{ block.settings.cta_label }}
+            </a>
+          {%- endif -%}
+
+          {%- if block.settings.features != blank -%}
+            <div class="mt-card__features rte">
+              {{ block.settings.features }}
+            </div>
+          {%- endif -%}
+        </article>
+      {%- endfor -%}
+    </div>
+
+    <div class="mt-foot" data-animate>
+      {%- if section.settings.guarantee_text != blank -%}
+        <p class="data muted mt-foot__guarantee">
+          <svg class="mt-foot__shield" width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M12 2 4 5v6c0 5 3.5 8.5 8 11 4.5-2.5 8-6 8-11V5l-8-3Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+            <path d="M9 12l2 2 4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          {{ section.settings.guarantee_text }}
+        </p>
+      {%- endif -%}
+      {%- if customer -%}
+        <a href="{{ routes.account_url }}" class="link-arrow mt-foot__dash">
+          {{ 'sections.membership_tiers.access_dashboard' | t }}
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </a>
+      {%- endif -%}
+    </div>
+
+  </div>
+</section>
+
+{% stylesheet %}
+  .mt-head{ align-items: flex-start; }
+  .mt-head__text{ max-width: 560px; }
+  .mt-head__heading{ margin-top: 14px; }
+  .mt-head__body{ margin-top: 16px; }
+
+  /* billing toggle */
+  .mt-toggle{
+    position: relative;
+    display: inline-flex;
+    border: 1px solid var(--color-border);
+    background: var(--color-surface);
+    padding: 4px;
+  }
+  .mt-toggle__pill{
+    position: absolute;
+    top: 4px; left: 4px; bottom: 4px;
+    width: calc(50% - 4px);
+    background: var(--color-ink);
+    z-index: 0;
+  }
+  .mt-section[data-billing="annual"] .mt-toggle__pill{ transform: translateX(100%); }
+  .mt-toggle__btn{
+    position: relative;
+    z-index: 1;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 11px 20px;
+    color: var(--color-mid);
+    transition: color var(--dur-med) var(--ease);
+    white-space: nowrap;
+  }
+  .mt-toggle__btn.is-active{ color: var(--color-bg); }
+  .mt-toggle__save{
+    font-size: 9px;
+    letter-spacing: 0.08em;
+    color: var(--color-acid);
+    padding: 2px 6px;
+    border: 1px solid currentColor;
+  }
+  .mt-toggle__btn.is-active .mt-toggle__save{ color: var(--color-acid); }
+
+  /* grid */
+  .mt-grid{
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--gutter);
+    align-items: start;
+  }
+  @media (max-width: 990px){ .mt-grid{ grid-template-columns: 1fr; max-width: 460px; margin-inline: auto; } }
+
+  /* card */
+  .mt-card{
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    padding: clamp(24px, 3vw, 36px);
+    border-top: 3px solid var(--color-mid);
+  }
+  .mt-card--acid{ border-top-color: var(--color-acid); }
+  .mt-card--ink{ border-top-color: var(--color-ink); }
+  .mt-card--popular{
+    background: var(--color-bg);
+    border-color: var(--color-ink);
+    box-shadow: 0 0 0 1px var(--color-ink);
+  }
+  @media (min-width: 991px){
+    .mt-card--popular{ transform: translateY(-12px); }
+  }
+
+  .mt-card__pop{
+    position: absolute;
+    top: 0; right: clamp(20px, 3vw, 32px);
+    transform: translateY(-50%);
+  }
+  .mt-card__head{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    min-height: 30px;
+  }
+  .mt-card__countdown{
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .mt-card__countdown-pre{ font-size: 9px; }
+  .mt-card__countdown-clock{
+    font-size: 13px;
+    color: var(--color-danger);
+    letter-spacing: 0.1em;
+  }
+
+  .mt-card__gauge{
+    margin: 18px 0 6px;
+    max-width: 168px;
+  }
+
+  .mt-card__pricing{ margin-top: 8px; }
+  .mt-price{ display: flex; align-items: baseline; gap: 8px; }
+  .mt-price__amount{ font-size: clamp(40px, 4.5vw, 56px); line-height: 1; }
+  .mt-price__per{ font-size: 13px; }
+  .mt-price__save{ margin-top: 8px; font-size: 11px; }
+
+  .mt-card__cta{ margin-top: 24px; }
+
+  .mt-card__features{
+    margin-top: 24px;
+    padding-top: 22px;
+    border-top: 1px solid var(--color-border);
+  }
+  .mt-card__features ul{ display: flex; flex-direction: column; gap: 12px; }
+  .mt-card__features li{
+    position: relative;
+    padding-left: 26px;
+    font-family: var(--font-body);
+    font-size: 13px;
+    line-height: 1.5;
+    color: var(--color-ink);
+  }
+  .mt-card__features li::before{
+    content: "";
+    position: absolute;
+    left: 0; top: 2px;
+    width: 16px; height: 16px;
+    background-color: var(--color-acid);
+    -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='none' stroke='%23000' stroke-width='3' stroke-linecap='round' stroke-linejoin='round' d='M5 12l5 5 9-9'/%3E%3C/svg%3E") center / contain no-repeat;
+    mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='none' stroke='%23000' stroke-width='3' stroke-linecap='round' stroke-linejoin='round' d='M5 12l5 5 9-9'/%3E%3C/svg%3E") center / contain no-repeat;
+  }
+  .mt-card__features p{ font-size: 13px; color: var(--color-mid); }
+
+  /* footer */
+  .mt-foot{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+    flex-wrap: wrap;
+    margin-top: clamp(36px, 5vw, 56px);
+    padding-top: 28px;
+    border-top: 1px solid var(--color-border);
+  }
+  .mt-foot__guarantee{ display: inline-flex; align-items: center; gap: 8px; }
+  .mt-foot__shield{ color: var(--color-success); flex: none; }
+{% endstylesheet %}
+
+<script>
+  (function () {
+    var root = document.getElementById('shopify-section-{{ section.id }}');
+    if (!root) return;
+    var section = root.querySelector('.mt-section');
+    if (!section) return;
+
+    var btns = section.querySelectorAll('[data-billing-set]');
+    function setBilling(mode) {
+      section.setAttribute('data-billing', mode);
+      btns.forEach(function (b) {
+        var on = b.getAttribute('data-billing-set') === mode;
+        b.classList.toggle('is-active', on);
+        b.setAttribute('aria-pressed', on ? 'true' : 'false');
+      });
+      var annual = mode === 'annual';
+      section.querySelectorAll('.mt-price--monthly').forEach(function (e) { e.hidden = annual; });
+      section.querySelectorAll('.mt-price--annual').forEach(function (e) { e.hidden = !annual; });
+      section.querySelectorAll('.mt-price__save--monthly').forEach(function (e) { e.hidden = annual; });
+      section.querySelectorAll('.mt-price__save--annual').forEach(function (e) { e.hidden = !annual; });
+    }
+    btns.forEach(function (b) {
+      b.addEventListener('click', function () { setBilling(b.getAttribute('data-billing-set')); });
+    });
+  })();
+
+  if (!customElements.get('countdown-timer')) {
+    class CountdownTimer extends HTMLElement {
+      connectedCallback() {
+        this.clock = this.querySelector('[data-clock]');
+        var end = Date.parse(this.dataset.end);
+        if (!this.clock || isNaN(end)) return;
+        this.end = end;
+        this.tick();
+        if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+          this.timer = setInterval(this.tick.bind(this), 1000);
+        }
+      }
+      disconnectedCallback() { if (this.timer) clearInterval(this.timer); }
+      tick() {
+        var diff = this.end - Date.now();
+        if (diff <= 0) { this.clock.textContent = '00:00:00:00'; if (this.timer) clearInterval(this.timer); return; }
+        var s = Math.floor(diff / 1000);
+        var d = Math.floor(s / 86400); s -= d * 86400;
+        var h = Math.floor(s / 3600); s -= h * 3600;
+        var m = Math.floor(s / 60); s -= m * 60;
+        var p = function (n) { return String(n).padStart(2, '0'); };
+        this.clock.textContent = p(d) + ':' + p(h) + ':' + p(m) + ':' + p(s);
+      }
+    }
+    customElements.define('countdown-timer', CountdownTimer);
+  }
+</script>
+
+{% schema %}
+{
+  "name": "t:sections.membership_tiers.name",
+  "tag": "section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "t:sections.membership_tiers.eyebrow",
+      "default": "Choose your protocol"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "t:sections.membership_tiers.heading",
+      "default": "Find Your Level."
+    },
+    {
+      "type": "textarea",
+      "id": "body",
+      "label": "t:sections.membership_tiers.body",
+      "default": "Every protocol is built on the same engine: live recovery data, coached programming, and a community that shows up. Pick the intensity that matches your season."
+    },
+    {
+      "type": "checkbox",
+      "id": "show_countdown",
+      "label": "t:sections.membership_tiers.show_countdown",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "countdown_end_date",
+      "label": "t:sections.membership_tiers.countdown_end_date",
+      "info": "t:sections.membership_tiers.countdown_end_date_info",
+      "default": "2026-12-31T23:59:59"
+    },
+    {
+      "type": "text",
+      "id": "guarantee_text",
+      "label": "t:sections.membership_tiers.guarantee_text",
+      "default": "30-day performance guarantee. Cancel anytime, no contract."
+    }
+  ],
+  "blocks": [
+    {
+      "type": "tier",
+      "name": "t:sections.membership_tiers.blocks.tier.name",
+      "settings": [
+        {
+          "type": "text",
+          "id": "name",
+          "label": "t:sections.membership_tiers.blocks.tier.tier_name",
+          "default": "Starter"
+        },
+        {
+          "type": "range",
+          "id": "gauge_fill",
+          "label": "t:sections.membership_tiers.blocks.tier.gauge_fill",
+          "min": 0,
+          "max": 100,
+          "step": 5,
+          "unit": "%",
+          "default": 40
+        },
+        {
+          "type": "text",
+          "id": "price_monthly",
+          "label": "t:sections.membership_tiers.blocks.tier.price_monthly",
+          "default": "$49"
+        },
+        {
+          "type": "text",
+          "id": "price_annual",
+          "label": "t:sections.membership_tiers.blocks.tier.price_annual",
+          "default": "$37"
+        },
+        {
+          "type": "text",
+          "id": "billed_annual",
+          "label": "t:sections.membership_tiers.blocks.tier.billed_annual",
+          "default": "Save $144 billed annually"
+        },
+        {
+          "type": "text",
+          "id": "cta_label",
+          "label": "t:sections.membership_tiers.blocks.tier.cta_label",
+          "default": "Start Starter"
+        },
+        {
+          "type": "url",
+          "id": "cta_link",
+          "label": "t:sections.membership_tiers.blocks.tier.cta_link"
+        },
+        {
+          "type": "checkbox",
+          "id": "is_popular",
+          "label": "t:sections.membership_tiers.blocks.tier.is_popular",
+          "default": false
+        },
+        {
+          "type": "select",
+          "id": "accent",
+          "label": "t:sections.membership_tiers.blocks.tier.accent",
+          "options": [
+            { "value": "mid", "label": "t:sections.membership_tiers.blocks.tier.accent_mid" },
+            { "value": "acid", "label": "t:sections.membership_tiers.blocks.tier.accent_acid" },
+            { "value": "ink", "label": "t:sections.membership_tiers.blocks.tier.accent_ink" }
+          ],
+          "default": "mid"
+        },
+        {
+          "type": "richtext",
+          "id": "features",
+          "label": "t:sections.membership_tiers.blocks.tier.features",
+          "default": "<ul><li>Live recovery + strain dashboard</li><li>2 coached programs / month</li><li>Community access</li><li>Mobile app</li></ul>"
+        }
+      ]
+    }
+  ],
+  "max_blocks": 3,
+  "presets": [
+    {
+      "name": "t:sections.membership_tiers.name",
+      "blocks": [
+        {
+          "type": "tier",
+          "settings": {
+            "name": "Starter",
+            "gauge_fill": 40,
+            "price_monthly": "$49",
+            "price_annual": "$37",
+            "billed_annual": "Save $144 billed annually",
+            "cta_label": "Start Starter",
+            "accent": "mid",
+            "is_popular": false,
+            "features": "<ul><li>Live recovery + strain dashboard</li><li>2 coached programs / month</li><li>Community access</li><li>Mobile app</li></ul>"
+          }
+        },
+        {
+          "type": "tier",
+          "settings": {
+            "name": "Performance",
+            "gauge_fill": 75,
+            "price_monthly": "$89",
+            "price_annual": "$67",
+            "billed_annual": "Save $264 billed annually",
+            "cta_label": "Go Performance",
+            "accent": "acid",
+            "is_popular": true,
+            "features": "<ul><li>Everything in Starter</li><li>Unlimited coached programs</li><li>Weekly 1:1 check-ins</li><li>Personalized nutrition protocol</li><li>Priority class booking</li></ul>"
+          }
+        },
+        {
+          "type": "tier",
+          "settings": {
+            "name": "Elite",
+            "gauge_fill": 100,
+            "price_monthly": "$149",
+            "price_annual": "$112",
+            "billed_annual": "Save $444 billed annually",
+            "cta_label": "Apply for Elite",
+            "accent": "ink",
+            "is_popular": false,
+            "features": "<ul><li>Everything in Performance</li><li>Dedicated performance coach</li><li>Quarterly lab + InBody testing</li><li>Recovery suite access</li><li>Member events + retreats</li></ul>"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

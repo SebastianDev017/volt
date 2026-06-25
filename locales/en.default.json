@@ -51,5 +51,76 @@
     "submit": "Search",
     "no_results_html": "No results found for {{ terms }}",
     "results_for_html": "{{ count }} results found for {{ terms }}"
+  },
+  "sections": {
+    "membership_tiers": {
+      "billing_toggle_label": "Billing period",
+      "monthly": "Monthly",
+      "annually": "Annually",
+      "save_badge": "Save 25%",
+      "most_popular": "Most popular",
+      "offer_ends": "Founding rate ends in",
+      "intensity": "Intensity",
+      "per_mo": "/mo",
+      "billed_monthly": "Billed monthly, cancel anytime",
+      "access_dashboard": "Access your dashboard"
+    },
+    "footer_main": {
+      "rights": "All rights reserved.",
+      "trust_secure": "Secure Checkout",
+      "trust_shipping": "Free Shipping $75+",
+      "trust_returns": "30-Day Returns",
+      "trust_nsf": "NSF Certified"
+    },
+    "newsletter_diagnostic": {
+      "q1_title": "Primary goal",
+      "q1_a": "Build strength",
+      "q1_b": "Improve endurance",
+      "q1_c": "Lose fat",
+      "q1_d": "General health",
+      "q2_title": "Training frequency",
+      "q2_a": "1–2x per week",
+      "q2_b": "3–4x per week",
+      "q2_c": "5+ per week",
+      "q2_d": "Not training yet",
+      "q3_title": "Biggest challenge",
+      "q3_a": "Staying motivated",
+      "q3_b": "Programming",
+      "q3_c": "Nutrition",
+      "q3_d": "Recovery",
+      "q4_title": "Membership interest",
+      "q4_a": "Starter",
+      "q4_b": "Performance",
+      "q4_c": "Elite",
+      "cta": "Start my protocol",
+      "back": "Back",
+      "nl_success": "You are in. Watch your inbox for the first dispatch.",
+      "nl_placeholder": "Email address",
+      "nl_submit": "Subscribe"
+    },
+    "header_main": {
+      "skip_to_content": "Skip to content",
+      "open_menu": "Open menu",
+      "close_menu": "Close menu",
+      "primary_nav": "Primary",
+      "view_all": "View all",
+      "search": "Search",
+      "account": "Account",
+      "cart": "Cart",
+      "promo_eyebrow": "Members only",
+      "promo_title": "Train with data, not guesswork.",
+      "promo_body": "Recovery, strain, and sleep scoring built for the way you actually move.",
+      "promo_cta": "Start your protocol"
+    },
+    "announcement_bar": {
+      "aria_label": "Announcement",
+      "dismiss": "Dismiss announcement"
+    },
+    "before_after": {
+      "range_label": "Drag to compare before and after"
+    },
+    "marquee": {
+      "aria_label": "Scrolling highlights"
+    }
   }
 }

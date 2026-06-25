@@ -9,14 +9,40 @@
  */
 {
   "type": "footer",
-  "name": "t:general.footer",
+  "name": "t:sections.footer_main.name",
   "sections": {
     "footer": {
       "type": "footer",
-      "settings": {
-        "menu": "",
-        "show_payment_icons": true
-      }
+      "blocks": {
+        "brand": {
+          "type": "brand"
+        },
+        "menu_explore": {
+          "type": "menu",
+          "settings": {
+            "title": "Explore"
+          }
+        },
+        "menu_support": {
+          "type": "menu",
+          "settings": {
+            "title": "Support"
+          }
+        },
+        "menu_company": {
+          "type": "menu",
+          "settings": {
+            "title": "Company"
+          }
+        }
+      },
+      "block_order": [
+        "brand",
+        "menu_explore",
+        "menu_support",
+        "menu_company"
+      ],
+      "settings": {}
     }
   },
   "order": [

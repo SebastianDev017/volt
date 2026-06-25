@@ -1,0 +1,243 @@
+{%- liquid
+  assign block_count = section.blocks.size
+-%}
+<div class="volt-hiw" data-animate>
+  <div class="section-inner">
+    {%- if section.settings.eyebrow != blank or section.settings.heading != blank -%}
+      <div class="section-head volt-hiw__head">
+        <div>
+          {%- if section.settings.eyebrow != blank -%}
+            <p class="eyebrow volt-hiw__eyebrow">{{ section.settings.eyebrow }}</p>
+          {%- endif -%}
+          {%- if section.settings.heading != blank -%}
+            <h2 class="h2 volt-hiw__heading">{{ section.settings.heading }}</h2>
+          {%- endif -%}
+        </div>
+      </div>
+    {%- endif -%}
+
+    {%- if block_count > 0 -%}
+      <div class="volt-hiw__flow" data-steps="{{ block_count }}">
+        {%- for block in section.blocks -%}
+          {%- liquid
+            assign idx = forloop.index
+            assign num = idx | prepend: '0' | slice: -2, 2
+          -%}
+          <div
+            class="volt-hiw__step"
+            data-animate
+            {% if forloop.index0 > 0 %}data-animate-delay="{{ forloop.index0 | times: 100 | at_most: 300 }}"{% endif %}
+            {{ block.shopify_attributes }}
+          >
+            <span class="volt-hiw__num" aria-hidden="true">{{ num }}</span>
+
+            <div class="volt-hiw__media">
+              {%- if block.settings.image != blank -%}
+                {{
+                  block.settings.image
+                  | image_url: width: 800
+                  | image_tag: loading: 'lazy', widths: '400,600,800', class: 'volt-hiw__img', alt: block.settings.title
+                }}
+              {%- else -%}
+                <span class="volt-hiw__placeholder" aria-hidden="true"></span>
+              {%- endif -%}
+            </div>
+
+            {%- if block.settings.label != blank -%}
+              <p class="label acid volt-hiw__phase">{{ block.settings.label }}</p>
+            {%- endif -%}
+            {%- if block.settings.title != blank -%}
+              <h3 class="h3 volt-hiw__title">{{ block.settings.title }}</h3>
+            {%- endif -%}
+            {%- if block.settings.body != blank -%}
+              <div class="body muted volt-hiw__body">{{ block.settings.body }}</div>
+            {%- endif -%}
+            {%- if block.settings.link_text != blank and block.settings.link_url != blank -%}
+              <a class="link-arrow volt-hiw__link" href="{{ block.settings.link_url }}">
+                {{ block.settings.link_text }}
+                <span aria-hidden="true">&rarr;</span>
+              </a>
+            {%- endif -%}
+
+            {%- unless forloop.last -%}
+              <span class="volt-hiw__connector" aria-hidden="true">&rarr;</span>
+            {%- endunless -%}
+          </div>
+        {%- endfor -%}
+      </div>
+    {%- endif -%}
+  </div>
+</div>
+
+{% stylesheet %}
+  .volt-hiw { padding-block: var(--section-space); background: var(--color-surface); }
+  .volt-hiw__head { margin-bottom: clamp(36px, 5vw, 64px); }
+  .volt-hiw__eyebrow { margin-bottom: 16px; }
+  .volt-hiw__heading { max-width: 22ch; }
+
+  .volt-hiw__flow {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    align-items: start;
+  }
+
+  .volt-hiw__step {
+    position: relative;
+    padding: clamp(24px, 3vw, 40px);
+    border-left: 1px solid var(--color-border);
+  }
+  .volt-hiw__step:first-child { border-left: 0; padding-left: 0; }
+  .volt-hiw__step:last-child { padding-right: 0; }
+
+  .volt-hiw__num {
+    display: block;
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: 64px;
+    line-height: 1;
+    color: var(--color-border);
+    margin-bottom: 20px;
+  }
+
+  .volt-hiw__media { margin-bottom: 22px; }
+  .volt-hiw__img,
+  .volt-hiw__placeholder {
+    display: block;
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+    border-radius: var(--radius-image);
+  }
+  .volt-hiw__placeholder {
+    background:
+      linear-gradient(135deg, var(--color-ink-06), transparent 60%),
+      linear-gradient(315deg, var(--color-acid-10), var(--color-surface));
+    border: 1px solid var(--color-border);
+  }
+
+  .volt-hiw__phase { margin-bottom: 12px; }
+  .volt-hiw__title { margin-bottom: 12px; }
+  .volt-hiw__body { max-width: 40ch; }
+  .volt-hiw__body > :first-child { margin-top: 0; }
+  .volt-hiw__body > :last-child { margin-bottom: 0; }
+  .volt-hiw__link { margin-top: 18px; }
+
+  .volt-hiw__connector {
+    position: absolute;
+    top: 56px;
+    right: -14px;
+    z-index: 1;
+    font-family: var(--font-mono);
+    font-size: 20px;
+    line-height: 1;
+    color: var(--color-acid);
+    transform: translateX(50%);
+  }
+
+  @media (max-width: 768px) {
+    .volt-hiw__flow { grid-template-columns: 1fr; }
+    .volt-hiw__step {
+      border-left: 0;
+      padding-left: 0;
+      padding-right: 0;
+      padding-block: clamp(24px, 6vw, 36px);
+    }
+    .volt-hiw__step:not(:first-child) { border-top: 1px solid var(--color-border); }
+    .volt-hiw__num { font-size: 52px; }
+    .volt-hiw__connector { display: none; }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:sections.how_it_works.name",
+  "tag": "section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "t:sections.how_it_works.eyebrow",
+      "default": "The protocol"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "t:sections.how_it_works.heading",
+      "default": "How the system works, end to end"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "step",
+      "name": "t:sections.how_it_works.blocks.step.name",
+      "settings": [
+        {
+          "type": "text",
+          "id": "label",
+          "label": "t:sections.how_it_works.blocks.step.label",
+          "default": "Phase 01"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "t:sections.how_it_works.blocks.step.title",
+          "default": "Pre-workout"
+        },
+        {
+          "type": "richtext",
+          "id": "body",
+          "label": "t:sections.how_it_works.blocks.step.body",
+          "default": "<p>Prime the nervous system. Five-minute mobility ramp plus a measured caffeine and electrolyte load, timed to your training window for clean, jitter-free output.</p>"
+        },
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "t:sections.how_it_works.blocks.step.image"
+        },
+        {
+          "type": "text",
+          "id": "link_text",
+          "label": "t:sections.how_it_works.blocks.step.link_text"
+        },
+        {
+          "type": "url",
+          "id": "link_url",
+          "label": "t:sections.how_it_works.blocks.step.link_url"
+        }
+      ]
+    }
+  ],
+  "max_blocks": 3,
+  "presets": [
+    {
+      "name": "t:sections.how_it_works.name",
+      "blocks": [
+        {
+          "type": "step",
+          "settings": {
+            "label": "Phase 01",
+            "title": "Pre-workout",
+            "body": "<p>Prime the nervous system. Five-minute mobility ramp plus a measured caffeine and electrolyte load, timed to your training window for clean, jitter-free output.</p>"
+          }
+        },
+        {
+          "type": "step",
+          "settings": {
+            "label": "Phase 02",
+            "title": "Training",
+            "body": "<p>Execute the day's block. Strain and heart-rate zones stream live to your dashboard so every set lands inside the target stimulus, not above it.</p>"
+          }
+        },
+        {
+          "type": "step",
+          "settings": {
+            "label": "Phase 03",
+            "title": "Recovery",
+            "body": "<p>Close the loop. Protein timing, sleep targets, and an HRV check the next morning confirm the session was absorbed before the next one is programmed.</p>"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

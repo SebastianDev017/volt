@@ -1,0 +1,152 @@
+{% doc %}
+  Renders a VOLT product card for product grids (featured grid, collections, related).
+
+  @param {product} card_product - The product to render
+  @param {number} [image_radius] - Border-radius in px for the media (default 0)
+  @param {boolean} [hover_swap] - Fade to the 2nd image on hover when available
+  @param {boolean} [quick_buy] - Show the "ADD TO BAG" quick-add overlay
+  @param {number} [stock_threshold] - Show "ONLY X LEFT" when 0 < inventory < this
+  @param {boolean} [show_tasting_specs] - Show the spec line from volt.specs metafield
+  @param {boolean} [show_member_price] - Show member price when the customer is a member
+
+  @example
+  {% render 'product-card', card_product: product, image_radius: 0, quick_buy: true %}
+{% enddoc %}
+
+{%- liquid
+  assign p = card_product
+  assign radius = image_radius | default: 0
+
+  assign is_member = false
+  if customer and customer.tags contains 'volt-member'
+    assign is_member = true
+  endif
+
+  assign images_count = p.images.size
+  assign second_image = p.images[1]
+
+  assign threshold = stock_threshold | default: 8
+  assign show_specs = show_tasting_specs | default: false
+  assign show_member = show_member_price | default: false
+
+  assign meta_badge = p.metafields.volt.badge.value
+  assign meta_category = p.metafields.volt.category.value
+  assign meta_specs = p.metafields.volt.specs.value
+
+  assign on_sale = false
+  if p.compare_at_price > p.price
+    assign on_sale = true
+  endif
+
+  assign variant = p.selected_or_first_available_variant
+  assign inventory = variant.inventory_quantity
+  assign low_stock = false
+  if variant.inventory_management != blank and inventory > 0 and inventory < threshold
+    assign low_stock = true
+  endif
+
+  assign has_subscription = false
+  if p.selling_plan_groups.size > 0
+    assign has_subscription = true
+  endif
+-%}
+
+<article class="pcard" data-product-id="{{ p.id }}">
+  <a class="pcard__media" href="{{ p.url }}" aria-label="{{ p.title | escape }}" style="--pcard-radius: {{ radius }}px;">
+    <div class="pcard__badges pcard__badges--tl">
+      {%- if meta_badge != blank -%}
+        {%- assign badge_down = meta_badge | downcase -%}
+        {%- if badge_down == 'new' or badge_down == 'limited' -%}
+          <span class="badge badge--acid">{{ meta_badge }}</span>
+        {%- else -%}
+          <span class="badge badge--ink">{{ meta_badge }}</span>
+        {%- endif -%}
+      {%- elsif p.available == false -%}
+        <span class="badge badge--ink">SOLD OUT</span>
+      {%- elsif on_sale -%}
+        <span class="badge badge--danger">SALE</span>
+      {%- endif -%}
+      {%- if low_stock -%}
+        <span class="badge badge--danger pcard__stock">ONLY {{ inventory }} LEFT</span>
+      {%- endif -%}
+    </div>
+
+    {%- if is_member -%}
+      <div class="pcard__badges pcard__badges--tr">
+        <span class="badge badge--success">MEMBER &minus;20%</span>
+      </div>
+    {%- endif -%}
+
+    {%- if p.featured_image -%}
+      {{ p.featured_image | image_url: width: 800 | image_tag: loading: 'lazy', widths: '400,600,800', sizes: '(max-width: 749px) 100vw, 25vw', class: 'pcard__img pcard__img--primary', alt: p.title | escape }}
+    {%- else -%}
+      <div class="pcard__img pcard__img--ph" aria-hidden="true"></div>
+    {%- endif -%}
+
+    {%- if hover_swap and images_count > 1 and second_image -%}
+      {{ second_image | image_url: width: 800 | image_tag: loading: 'lazy', widths: '400,600,800', sizes: '(max-width: 749px) 100vw, 25vw', class: 'pcard__img pcard__img--secondary', alt: p.title | escape }}
+    {%- endif -%}
+
+    {%- if quick_buy and p.available -%}
+      <div class="pcard__quickadd">
+        {%- if p.variants.size == 1 -%}
+          <product-form class="pcard__form">
+            {%- form 'product', p, class: 'pcard__form-el' -%}
+              <input type="hidden" name="id" value="{{ variant.id }}">
+              <button type="submit" class="btn btn--acid btn--full pcard__quickadd-btn">
+                ADD TO BAG
+              </button>
+            {%- endform -%}
+          </product-form>
+        {%- else -%}
+          <span class="btn btn--acid btn--full pcard__quickadd-btn pcard__quickadd-btn--options">
+            CHOOSE OPTIONS
+          </span>
+        {%- endif -%}
+      </div>
+    {%- endif -%}
+  </a>
+
+  <div class="pcard__body">
+    <div class="pcard__meta">
+      {%- if meta_category != blank -%}
+        <span class="pcard__pill label">{{ meta_category }}</span>
+      {%- endif -%}
+      {%- if p.vendor != blank -%}
+        <span class="label muted pcard__vendor">{{ p.vendor }}</span>
+      {%- endif -%}
+    </div>
+
+    <h3 class="h3 pcard__title">
+      <a href="{{ p.url }}">{{ p.title }}</a>
+    </h3>
+
+    {%- if show_specs and meta_specs != blank -%}
+      <p class="data muted pcard__specs">{{ meta_specs }}</p>
+    {%- endif -%}
+
+    <div class="pcard__pricing">
+      {%- if on_sale -%}
+        <span class="pcard__price pcard__price--sale">{{ p.price | money }}</span>
+        <s class="pcard__price pcard__price--was muted">{{ p.compare_at_price | money }}</s>
+      {%- else -%}
+        <span class="pcard__price">{{ p.price | money }}</span>
+      {%- endif -%}
+    </div>
+
+    {%- if show_member and is_member -%}
+      {%- assign member_price = p.price | times: 0.8 -%}
+      <p class="data pcard__member">
+        <span class="pcard__member-label">MEMBER</span>
+        <span class="pcard__member-value">{{ member_price | money }}</span>
+      </p>
+    {%- endif -%}
+
+    {%- if has_subscription -%}
+      <a class="link-arrow pcard__sub" href="{{ p.url }}">
+        SUBSCRIBE &amp; SAVE
+        <span aria-hidden="true">&rarr;</span>
+      </a>
+    {%- endif -%}
+  </div>
+</article>

@@ -1,0 +1,336 @@
+{%- liquid
+  assign before_img = section.settings.before_image
+  assign after_img = section.settings.after_image
+-%}
+
+<style>
+  #shopify-section-{{ section.id }} .ba-compare{ --pos: 50%; }
+</style>
+
+<section class="section ba" data-animate>
+  <div class="section-inner">
+    <div class="section-head ba__head">
+      <div>
+        {%- if section.settings.eyebrow != blank -%}
+          <p class="eyebrow">{{ section.settings.eyebrow }}</p>
+        {%- endif -%}
+        {%- if section.settings.heading != blank -%}
+          <h2 class="h1 ba__heading">{{ section.settings.heading }}</h2>
+        {%- endif -%}
+      </div>
+    </div>
+
+    <before-after-slider class="ba__stage" data-animate data-animate-delay="100">
+      <div class="ba-compare">
+        <div class="ba-compare__layer ba-compare__layer--before">
+          {%- if before_img != blank -%}
+            {{ before_img | image_url: width: 1200 | image_tag: loading: 'lazy', widths: '600,900,1200', class: 'ba-compare__img', alt: section.settings.before_label }}
+          {%- else -%}
+            <div class="ba-compare__img ba-ph ba-ph--before" role="img" aria-label="{{ section.settings.before_label }}"></div>
+          {%- endif -%}
+          {%- if section.settings.before_label != blank -%}
+            <span class="ba-pill ba-pill--before data">{{ section.settings.before_label }}</span>
+          {%- endif -%}
+        </div>
+
+        <div class="ba-compare__layer ba-compare__layer--after">
+          {%- if after_img != blank -%}
+            {{ after_img | image_url: width: 1200 | image_tag: loading: 'lazy', widths: '600,900,1200', class: 'ba-compare__img', alt: section.settings.after_label }}
+          {%- else -%}
+            <div class="ba-compare__img ba-ph ba-ph--after" role="img" aria-label="{{ section.settings.after_label }}"></div>
+          {%- endif -%}
+          {%- if section.settings.after_label != blank -%}
+            <span class="ba-pill ba-pill--after badge--acid data">{{ section.settings.after_label }}</span>
+          {%- endif -%}
+        </div>
+
+        <div class="ba-compare__handle" aria-hidden="true">
+          <span class="ba-compare__knob">&lt;&gt;</span>
+        </div>
+
+        <input
+          class="ba-compare__range"
+          type="range"
+          min="0"
+          max="100"
+          value="50"
+          step="1"
+          aria-label="{{ 'sections.before_after.range_label' | t }}"
+        >
+      </div>
+    </before-after-slider>
+
+    {%- if section.blocks.size > 0 -%}
+      <div class="ba__testimonials">
+        {%- for block in section.blocks -%}
+          <figure class="card ba-quote" data-animate data-animate-delay="{{ forloop.index | times: 100 }}" {{ block.shopify_attributes }}>
+            <blockquote class="ba-quote__text body-lg">{{ block.settings.quote }}</blockquote>
+            <figcaption class="ba-quote__meta">
+              {%- if block.settings.name != blank -%}
+                <span class="ba-quote__name h3">{{ block.settings.name }}</span>
+              {%- endif -%}
+              <span class="ba-quote__sub">
+                {%- if block.settings.tier != blank -%}
+                  <span class="badge badge--outline">{{ block.settings.tier }}</span>
+                {%- endif -%}
+                {%- if block.settings.join_date != blank -%}
+                  <span class="data muted ba-quote__date">{{ block.settings.join_date }}</span>
+                {%- endif -%}
+              </span>
+            </figcaption>
+          </figure>
+        {%- endfor -%}
+      </div>
+    {%- endif -%}
+  </div>
+</section>
+
+{% stylesheet %}
+  .ba__head{ margin-bottom: clamp(28px, 4vw, 48px); }
+  .ba__heading{ margin-top: 16px; max-width: 16ch; }
+
+  .ba__stage{ position: relative; }
+  .ba-compare{
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16 / 10;
+    overflow: hidden;
+    border: 1px solid var(--color-border);
+    background: var(--color-surface);
+    user-select: none;
+    touch-action: pan-y;
+  }
+  .ba-compare__layer{ position: absolute; inset: 0; }
+  .ba-compare__img{ width: 100%; height: 100%; object-fit: cover; border-radius: 0; }
+
+  .ba-ph{
+    width: 100%; height: 100%;
+    background:
+      linear-gradient(125deg, var(--color-surface) 0%, var(--color-border) 100%);
+  }
+  .ba-ph--after{
+    background:
+      linear-gradient(125deg, var(--color-ink) 0%, var(--color-mid) 130%);
+  }
+
+  /* after layer is clipped from the right, revealing 'before' beneath as the handle moves left */
+  .ba-compare__layer--after{
+    clip-path: inset(0 calc(100% - var(--pos)) 0 0);
+  }
+
+  .ba-pill{
+    position: absolute;
+    bottom: clamp(12px, 2vw, 20px);
+    padding: 8px 12px;
+    z-index: 4;
+    white-space: nowrap;
+    font-weight: 400;
+  }
+  .ba-pill--before{
+    left: clamp(12px, 2vw, 20px);
+    background: var(--color-ink);
+    color: var(--color-bg);
+  }
+  .ba-pill--after{
+    right: clamp(12px, 2vw, 20px);
+  }
+
+  .ba-compare__handle{
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: var(--pos);
+    width: 2px;
+    background: var(--color-acid);
+    transform: translateX(-1px);
+    z-index: 5;
+    pointer-events: none;
+  }
+  .ba-compare__knob{
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 32px;
+    height: 32px;
+    display: grid;
+    place-items: center;
+    background: var(--color-acid);
+    color: var(--on-acid);
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.02em;
+    box-shadow: 0 0 0 4px var(--color-acid-10);
+  }
+
+  /* native range sits invisibly over the whole stage and IS the control */
+  .ba-compare__range{
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    background: transparent;
+    -webkit-appearance: none;
+    appearance: none;
+    cursor: ew-resize;
+    z-index: 6;
+  }
+  .ba-compare__range:focus-visible{ outline: 2px solid var(--color-acid); outline-offset: 3px; }
+  .ba-compare__range::-webkit-slider-thumb{
+    -webkit-appearance: none;
+    appearance: none;
+    width: 44px;
+    height: 100%;
+    background: transparent;
+    cursor: ew-resize;
+  }
+  .ba-compare__range::-moz-range-thumb{
+    width: 44px;
+    height: 100%;
+    border: 0;
+    background: transparent;
+    cursor: ew-resize;
+  }
+  .ba-compare__range::-moz-range-track{ background: transparent; }
+
+  .ba__testimonials{
+    margin-top: clamp(28px, 4vw, 48px);
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--gutter);
+  }
+  .ba-quote{
+    padding: clamp(20px, 2.4vw, 32px);
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+  .ba-quote__text{ flex: 1; }
+  .ba-quote__meta{ display: flex; flex-direction: column; gap: 10px; border-top: 1px solid var(--color-border); padding-top: 16px; }
+  .ba-quote__name{ font-size: clamp(18px, 1.6vw, 20px); }
+  .ba-quote__sub{ display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+  .ba-quote__date{ letter-spacing: 0.04em; }
+
+  @media (max-width: 990px){
+    .ba__testimonials{ grid-template-columns: 1fr; }
+    .ba-compare{ aspect-ratio: 4 / 5; }
+  }
+{% endstylesheet %}
+
+<script>
+  (function(){
+    if (customElements.get('before-after-slider')) return;
+    class BeforeAfterSlider extends HTMLElement {
+      connectedCallback(){
+        this.compare = this.querySelector('.ba-compare');
+        this.range = this.querySelector('.ba-compare__range');
+        if (!this.compare || !this.range) return;
+        this._onInput = this._onInput.bind(this);
+        this.range.addEventListener('input', this._onInput);
+        this._apply(this.range.value);
+      }
+      disconnectedCallback(){
+        if (this.range) this.range.removeEventListener('input', this._onInput);
+      }
+      _onInput(){ this._apply(this.range.value); }
+      _apply(v){
+        this.compare.style.setProperty('--pos', v + '%');
+      }
+    }
+    customElements.define('before-after-slider', BeforeAfterSlider);
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "t:sections.before_after.name",
+  "tag": "section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "t:sections.before_after.eyebrow",
+      "default": "Member results"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "heading",
+      "label": "t:sections.before_after.heading",
+      "default": "Six months. Read the difference."
+    },
+    {
+      "type": "header",
+      "content": "t:sections.before_after.images_header"
+    },
+    {
+      "type": "image_picker",
+      "id": "before_image",
+      "label": "t:sections.before_after.before_image"
+    },
+    {
+      "type": "image_picker",
+      "id": "after_image",
+      "label": "t:sections.before_after.after_image"
+    },
+    {
+      "type": "text",
+      "id": "before_label",
+      "label": "t:sections.before_after.before_label",
+      "info": "t:sections.before_after.label_info",
+      "default": "MONTH 0 · 92KG"
+    },
+    {
+      "type": "text",
+      "id": "after_label",
+      "label": "t:sections.before_after.after_label",
+      "info": "t:sections.before_after.label_info",
+      "default": "MONTH 6 · 78KG · 8 PRs"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "testimonial",
+      "name": "t:sections.before_after.blocks.testimonial.name",
+      "limit": 3,
+      "settings": [
+        {
+          "type": "textarea",
+          "id": "quote",
+          "label": "t:sections.before_after.blocks.testimonial.quote",
+          "default": "I stopped guessing. The protocol read my data and adjusted every week — and my body finally answered back."
+        },
+        {
+          "type": "text",
+          "id": "name",
+          "label": "t:sections.before_after.blocks.testimonial.name_label",
+          "default": "Marcus Vela"
+        },
+        {
+          "type": "text",
+          "id": "tier",
+          "label": "t:sections.before_after.blocks.testimonial.tier",
+          "default": "Performance tier"
+        },
+        {
+          "type": "text",
+          "id": "join_date",
+          "label": "t:sections.before_after.blocks.testimonial.join_date",
+          "default": "MEMBER SINCE 2024"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.before_after.name",
+      "blocks": [
+        { "type": "testimonial" },
+        { "type": "testimonial" },
+        { "type": "testimonial" }
+      ]
+    }
+  ]
+}
+{% endschema %}

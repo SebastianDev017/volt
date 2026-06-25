@@ -1,0 +1,65 @@
+{%- liquid
+  assign scheme = section.settings.color_scheme | default: 'default'
+-%}
+<div class="volt-statement volt-statement--{{ scheme }}" data-animate>
+  <div class="section-inner volt-statement__inner">
+    {%- if section.settings.eyebrow != blank -%}
+      <p class="eyebrow volt-statement__eyebrow">{{ section.settings.eyebrow }}</p>
+    {%- endif -%}
+    <h2 class="h1 volt-statement__heading">{{ section.settings.heading }}</h2>
+    {%- if section.settings.attribution != blank -%}
+      <p class="volt-statement__attr muted">{{ section.settings.attribution }}</p>
+    {%- endif -%}
+  </div>
+</div>
+
+{% stylesheet %}
+  .volt-statement { padding-block: var(--section-space); text-align: center; }
+  .volt-statement--surface { background: var(--color-surface); }
+  .volt-statement--ink { background: var(--color-ink); color: var(--color-bg); }
+  .volt-statement__inner { max-width: 900px; }
+  .volt-statement__eyebrow { margin-bottom: 20px; }
+  .volt-statement__heading { margin-inline: auto; }
+  .volt-statement__heading em { color: var(--color-acid); font-style: normal; }
+  .volt-statement__attr { margin-top: 24px; font-style: italic; }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:sections.editorial_statement.name",
+  "tag": "section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "t:sections.editorial_statement.eyebrow",
+      "default": "Our philosophy"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "heading",
+      "label": "t:sections.editorial_statement.heading",
+      "default": "Your body is the <em>data</em>. We help you read it."
+    },
+    {
+      "type": "text",
+      "id": "attribution",
+      "label": "t:sections.editorial_statement.attribution"
+    },
+    {
+      "type": "select",
+      "id": "color_scheme",
+      "label": "t:sections.editorial_statement.color_scheme",
+      "options": [
+        { "value": "default", "label": "t:sections.editorial_statement.scheme_default" },
+        { "value": "surface", "label": "t:sections.editorial_statement.scheme_surface" },
+        { "value": "ink", "label": "t:sections.editorial_statement.scheme_ink" }
+      ],
+      "default": "default"
+    }
+  ],
+  "presets": [
+    { "name": "t:sections.editorial_statement.name" }
+  ]
+}
+{% endschema %}

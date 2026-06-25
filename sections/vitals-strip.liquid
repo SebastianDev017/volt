@@ -1,0 +1,89 @@
+{%- liquid
+  assign speed = section.settings.speed | default: 'normal'
+-%}
+<div class="volt-vitals" data-animate>
+  <volt-vitals-strip class="volt-vitals__strip" data-speed="{{ speed }}">
+    <div class="vitals-track" aria-hidden="false">
+      {%- for block in section.blocks -%}
+        {%- if block.settings.text != blank -%}
+          <span class="volt-vitals__item data" {{ block.shopify_attributes }}>{{ block.settings.text }}</span>
+          <span class="volt-vitals__sep" aria-hidden="true">&middot;</span>
+        {%- endif -%}
+      {%- endfor -%}
+      {%- comment -%} duplicate set for seamless 50% marquee loop {%- endcomment -%}
+      {%- for block in section.blocks -%}
+        {%- if block.settings.text != blank -%}
+          <span class="volt-vitals__item data" aria-hidden="true">{{ block.settings.text }}</span>
+          <span class="volt-vitals__sep" aria-hidden="true">&middot;</span>
+        {%- endif -%}
+      {%- endfor -%}
+    </div>
+  </volt-vitals-strip>
+</div>
+
+{% stylesheet %}
+  .volt-vitals{ background: var(--color-ink); }
+  .volt-vitals__strip{ height: 48px; display: flex; align-items: center; }
+  .vitals-track{ height: 48px; }
+  .volt-vitals__item{
+    color: var(--color-acid);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    line-height: 48px;
+    padding-inline: 18px;
+    white-space: nowrap;
+  }
+  .volt-vitals__sep{
+    color: var(--color-mid);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    line-height: 48px;
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:sections.vitals_strip.name",
+  "tag": "section",
+  "settings": [
+    {
+      "type": "select",
+      "id": "speed",
+      "label": "t:sections.vitals_strip.speed.label",
+      "options": [
+        { "value": "slow", "label": "t:sections.vitals_strip.speed.slow" },
+        { "value": "normal", "label": "t:sections.vitals_strip.speed.normal" },
+        { "value": "fast", "label": "t:sections.vitals_strip.speed.fast" }
+      ],
+      "default": "normal"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "stat",
+      "name": "t:sections.vitals_strip.blocks.stat.name",
+      "settings": [
+        {
+          "type": "text",
+          "id": "text",
+          "label": "t:sections.vitals_strip.blocks.stat.text.label",
+          "default": "2,400 MEMBERS"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.vitals_strip.name",
+      "blocks": [
+        { "type": "stat", "settings": { "text": "2,400 MEMBERS" } },
+        { "type": "stat", "settings": { "text": "847 CLASSES/MONTH" } },
+        { "type": "stat", "settings": { "text": "94% RETENTION" } },
+        { "type": "stat", "settings": { "text": "AVG FIRST PR: WEEK 6" } },
+        { "type": "stat", "settings": { "text": "HYROX CERTIFIED" } },
+        { "type": "stat", "settings": { "text": "NSF TESTED" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,115 @@
+{%- liquid
+  assign scheme = section.settings.color_scheme | default: 'default'
+  assign style = section.settings.text_style | default: 'display'
+-%}
+<div class="volt-marquee volt-marquee--{{ scheme }} volt-marquee--{{ style }}" data-animate>
+  <volt-vitals-strip data-speed="{{ section.settings.speed }}" class="volt-marquee__strip" aria-label="{{ 'sections.marquee.aria_label' | t }}">
+    <div class="vitals-track" aria-hidden="true">
+      {%- for i in (1..2) -%}
+        {%- for block in section.blocks -%}
+          {%- if block.type == 'item' -%}
+            <span class="volt-marquee__item" {{ block.shopify_attributes }}>{{ block.settings.text }}</span>
+            <span class="volt-marquee__sep" aria-hidden="true">/</span>
+          {%- endif -%}
+        {%- endfor -%}
+      {%- endfor -%}
+    </div>
+  </volt-vitals-strip>
+</div>
+
+{% stylesheet %}
+  .volt-marquee { padding-block: clamp(28px, 4vw, 56px); border-block: 1px solid var(--color-border); }
+  .volt-marquee--surface { background: var(--color-surface); }
+  .volt-marquee--ink { background: var(--color-ink); color: var(--color-bg); border-color: var(--color-ink); }
+  .volt-marquee--acid { background: var(--color-acid); color: var(--on-acid); border-color: var(--color-acid); }
+  .volt-marquee__strip { -webkit-mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent); mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent); }
+  .volt-marquee__item {
+    font-family: var(--font-display);
+    font-weight: var(--font-display-weight);
+    font-size: clamp(28px, 4.5vw, 64px);
+    letter-spacing: -0.01em;
+    line-height: 1;
+    text-transform: uppercase;
+  }
+  .volt-marquee--mono .volt-marquee__item {
+    font-family: var(--font-mono);
+    font-weight: 400;
+    font-size: clamp(18px, 2.6vw, 36px);
+    letter-spacing: 0.04em;
+  }
+  .volt-marquee__sep {
+    margin-inline: clamp(28px, 4vw, 64px);
+    font-family: var(--font-mono);
+    font-size: clamp(20px, 3vw, 44px);
+    color: var(--color-acid);
+    line-height: 1;
+  }
+  .volt-marquee--acid .volt-marquee__sep { color: var(--on-acid); opacity: 0.5; }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:sections.marquee.name",
+  "tag": "section",
+  "settings": [
+    {
+      "type": "select",
+      "id": "speed",
+      "label": "t:sections.marquee.speed",
+      "options": [
+        { "value": "slow", "label": "t:sections.marquee.speed_slow" },
+        { "value": "normal", "label": "t:sections.marquee.speed_normal" },
+        { "value": "fast", "label": "t:sections.marquee.speed_fast" }
+      ],
+      "default": "normal"
+    },
+    {
+      "type": "select",
+      "id": "text_style",
+      "label": "t:sections.marquee.text_style",
+      "options": [
+        { "value": "display", "label": "t:sections.marquee.style_display" },
+        { "value": "mono", "label": "t:sections.marquee.style_mono" }
+      ],
+      "default": "display"
+    },
+    {
+      "type": "select",
+      "id": "color_scheme",
+      "label": "t:sections.marquee.color_scheme",
+      "options": [
+        { "value": "default", "label": "t:sections.marquee.scheme_default" },
+        { "value": "surface", "label": "t:sections.marquee.scheme_surface" },
+        { "value": "ink", "label": "t:sections.marquee.scheme_ink" },
+        { "value": "acid", "label": "t:sections.marquee.scheme_acid" }
+      ],
+      "default": "default"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "item",
+      "name": "t:sections.marquee.item.name",
+      "settings": [
+        {
+          "type": "text",
+          "id": "text",
+          "label": "t:sections.marquee.item.text",
+          "default": "TRAIN WITH INTENTION"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.marquee.name",
+      "blocks": [
+        { "type": "item", "settings": { "text": "TRAIN WITH INTENTION" } },
+        { "type": "item", "settings": { "text": "MEASURE EVERYTHING" } },
+        { "type": "item", "settings": { "text": "NO JUNK VOLUME" } },
+        { "type": "item", "settings": { "text": "RECOVER LIKE IT MATTERS" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

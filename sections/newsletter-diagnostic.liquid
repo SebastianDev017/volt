@@ -1,0 +1,388 @@
+{%- liquid
+  assign tier_starter = section.settings.tier_starter_handle | default: 'starter'
+  assign tier_performance = section.settings.tier_performance_handle | default: 'performance'
+  assign tier_elite = section.settings.tier_elite_handle | default: 'elite'
+-%}
+
+<div class="volt-diag section" data-animate>
+  <div class="section-inner volt-diag__grid">
+
+    {%- comment -%} LEFT — diagnostic quiz {%- endcomment -%}
+    <div class="volt-diag__left">
+      {%- if section.settings.eyebrow != blank -%}
+        <p class="eyebrow">{{ section.settings.eyebrow }}</p>
+      {%- endif -%}
+      <h2 class="h2 volt-diag__heading">{{ section.settings.heading }}</h2>
+      {%- if section.settings.body != blank -%}
+        <p class="body-lg muted volt-diag__body">{{ section.settings.body }}</p>
+      {%- endif -%}
+
+      <diagnostic-quiz
+        class="volt-quiz"
+        data-base="/products/volt-membership-"
+        data-tier-starter="{{ tier_starter }}"
+        data-tier-performance="{{ tier_performance }}"
+        data-tier-elite="{{ tier_elite }}"
+      >
+        <div class="volt-quiz__bar" aria-hidden="true">
+          <span class="volt-quiz__bar-fill" data-quiz-fill></span>
+        </div>
+        <p class="data muted volt-quiz__progress">
+          <span data-quiz-step>01</span> / 04
+        </p>
+
+        <form class="volt-quiz__form">
+          {%- comment -%} Q1 {%- endcomment -%}
+          <fieldset class="volt-quiz__step" data-quiz-fieldset="0" aria-current="step">
+            <legend class="label volt-quiz__legend">{{ 'sections.newsletter_diagnostic.q1_title' | t: default: 'Primary goal' }}</legend>
+            <div class="volt-quiz__options">
+              <button type="button" class="volt-quiz__opt" data-quiz-answer>{{ 'sections.newsletter_diagnostic.q1_a' | t: default: 'Build strength' }}</button>
+              <button type="button" class="volt-quiz__opt" data-quiz-answer>{{ 'sections.newsletter_diagnostic.q1_b' | t: default: 'Improve endurance' }}</button>
+              <button type="button" class="volt-quiz__opt" data-quiz-answer>{{ 'sections.newsletter_diagnostic.q1_c' | t: default: 'Lose fat' }}</button>
+              <button type="button" class="volt-quiz__opt" data-quiz-answer>{{ 'sections.newsletter_diagnostic.q1_d' | t: default: 'General health' }}</button>
+            </div>
+          </fieldset>
+
+          {%- comment -%} Q2 {%- endcomment -%}
+          <fieldset class="volt-quiz__step" data-quiz-fieldset="1" hidden>
+            <legend class="label volt-quiz__legend">{{ 'sections.newsletter_diagnostic.q2_title' | t: default: 'Training frequency' }}</legend>
+            <div class="volt-quiz__options">
+              <button type="button" class="volt-quiz__opt" data-quiz-answer>{{ 'sections.newsletter_diagnostic.q2_a' | t: default: '1–2x per week' }}</button>
+              <button type="button" class="volt-quiz__opt" data-quiz-answer>{{ 'sections.newsletter_diagnostic.q2_b' | t: default: '3–4x per week' }}</button>
+              <button type="button" class="volt-quiz__opt" data-quiz-answer>{{ 'sections.newsletter_diagnostic.q2_c' | t: default: '5+ per week' }}</button>
+              <button type="button" class="volt-quiz__opt" data-quiz-answer>{{ 'sections.newsletter_diagnostic.q2_d' | t: default: 'Not training yet' }}</button>
+            </div>
+          </fieldset>
+
+          {%- comment -%} Q3 {%- endcomment -%}
+          <fieldset class="volt-quiz__step" data-quiz-fieldset="2" hidden>
+            <legend class="label volt-quiz__legend">{{ 'sections.newsletter_diagnostic.q3_title' | t: default: 'Biggest challenge' }}</legend>
+            <div class="volt-quiz__options">
+              <button type="button" class="volt-quiz__opt" data-quiz-answer>{{ 'sections.newsletter_diagnostic.q3_a' | t: default: 'Staying motivated' }}</button>
+              <button type="button" class="volt-quiz__opt" data-quiz-answer>{{ 'sections.newsletter_diagnostic.q3_b' | t: default: 'Programming' }}</button>
+              <button type="button" class="volt-quiz__opt" data-quiz-answer>{{ 'sections.newsletter_diagnostic.q3_c' | t: default: 'Nutrition' }}</button>
+              <button type="button" class="volt-quiz__opt" data-quiz-answer>{{ 'sections.newsletter_diagnostic.q3_d' | t: default: 'Recovery' }}</button>
+            </div>
+          </fieldset>
+
+          {%- comment -%} Q4 — tier selection {%- endcomment -%}
+          <fieldset class="volt-quiz__step" data-quiz-fieldset="3" hidden>
+            <legend class="label volt-quiz__legend">{{ 'sections.newsletter_diagnostic.q4_title' | t: default: 'Membership interest' }}</legend>
+            <div class="volt-quiz__options">
+              <button type="button" class="volt-quiz__opt" data-quiz-answer data-quiz-tier="starter">
+                {{ 'sections.newsletter_diagnostic.q4_a' | t: default: 'Starter' }}
+                <span class="data acid volt-quiz__price">$49/mo</span>
+              </button>
+              <button type="button" class="volt-quiz__opt" data-quiz-answer data-quiz-tier="performance">
+                {{ 'sections.newsletter_diagnostic.q4_b' | t: default: 'Performance' }}
+                <span class="data acid volt-quiz__price">$89/mo</span>
+              </button>
+              <button type="button" class="volt-quiz__opt" data-quiz-answer data-quiz-tier="elite">
+                {{ 'sections.newsletter_diagnostic.q4_c' | t: default: 'Elite' }}
+                <span class="data acid volt-quiz__price">$149/mo</span>
+              </button>
+            </div>
+
+            <a class="btn btn--acid btn--full volt-quiz__cta" data-quiz-cta href="{{ routes.all_products_collection_url | default: '/products/volt-membership-performance' }}">
+              {{ 'sections.newsletter_diagnostic.cta' | t: default: 'Start my protocol' }}
+            </a>
+          </fieldset>
+
+          <div class="volt-quiz__nav">
+            <button type="button" class="btn btn--text volt-quiz__back" data-quiz-back hidden>
+              {{ 'sections.newsletter_diagnostic.back' | t: default: 'Back' }}
+            </button>
+          </div>
+        </form>
+      </diagnostic-quiz>
+    </div>
+
+    {%- comment -%} RIGHT — newsletter capture {%- endcomment -%}
+    <div class="volt-diag__right card" data-animate data-animate-delay="100">
+      <p class="label volt-diag__nl-label">{{ section.settings.newsletter_heading }}</p>
+      {%- if section.settings.newsletter_body != blank -%}
+        <p class="body muted volt-diag__nl-body">{{ section.settings.newsletter_body }}</p>
+      {%- endif -%}
+
+      {%- form 'customer', class: 'volt-diag__form' -%}
+        <input type="hidden" name="contact[tags]" value="newsletter">
+        {%- if form.posted_successfully? -%}
+          <p class="data acid volt-diag__success" role="status">
+            {{ 'sections.newsletter_diagnostic.nl_success' | t: default: 'You are in. Watch your inbox for the first dispatch.' }}
+          </p>
+        {%- else -%}
+          <label class="visually-hidden" for="VoltDispatch-{{ section.id }}">
+            {{ 'sections.newsletter_diagnostic.nl_placeholder' | t: default: 'Email address' }}
+          </label>
+          <div class="volt-diag__field">
+            <input
+              id="VoltDispatch-{{ section.id }}"
+              class="input"
+              type="email"
+              name="contact[email]"
+              autocomplete="email"
+              required
+              placeholder="{{ 'sections.newsletter_diagnostic.nl_placeholder' | t: default: 'Email address' }}"
+            >
+            <button type="submit" class="btn btn--acid">
+              {{ 'sections.newsletter_diagnostic.nl_submit' | t: default: 'Subscribe' }}
+            </button>
+          </div>
+          {%- if form.errors -%}
+            <p class="data volt-diag__error" style="color: var(--color-danger);" role="alert">
+              {{ form.errors | default_errors }}
+            </p>
+          {%- endif -%}
+        {%- endif -%}
+        <p class="data muted volt-diag__consent">{{ section.settings.consent_text }}</p>
+      {%- endform -%}
+    </div>
+
+  </div>
+</div>
+
+{% stylesheet %}
+  .volt-diag { background: var(--color-surface); }
+  .volt-diag__grid {
+    display: grid;
+    grid-template-columns: 60fr 40fr;
+    gap: clamp(32px, 5vw, 72px);
+    align-items: start;
+  }
+  .volt-diag__heading { margin-top: 16px; }
+  .volt-diag__body { margin-top: 18px; max-width: 46ch; }
+
+  /* ---- quiz ---- */
+  .volt-quiz { margin-top: clamp(28px, 4vw, 44px); }
+  .volt-quiz__bar {
+    position: relative;
+    height: 2px;
+    background: var(--color-border);
+    overflow: hidden;
+  }
+  .volt-quiz__bar-fill {
+    display: block;
+    height: 100%;
+    width: 25%;
+    background: var(--color-acid);
+    transition: width var(--dur-med) var(--ease);
+  }
+  .volt-quiz__progress { margin-top: 10px; }
+  .volt-quiz__form { margin-top: 22px; }
+
+  .volt-quiz__step { border: 0; padding: 0; min-inline-size: 0; }
+  .volt-quiz__step[hidden] { display: none; }
+  .volt-quiz__legend {
+    padding: 0;
+    color: var(--color-mid);
+    margin-bottom: 16px;
+  }
+  .volt-quiz__options {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+  .volt-quiz__opt {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    text-align: left;
+    background: var(--color-bg);
+    border: 1px solid var(--color-border);
+    color: var(--color-ink);
+    padding: 16px 18px;
+    font-weight: 500;
+    font-size: 14px;
+    transition: border-color var(--dur-fast) var(--ease), background var(--dur-fast) var(--ease), transform var(--dur-fast) var(--ease);
+  }
+  .volt-quiz__opt:hover { border-color: var(--color-ink); }
+  .volt-quiz__opt:active { transform: translateY(1px); }
+  .volt-quiz__opt[aria-pressed="true"] {
+    border-color: var(--color-ink);
+    background: var(--color-ink);
+    color: var(--color-bg);
+  }
+  .volt-quiz__opt[aria-pressed="true"] .volt-quiz__price { color: var(--color-acid); }
+  .volt-quiz__price { white-space: nowrap; }
+
+  .volt-quiz__cta { margin-top: 22px; }
+  .volt-quiz__nav { margin-top: 16px; min-height: 20px; }
+  .volt-quiz__back[hidden] { display: none; }
+
+  /* ---- newsletter ---- */
+  .volt-diag__right { padding: clamp(24px, 3vw, 36px); }
+  .volt-diag__nl-body { margin-top: 12px; max-width: 36ch; }
+  .volt-diag__form { margin-top: 22px; }
+  .volt-diag__field { display: flex; gap: 10px; }
+  .volt-diag__field .input { flex: 1 1 auto; }
+  .volt-diag__field .btn { flex: 0 0 auto; }
+  .volt-diag__error { margin-top: 10px; }
+  .volt-diag__consent { margin-top: 14px; line-height: 1.6; }
+
+  @media (max-width: 990px) {
+    .volt-diag__grid { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 560px) {
+    .volt-quiz__options { grid-template-columns: 1fr; }
+    .volt-diag__field { flex-direction: column; }
+    .volt-diag__field .btn { width: 100%; }
+  }
+{% endstylesheet %}
+
+<script>
+  (function () {
+    if (customElements.get('diagnostic-quiz')) return;
+
+    class DiagnosticQuiz extends HTMLElement {
+      connectedCallback() {
+        this.steps = Array.from(this.querySelectorAll('[data-quiz-fieldset]'));
+        this.fill = this.querySelector('[data-quiz-fill]');
+        this.stepLabel = this.querySelector('[data-quiz-step]');
+        this.backBtn = this.querySelector('[data-quiz-back]');
+        this.cta = this.querySelector('[data-quiz-cta]');
+        this.index = 0;
+        this.total = this.steps.length;
+
+        var base = this.getAttribute('data-base') || '/products/volt-membership-';
+        this.tiers = {
+          starter: this.getAttribute('data-tier-starter') || 'starter',
+          performance: this.getAttribute('data-tier-performance') || 'performance',
+          elite: this.getAttribute('data-tier-elite') || 'elite'
+        };
+        this.base = base;
+
+        var stored = null;
+        try { stored = localStorage.getItem('volt-tier'); } catch (e) {}
+        if (stored && this.tiers[stored]) this.setTier(stored);
+
+        this.addEventListener('click', this.onClick.bind(this));
+        this.show(0);
+      }
+
+      onClick(e) {
+        var ans = e.target.closest('[data-quiz-answer]');
+        if (ans) { this.answer(ans); return; }
+        if (e.target.closest('[data-quiz-back]')) { this.show(this.index - 1); }
+      }
+
+      answer(btn) {
+        var field = btn.closest('[data-quiz-fieldset]');
+        field.querySelectorAll('[data-quiz-answer]').forEach(function (b) {
+          b.setAttribute('aria-pressed', b === btn ? 'true' : 'false');
+        });
+        var tier = btn.getAttribute('data-quiz-tier');
+        if (tier) { this.setTier(tier); return; }
+        var self = this;
+        window.setTimeout(function () {
+          if (self.index < self.total - 1) self.show(self.index + 1);
+        }, 220);
+      }
+
+      setTier(tier) {
+        if (!this.tiers[tier]) return;
+        try { localStorage.setItem('volt-tier', tier); } catch (e) {}
+        if (this.cta) this.cta.setAttribute('href', this.base + this.tiers[tier]);
+        var last = this.steps[this.total - 1];
+        if (last) {
+          last.querySelectorAll('[data-quiz-tier]').forEach(function (b) {
+            b.setAttribute('aria-pressed', b.getAttribute('data-quiz-tier') === tier ? 'true' : 'false');
+          });
+        }
+      }
+
+      show(i) {
+        if (i < 0 || i >= this.total) return;
+        this.index = i;
+        this.steps.forEach(function (s, n) {
+          var active = n === i;
+          s.hidden = !active;
+          if (active) { s.setAttribute('aria-current', 'step'); }
+          else { s.removeAttribute('aria-current'); }
+        });
+        if (this.fill) this.fill.style.width = ((i + 1) / this.total * 100) + '%';
+        if (this.stepLabel) this.stepLabel.textContent = ('0' + (i + 1)).slice(-2);
+        if (this.backBtn) this.backBtn.hidden = i === 0;
+        var firstOpt = this.steps[i].querySelector('[data-quiz-answer]');
+        if (firstOpt) firstOpt.focus();
+      }
+    }
+
+    customElements.define('diagnostic-quiz', DiagnosticQuiz);
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "t:sections.newsletter_diagnostic.name",
+  "tag": "section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "t:sections.newsletter_diagnostic.eyebrow",
+      "default": "Find your tier"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "t:sections.newsletter_diagnostic.heading",
+      "default": "What's your training level?"
+    },
+    {
+      "type": "textarea",
+      "id": "body",
+      "label": "t:sections.newsletter_diagnostic.body",
+      "default": "Four questions. Sixty seconds. We map your goals, frequency and obstacles to the protocol built to move your numbers."
+    },
+    {
+      "type": "header",
+      "content": "t:sections.newsletter_diagnostic.tiers_header"
+    },
+    {
+      "type": "text",
+      "id": "tier_starter_handle",
+      "label": "t:sections.newsletter_diagnostic.tier_starter_handle",
+      "info": "t:sections.newsletter_diagnostic.tier_handle_info",
+      "default": "starter"
+    },
+    {
+      "type": "text",
+      "id": "tier_performance_handle",
+      "label": "t:sections.newsletter_diagnostic.tier_performance_handle",
+      "default": "performance"
+    },
+    {
+      "type": "text",
+      "id": "tier_elite_handle",
+      "label": "t:sections.newsletter_diagnostic.tier_elite_handle",
+      "default": "elite"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.newsletter_diagnostic.newsletter_header"
+    },
+    {
+      "type": "text",
+      "id": "newsletter_heading",
+      "label": "t:sections.newsletter_diagnostic.newsletter_heading",
+      "default": "Or join the dispatch"
+    },
+    {
+      "type": "textarea",
+      "id": "newsletter_body",
+      "label": "t:sections.newsletter_diagnostic.newsletter_body",
+      "default": "Weekly performance science, member protocols and early access to drops. No filler."
+    },
+    {
+      "type": "text",
+      "id": "consent_text",
+      "label": "t:sections.newsletter_diagnostic.consent_text",
+      "default": "By subscribing you agree to receive marketing emails. Unsubscribe anytime."
+    }
+  ],
+  "presets": [
+    { "name": "t:sections.newsletter_diagnostic.name" }
+  ]
+}
+{% endschema %}

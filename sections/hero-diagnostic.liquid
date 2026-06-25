@@ -1,0 +1,253 @@
+{%- liquid
+  assign streak_current = section.settings.streak_current
+  assign streak_total = section.settings.streak_total
+  assign streak_pct = 0
+  if streak_total > 0
+    assign streak_pct = streak_current | times: 100.0 | divided_by: streak_total
+  endif
+  if streak_pct > 100
+    assign streak_pct = 100
+  endif
+-%}
+
+<style>
+  #shopify-section-{{ section.id }} .hd-streak__fill { width: {{ streak_pct }}%; }
+</style>
+
+<section class="hd" data-animate>
+  <div class="section-inner hd__grid">
+    <div class="hd__left">
+      {%- if section.settings.eyebrow != blank -%}
+        <p class="eyebrow hd__eyebrow">{{ section.settings.eyebrow }}</p>
+      {%- endif -%}
+
+      {%- if section.settings.heading != blank -%}
+        <h1 class="h0 hd__heading">{{ section.settings.heading }}</h1>
+      {%- endif -%}
+
+      {%- if section.settings.subheading != blank -%}
+        <p class="body-lg muted hd__sub">{{ section.settings.subheading }}</p>
+      {%- endif -%}
+
+      <div class="hd__ctas">
+        {%- if section.settings.primary_label != blank -%}
+          <a class="btn btn--acid" href="{{ section.settings.primary_link | default: '/pages/membership' }}">
+            {{ section.settings.primary_label }}
+          </a>
+        {%- endif -%}
+        {%- if section.settings.secondary_label != blank -%}
+          <a class="btn btn--outline" href="{{ section.settings.secondary_link | default: '#diagnostic' }}">
+            {{ section.settings.secondary_label }}
+          </a>
+        {%- endif -%}
+      </div>
+
+      {%- if section.settings.social_proof != blank -%}
+        <p class="data muted hd__proof">{{ section.settings.social_proof }}</p>
+      {%- endif -%}
+    </div>
+
+    <div class="hd__right" data-animate data-animate-delay="200">
+      <div class="card hd__dash">
+        <p class="hd__dash-caption">Member dashboard preview</p>
+
+        <div class="hd__gauges">
+          <div class="hd__gauge">
+            <volt-gauge
+              data-value="{{ section.settings.recovery_value }}"
+              data-label="{{ section.settings.recovery_value }}"
+              data-sub="RECOVERY"
+              data-color="success"></volt-gauge>
+          </div>
+          <div class="hd__gauge">
+            <volt-gauge
+              data-value="71"
+              data-label="{{ section.settings.strain_label }}"
+              data-sub="STRAIN"
+              data-color="acid"></volt-gauge>
+          </div>
+        </div>
+
+        <div class="hd__streak">
+          <div class="hd__streak-head">
+            <span class="label">Week streak</span>
+            <span class="data">{{ streak_current }} / {{ streak_total }} DAYS</span>
+          </div>
+          <div class="hd__streak-track">
+            <div class="hd__streak__fill"></div>
+          </div>
+        </div>
+
+        <p class="data muted hd__metrics">HRV 68ms &middot; RHR 52bpm &middot; 7.4h SLEEP</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% stylesheet %}
+  .hd {
+    min-height: 100svh;
+    display: flex;
+    align-items: center;
+    margin-top: calc(var(--header-height) * -1);
+    padding-top: var(--header-height);
+    padding-block: clamp(48px, 8vw, 96px);
+  }
+  .hd__grid {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 55fr 45fr;
+    gap: clamp(32px, 5vw, 72px);
+    align-items: center;
+  }
+  .hd__eyebrow { margin-bottom: 22px; }
+  .hd__heading { max-width: 14ch; }
+  .hd__heading em { color: var(--color-acid); font-style: normal; }
+  .hd__sub { max-width: 420px; margin-top: 26px; }
+  .hd__ctas {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+    margin-top: 36px;
+  }
+  .hd__proof { margin-top: 28px; }
+
+  /* dashboard preview */
+  .hd__dash {
+    padding: clamp(22px, 2.4vw, 34px);
+    display: flex;
+    flex-direction: column;
+    gap: 26px;
+  }
+  .hd__dash-caption {
+    font-family: var(--font-body);
+    font-style: italic;
+    font-size: 11px;
+    letter-spacing: 0.04em;
+    color: var(--color-mid);
+  }
+  .hd__gauges {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: clamp(16px, 2vw, 28px);
+  }
+  .hd__gauge { min-width: 0; }
+
+  .hd__streak { display: flex; flex-direction: column; gap: 10px; }
+  .hd__streak-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
+  .hd__streak-track {
+    height: 8px;
+    background: var(--color-ink-06);
+    border: 1px solid var(--color-border);
+    overflow: hidden;
+  }
+  .hd__streak__fill {
+    height: 100%;
+    background: var(--color-acid);
+    transition: width var(--dur-slow) var(--ease);
+  }
+
+  .hd__metrics {
+    padding-top: 18px;
+    border-top: 1px solid var(--color-border);
+  }
+
+  @media (max-width: 990px) {
+    .hd__grid { grid-template-columns: 1fr; gap: 44px; }
+    .hd__heading { max-width: 18ch; }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:sections.hero_diagnostic.name",
+  "tag": "section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "t:sections.hero_diagnostic.eyebrow",
+      "default": "Performance protocol 2025"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "heading",
+      "label": "t:sections.hero_diagnostic.heading",
+      "info": "t:sections.hero_diagnostic.heading_info",
+      "default": "Train with <em>Precision</em>. Measure everything."
+    },
+    {
+      "type": "text",
+      "id": "subheading",
+      "label": "t:sections.hero_diagnostic.subheading",
+      "default": "Membership-first training built on recovery, strain and sleep data. Read your body like an athlete and program the next 21 days around it."
+    },
+    {
+      "type": "text",
+      "id": "primary_label",
+      "label": "t:sections.hero_diagnostic.primary_label",
+      "default": "Start your protocol"
+    },
+    {
+      "type": "url",
+      "id": "primary_link",
+      "label": "t:sections.hero_diagnostic.primary_link",
+      "default": "/pages/membership"
+    },
+    {
+      "type": "text",
+      "id": "secondary_label",
+      "label": "t:sections.hero_diagnostic.secondary_label",
+      "default": "Diagnose your level"
+    },
+    {
+      "type": "url",
+      "id": "secondary_link",
+      "label": "t:sections.hero_diagnostic.secondary_link"
+    },
+    {
+      "type": "text",
+      "id": "social_proof",
+      "label": "t:sections.hero_diagnostic.social_proof",
+      "default": "4.9 stars / 2,400+ active members / Free shipping over $75"
+    },
+    {
+      "type": "range",
+      "id": "recovery_value",
+      "label": "t:sections.hero_diagnostic.recovery_value",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "%",
+      "default": 87
+    },
+    {
+      "type": "text",
+      "id": "strain_label",
+      "label": "t:sections.hero_diagnostic.strain_label",
+      "default": "14.2"
+    },
+    {
+      "type": "range",
+      "id": "streak_current",
+      "label": "t:sections.hero_diagnostic.streak_current",
+      "min": 0,
+      "max": 60,
+      "step": 1,
+      "default": 14
+    },
+    {
+      "type": "range",
+      "id": "streak_total",
+      "label": "t:sections.hero_diagnostic.streak_total",
+      "min": 1,
+      "max": 60,
+      "step": 1,
+      "default": 21
+    }
+  ],
+  "presets": [
+    { "name": "t:sections.hero_diagnostic.name" }
+  ]
+}
+{% endschema %}

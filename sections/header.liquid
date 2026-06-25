@@ -1,76 +1,558 @@
-<header>
-  <h2 class="header__title">
-    {{ shop.name | link_to: routes.root_url }}
-  </h2>
+{%- liquid
+  assign menu = settings.menu
+  assign sticky = section.settings.enable_sticky
+  assign mega_on = settings.mega_menu_enable
+  assign is_elite = false
+  if customer and customer.tags contains 'volt-member-elite'
+    assign is_elite = true
+  endif
+-%}
 
-  <div class="header__menu">
-    {% for link in section.settings.menu.links %}
-      {{ link.title | link_to: link.url }}
-    {% endfor %}
+<style>
+  #shopify-section-{{ section.id }} { --volt-header-h: var(--header-height); }
+  {%- if sticky -%}
+  #shopify-section-{{ section.id }} { position: sticky; top: 0; z-index: var(--z-header); }
+  {%- endif -%}
+</style>
+
+<site-header
+  class="volt-header"
+  {% if mega_on %}data-mega="true"{% endif %}
+  {% if settings.transparent_hero %}data-transparent="true"{% endif %}
+>
+  <a class="visually-hidden skip-link" href="#MainContent">{{ 'sections.header_main.skip_to_content' | t }}</a>
+
+  <span class="volt-header__sentinel" data-header-sentinel aria-hidden="true"></span>
+
+  <div class="volt-header__bar">
+    <div class="page-width volt-header__inner">
+
+      {%- comment -%} ---------- LEFT: logo ---------- {%- endcomment -%}
+      <div class="volt-header__left">
+        <button
+          type="button"
+          class="volt-header__burger"
+          data-menu-toggle
+          aria-expanded="false"
+          aria-controls="VoltDrawer-{{ section.id }}"
+          aria-label="{{ 'sections.header_main.open_menu' | t }}"
+        >
+          <span class="volt-header__burger-line"></span>
+          <span class="volt-header__burger-line"></span>
+        </button>
+
+        <a class="volt-header__logo" href="{{ routes.root_url }}" aria-label="{{ shop.name }}">
+          {%- if section.settings.logo != blank -%}
+            {%- assign logo_w = section.settings.logo_width | default: 120 -%}
+            {{
+              section.settings.logo
+              | image_url: width: 240
+              | image_tag:
+                loading: 'eager',
+                fetchpriority: 'high',
+                widths: '120,180,240',
+                class: 'volt-header__logo-img',
+                style: 'width:' | append: logo_w | append: 'px',
+                alt: shop.name
+            }}
+          {%- else -%}
+            <span class="h3 volt-header__wordmark">{{ settings.logo_text | default: shop.name }}</span>
+          {%- endif -%}
+        </a>
+      </div>
+
+      {%- comment -%} ---------- CENTER: primary nav ---------- {%- endcomment -%}
+      <nav class="volt-header__nav" aria-label="{{ 'sections.header_main.primary_nav' | t }}">
+        <ul class="volt-header__nav-list">
+          {%- for link in menu.links -%}
+            {%- assign has_children = false -%}
+            {%- if link.links.size > 0 -%}{%- assign has_children = true -%}{%- endif -%}
+
+            {%- if has_children and mega_on -%}
+              <li class="volt-header__nav-item" data-has-mega>
+                <a
+                  class="volt-header__nav-link"
+                  href="{{ link.url }}"
+                  aria-haspopup="true"
+                  aria-expanded="false"
+                  data-mega-trigger
+                >
+                  {{ link.title | escape }}
+                  <svg class="volt-header__caret" viewBox="0 0 10 6" fill="none" aria-hidden="true"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </a>
+
+                <div class="volt-header__mega" data-mega-panel hidden>
+                  <div class="page-width volt-header__mega-inner">
+                    <div class="volt-header__mega-cols">
+                      {%- assign col_count = 0 -%}
+                      {%- for child in link.links -%}
+                        {%- if col_count < 4 -%}
+                          <div class="volt-header__mega-col">
+                            <a class="volt-header__mega-head" href="{{ child.url }}">{{ child.title | escape }}</a>
+                            {%- if child.links.size > 0 -%}
+                              <ul class="volt-header__mega-sub">
+                                {%- for grandchild in child.links -%}
+                                  <li><a class="volt-header__mega-link" href="{{ grandchild.url }}">{{ grandchild.title | escape }}</a></li>
+                                {%- endfor -%}
+                              </ul>
+                            {%- endif -%}
+                          </div>
+                          {%- assign col_count = col_count | plus: 1 -%}
+                        {%- endif -%}
+                      {%- endfor -%}
+                    </div>
+
+                    <div class="volt-header__mega-promo card">
+                      <p class="eyebrow">{{ 'sections.header_main.promo_eyebrow' | t }}</p>
+                      <p class="h3 volt-header__mega-promo-title">{{ 'sections.header_main.promo_title' | t }}</p>
+                      <p class="muted body">{{ 'sections.header_main.promo_body' | t }}</p>
+                      <a class="btn btn--acid volt-header__mega-cta" href="/pages/membership">
+                        {{ 'sections.header_main.promo_cta' | t }}
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              </li>
+            {%- else -%}
+              <li class="volt-header__nav-item">
+                <a class="volt-header__nav-link" href="{{ link.url }}"{% if link.active %} aria-current="page"{% endif %}>
+                  {{ link.title | escape }}
+                </a>
+              </li>
+            {%- endif -%}
+          {%- endfor -%}
+        </ul>
+      </nav>
+
+      {%- comment -%} ---------- RIGHT: utilities ---------- {%- endcomment -%}
+      <div class="volt-header__right">
+        <button
+          type="button"
+          class="volt-header__util volt-header__search"
+          data-search-toggle
+          aria-label="{{ 'sections.header_main.search' | t }}"
+        >
+          <svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><circle cx="9" cy="9" r="6" stroke="currentColor" stroke-width="1.4"/><path d="M14 14l4 4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+        </button>
+
+        {%- if customer -%}
+          {%- assign initial = customer.first_name | default: customer.email | slice: 0 | upcase -%}
+          <a
+            class="volt-header__util volt-header__account volt-header__account--in{% if is_elite %} is-elite{% endif %}"
+            href="{{ routes.account_url }}"
+            aria-label="{{ 'sections.header_main.account' | t }}"
+          >
+            <span class="volt-header__avatar">{{ initial }}</span>
+            {%- if is_elite -%}<span class="volt-header__elite-dot" aria-hidden="true"></span>{%- endif -%}
+          </a>
+        {%- else -%}
+          <a
+            class="volt-header__util volt-header__account"
+            href="{{ routes.account_login_url }}"
+            aria-label="{{ 'sections.header_main.account' | t }}"
+          >
+            <svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><circle cx="10" cy="6.5" r="2.75" stroke="currentColor" stroke-width="1.4"/><path d="M5.2 14.6l-.44.79a.59.59 0 0 0 .52.87h9.5a.59.59 0 0 0 .51-.87l-.44-.79a5.52 5.52 0 0 0-9.65 0" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </a>
+        {%- endif -%}
+
+        <a class="volt-header__util volt-header__cart" href="{{ routes.cart_url }}" aria-label="{{ 'sections.header_main.cart' | t }}">
+          <svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M3.4 6.9h13.2v8c0 .57-.22 1.11-.62 1.51s-.94.63-1.5.63H5.5c-.57 0-1.11-.23-1.51-.63s-.62-.94-.62-1.51zM8.8 3h2.3c.62 0 1.21.25 1.65.69s.68 1.03.68 1.66v1.55H6.5V5.35c0-.62.25-1.22.68-1.66S8.18 3 8.8 3" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg>
+          <span class="volt-header__cart-count data{% if cart.item_count == 0 %} is-empty{% endif %}" data-cart-count>{{ cart.item_count }}</span>
+        </a>
+      </div>
+
+    </div>
   </div>
 
-  <div class="header__icons">
-    {% if shop.customer_accounts_enabled %}
-      <shopify-account menu="{{ section.settings.customer_account_menu }}">
-        {{ 'icon-account.svg' | inline_asset_content }}
-      </shopify-account>
-    {% endif %}
+  {%- comment -%} ---------- MOBILE DRAWER ---------- {%- endcomment -%}
+  <div class="volt-header__drawer" id="VoltDrawer-{{ section.id }}" data-drawer hidden>
+    <div class="volt-header__drawer-head">
+      <span class="h3 volt-header__wordmark">{{ settings.logo_text | default: shop.name }}</span>
+      <button
+        type="button"
+        class="volt-header__drawer-close"
+        data-menu-close
+        aria-label="{{ 'sections.header_main.close_menu' | t }}"
+      >
+        <svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M5 5l10 10M15 5L5 15" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+      </button>
+    </div>
 
-    <a href="{{ routes.cart_url }}">
-      {% if cart.item_count > 0 %}
-        <sup>{{ cart.item_count }}</sup>
-      {% endif %}
+    <nav class="volt-header__drawer-nav" aria-label="{{ 'sections.header_main.primary_nav' | t }}">
+      <ul class="volt-header__drawer-list">
+        {%- for link in menu.links -%}
+          {%- if link.links.size > 0 -%}
+            <li class="volt-header__drawer-item" data-accordion>
+              <button type="button" class="volt-header__drawer-link volt-header__drawer-link--parent" data-accordion-toggle aria-expanded="false">
+                {{ link.title | escape }}
+                <svg class="volt-header__caret" viewBox="0 0 10 6" fill="none" aria-hidden="true"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </button>
+              <ul class="volt-header__drawer-sub" data-accordion-panel hidden>
+                <li><a class="volt-header__drawer-sublink" href="{{ link.url }}">{{ 'sections.header_main.view_all' | t }}</a></li>
+                {%- for child in link.links -%}
+                  <li><a class="volt-header__drawer-sublink" href="{{ child.url }}">{{ child.title | escape }}</a></li>
+                {%- endfor -%}
+              </ul>
+            </li>
+          {%- else -%}
+            <li class="volt-header__drawer-item">
+              <a class="volt-header__drawer-link" href="{{ link.url }}">{{ link.title | escape }}</a>
+            </li>
+          {%- endif -%}
+        {%- endfor -%}
+      </ul>
+    </nav>
 
-      {{ 'icon-cart.svg' | inline_asset_content }}
+    <a class="btn btn--acid btn--full volt-header__drawer-cta" href="/pages/membership">
+      {{ 'sections.header_main.promo_cta' | t }}
     </a>
   </div>
-</header>
+</site-header>
 
 {% stylesheet %}
-  header {
-    height: 5rem;
-    display: flex;
+  .volt-header { display: block; }
+  .volt-header__bar {
+    background: transparent;
+    transition: background var(--dur-med) var(--ease), border-color var(--dur-med) var(--ease), backdrop-filter var(--dur-med) var(--ease);
+    border-bottom: 1px solid transparent;
+  }
+  .volt-header.is-stuck .volt-header__bar {
+    background: color-mix(in srgb, var(--color-bg) 72%, transparent);
+    -webkit-backdrop-filter: blur(20px) saturate(150%);
+    backdrop-filter: blur(20px) saturate(150%);
+    border-bottom-color: var(--color-border);
+  }
+  .volt-header__sentinel { position: absolute; top: 0; left: 0; width: 1px; height: 1px; }
+
+  .volt-header__inner {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
     align-items: center;
-    justify-content: space-between;
+    height: var(--header-height);
+    gap: 24px;
   }
-  header a {
-    position: relative;
-    text-decoration: none;
-    color: var(--color-foreground);
-    display: flex;
-    align-items: center;
-    justify-content: center;
+
+  /* left */
+  .volt-header__left { display: flex; align-items: center; gap: 14px; justify-self: start; }
+  .volt-header__logo { display: inline-flex; align-items: center; }
+  .volt-header__logo-img { height: auto; }
+  .volt-header__wordmark { font-family: var(--font-display); letter-spacing: -0.02em; line-height: 1; }
+
+  /* nav */
+  .volt-header__nav { justify-self: center; }
+  .volt-header__nav-list { display: flex; align-items: center; gap: clamp(18px, 2.4vw, 36px); }
+  .volt-header__nav-item { position: static; }
+  .volt-header__nav-link {
+    display: inline-flex; align-items: center; gap: 5px;
+    font-family: var(--font-body); font-weight: 500; font-size: 11px;
+    letter-spacing: 0.1em; text-transform: uppercase; color: var(--color-ink);
+    padding-block: 8px;
+    transition: color var(--dur-fast) var(--ease);
   }
-  header a sup {
-    position: absolute;
-    left: 100%;
-    overflow: hidden;
-    max-width: var(--page-margin);
+  .volt-header__nav-link:hover, .volt-header__nav-link[aria-current="page"] { color: var(--color-mid); }
+  .volt-header__caret { width: 9px; height: 6px; transition: transform var(--dur-fast) var(--ease); }
+  .volt-header__nav-item[data-has-mega].is-open .volt-header__caret { transform: rotate(180deg); }
+
+  /* mega */
+  .volt-header__mega {
+    position: absolute; left: 0; right: 0; top: 100%;
+    background: var(--color-bg);
+    border-top: 1px solid var(--color-border);
+    border-bottom: 1px solid var(--color-border);
+    opacity: 0; visibility: hidden; transform: translateY(-6px);
+    transition: opacity var(--dur-med) var(--ease), transform var(--dur-med) var(--ease), visibility var(--dur-med) var(--ease);
+    box-shadow: 0 24px 48px -24px var(--color-ink-10);
   }
-  header svg {
-    width: 2rem;
+  .volt-header__nav-item[data-has-mega].is-open .volt-header__mega { opacity: 1; visibility: visible; transform: none; }
+  .volt-header__mega[hidden] { display: block; }
+  .volt-header__mega-inner {
+    display: grid; grid-template-columns: 1fr 320px; gap: clamp(32px, 5vw, 72px);
+    padding-block: clamp(32px, 4vw, 48px);
   }
-  header .header__menu,
-  header .header__icons {
-    display: flex;
-    gap: 1rem;
+  .volt-header__mega-cols { display: grid; grid-template-columns: repeat(4, 1fr); gap: clamp(20px, 3vw, 40px); align-content: start; }
+  .volt-header__mega-head {
+    display: block; font-family: var(--font-body); font-weight: 500; font-size: 11px;
+    letter-spacing: 0.16em; text-transform: uppercase; color: var(--color-mid);
+    margin-bottom: 14px; padding-bottom: 10px; border-bottom: 1px solid var(--color-border);
+  }
+  .volt-header__mega-head:hover { color: var(--color-ink); }
+  .volt-header__mega-sub { display: flex; flex-direction: column; gap: 9px; }
+  .volt-header__mega-link {
+    font-size: 14px; color: var(--color-ink); transition: color var(--dur-fast) var(--ease);
+  }
+  .volt-header__mega-link:hover { color: var(--color-mid); }
+
+  .volt-header__mega-promo { padding: 28px; display: flex; flex-direction: column; gap: 12px; align-items: flex-start; }
+  .volt-header__mega-promo-title { margin-top: 4px; }
+  .volt-header__mega-cta { margin-top: 8px; }
+
+  /* right */
+  .volt-header__right { display: flex; align-items: center; gap: 6px; justify-self: end; }
+  .volt-header__util {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 40px; height: 40px; color: var(--color-ink); position: relative;
+    transition: background var(--dur-fast) var(--ease);
+  }
+  .volt-header__util:hover { background: var(--color-ink-06); }
+  .volt-header__util svg { width: 20px; height: 20px; }
+
+  .volt-header__account--in:hover { background: transparent; }
+  .volt-header__avatar {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 30px; height: 30px; border-radius: 50%;
+    background: var(--color-ink); color: var(--color-bg);
+    font-family: var(--font-mono); font-size: 12px; letter-spacing: 0; line-height: 1;
+  }
+  .volt-header__elite-dot {
+    position: absolute; top: 5px; right: 5px; width: 8px; height: 8px; border-radius: 50%;
+    background: var(--color-acid); border: 2px solid var(--color-bg);
+  }
+
+  .volt-header__cart { width: auto; padding-inline: 8px; gap: 7px; }
+  .volt-header__cart-count {
+    min-width: 18px; height: 18px; padding-inline: 5px;
+    display: inline-flex; align-items: center; justify-content: center;
+    background: var(--color-ink); color: var(--color-bg);
+    font-size: 10px; line-height: 1;
+  }
+  .volt-header__cart-count.is-empty {
+    background: transparent; color: var(--color-mid); padding-inline: 0; min-width: 0;
+  }
+
+  /* burger */
+  .volt-header__burger { display: none; flex-direction: column; gap: 5px; width: 40px; height: 40px; align-items: center; justify-content: center; }
+  .volt-header__burger-line { display: block; width: 20px; height: 1.5px; background: var(--color-ink); transition: transform var(--dur-fast) var(--ease), opacity var(--dur-fast) var(--ease); }
+
+  /* drawer */
+  .volt-header__drawer {
+    position: fixed; inset: 0; z-index: var(--z-drawer);
+    background: var(--color-bg);
+    display: flex; flex-direction: column;
+    padding: 20px var(--container-padding) 40px;
+    opacity: 0; visibility: hidden; transform: translateY(-12px);
+    transition: opacity var(--dur-med) var(--ease), transform var(--dur-med) var(--ease), visibility var(--dur-med) var(--ease);
+  }
+  .volt-header__drawer[hidden] { display: flex; }
+  .volt-header.is-drawer-open .volt-header__drawer { opacity: 1; visibility: visible; transform: none; }
+  .volt-header__drawer-head { display: flex; align-items: center; justify-content: space-between; height: var(--header-height); margin-bottom: 16px; }
+  .volt-header__drawer-close { width: 40px; height: 40px; display: inline-flex; align-items: center; justify-content: center; color: var(--color-ink); }
+  .volt-header__drawer-close svg { width: 22px; height: 22px; }
+  .volt-header__drawer-nav { flex: 1; overflow-y: auto; }
+  .volt-header__drawer-list { display: flex; flex-direction: column; }
+  .volt-header__drawer-item { border-bottom: 1px solid var(--color-border); }
+  .volt-header__drawer-link {
+    display: flex; align-items: center; justify-content: space-between; width: 100%;
+    font-family: var(--font-display); font-weight: var(--font-display-weight-2);
+    font-size: 24px; letter-spacing: -0.01em; color: var(--color-ink);
+    padding-block: 18px; text-align: left;
+  }
+  .volt-header__drawer-item[data-accordion].is-open .volt-header__caret { transform: rotate(180deg); }
+  .volt-header__drawer-sub { display: flex; flex-direction: column; gap: 2px; padding-bottom: 16px; }
+  .volt-header__drawer-sub[hidden] { display: none; }
+  .volt-header__drawer-sublink {
+    display: block; font-size: 15px; color: var(--color-mid); padding-block: 7px;
+    font-family: var(--font-body);
+  }
+  .volt-header__drawer-sublink:hover { color: var(--color-ink); }
+  .volt-header__drawer-cta { margin-top: 24px; }
+
+  @media (max-width: 768px) {
+    .volt-header__nav { display: none; }
+    .volt-header__burger { display: inline-flex; }
+    .volt-header__inner { grid-template-columns: auto 1fr auto; }
+    .volt-header__left { gap: 6px; }
+    .volt-header__search { display: none; }
+  }
+  @media (min-width: 769px) {
+    .volt-header__drawer { display: none !important; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .volt-header__mega, .volt-header__drawer { transition: none; }
   }
 {% endstylesheet %}
+
+<script>
+  (function () {
+    if (!customElements.get('site-header')) {
+      class SiteHeader extends HTMLElement {
+        connectedCallback() {
+          this.bar = this.querySelector('.volt-header__bar');
+          this.drawer = this.querySelector('[data-drawer]');
+          this.burger = this.querySelector('[data-menu-toggle]');
+          this.megaItems = Array.from(this.querySelectorAll('[data-has-mega]'));
+          this._hoverTimers = new WeakMap();
+
+          this._initSticky();
+          this._initDrawer();
+          this._initAccordions();
+          this._initMega();
+          this._initSearch();
+          this._initCart();
+        }
+
+        _initSticky() {
+          var sentinel = this.querySelector('[data-header-sentinel]');
+          if (!sentinel || !('IntersectionObserver' in window)) return;
+          var self = this;
+          var io = new IntersectionObserver(function (entries) {
+            self.classList.toggle('is-stuck', !entries[0].isIntersecting);
+          }, { rootMargin: '0px', threshold: 0 });
+          io.observe(sentinel);
+        }
+
+        _initSearch() {
+          var btn = this.querySelector('[data-search-toggle]');
+          if (!btn) return;
+          btn.addEventListener('click', function () {
+            window.location.href = '/search';
+          });
+        }
+
+        _initCart() {
+          var self = this;
+          document.addEventListener('cart:updated', function (e) {
+            var count = e && e.detail && typeof e.detail.item_count === 'number' ? e.detail.item_count : null;
+            if (count === null) return;
+            var el = self.querySelector('[data-cart-count]');
+            if (!el) return;
+            el.textContent = count;
+            el.classList.toggle('is-empty', count === 0);
+          });
+        }
+
+        /* ---- mobile drawer ---- */
+        _initDrawer() {
+          var self = this;
+          if (!this.drawer || !this.burger) return;
+          this.burger.addEventListener('click', function () { self.openDrawer(); });
+          var close = this.querySelector('[data-menu-close]');
+          if (close) close.addEventListener('click', function () { self.closeDrawer(); });
+          document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape' && self.classList.contains('is-drawer-open')) self.closeDrawer();
+          });
+        }
+
+        openDrawer() {
+          this.classList.add('is-drawer-open');
+          this.burger.setAttribute('aria-expanded', 'true');
+          document.documentElement.style.overflow = 'hidden';
+          var first = this.drawer.querySelector('[data-menu-close]');
+          if (first) first.focus();
+        }
+
+        closeDrawer() {
+          this.classList.remove('is-drawer-open');
+          this.burger.setAttribute('aria-expanded', 'false');
+          document.documentElement.style.overflow = '';
+          this.burger.focus();
+        }
+
+        /* ---- mobile accordion ---- */
+        _initAccordions() {
+          var items = this.querySelectorAll('[data-accordion]');
+          items.forEach(function (item) {
+            var toggle = item.querySelector('[data-accordion-toggle]');
+            var panel = item.querySelector('[data-accordion-panel]');
+            if (!toggle || !panel) return;
+            toggle.addEventListener('click', function () {
+              var open = item.classList.toggle('is-open');
+              toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+              panel.hidden = !open;
+            });
+          });
+        }
+
+        /* ---- desktop mega menu ---- */
+        _initMega() {
+          var self = this;
+          this.megaItems.forEach(function (item) {
+            var trigger = item.querySelector('[data-mega-trigger]');
+            var panel = item.querySelector('[data-mega-panel]');
+            if (!trigger || !panel) return;
+
+            item.addEventListener('mouseenter', function () { self._cancelClose(item); self.openMega(item); });
+            item.addEventListener('mouseleave', function () { self._scheduleClose(item); });
+            item.addEventListener('focusin', function () { self._cancelClose(item); self.openMega(item); });
+            item.addEventListener('focusout', function (e) {
+              if (!item.contains(e.relatedTarget)) self.closeMega(item);
+            });
+            trigger.addEventListener('click', function (e) {
+              if (window.matchMedia('(min-width: 769px)').matches) {
+                e.preventDefault();
+                if (item.classList.contains('is-open')) self.closeMega(item);
+                else self.openMega(item);
+              }
+            });
+          });
+
+          document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape') self.megaItems.forEach(function (i) { self.closeMega(i); });
+          });
+          document.addEventListener('click', function (e) {
+            if (!self.contains(e.target)) self.megaItems.forEach(function (i) { self.closeMega(i); });
+          });
+        }
+
+        openMega(item) {
+          var self = this;
+          this.megaItems.forEach(function (i) { if (i !== item) self.closeMega(i); });
+          item.classList.add('is-open');
+          var trigger = item.querySelector('[data-mega-trigger]');
+          if (trigger) trigger.setAttribute('aria-expanded', 'true');
+        }
+
+        closeMega(item) {
+          item.classList.remove('is-open');
+          var trigger = item.querySelector('[data-mega-trigger]');
+          if (trigger) trigger.setAttribute('aria-expanded', 'false');
+        }
+
+        _scheduleClose(item) {
+          var self = this;
+          this._cancelClose(item);
+          var t = setTimeout(function () { self.closeMega(item); }, 150);
+          this._hoverTimers.set(item, t);
+        }
+
+        _cancelClose(item) {
+          var t = this._hoverTimers.get(item);
+          if (t) { clearTimeout(t); this._hoverTimers.delete(item); }
+        }
+      }
+      customElements.define('site-header', SiteHeader);
+    }
+  })();
+</script>
 
 {% schema %}
 {
   "name": "t:general.header",
   "settings": [
     {
-      "type": "link_list",
-      "id": "menu",
-      "label": "t:labels.menu"
+      "type": "image_picker",
+      "id": "logo",
+      "label": "t:sections.header_main.logo"
     },
     {
-      "type": "link_list",
-      "id": "customer_account_menu",
-      "label": "t:labels.customer_account_menu",
-      "default": "customer-account-main-menu"
+      "type": "range",
+      "id": "logo_width",
+      "min": 60,
+      "max": 220,
+      "step": 10,
+      "unit": "px",
+      "label": "t:sections.header_main.logo_width",
+      "default": 120
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_sticky",
+      "label": "t:sections.header_main.enable_sticky",
+      "default": true
+    },
+    {
+      "type": "paragraph",
+      "content": "t:sections.header_main.global_note"
     }
   ]
 }

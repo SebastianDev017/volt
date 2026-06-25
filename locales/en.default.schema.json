@@ -74,6 +74,294 @@
       "normal": "Normal text"
     }
   },
+  "sections": {
+    "newsletter_diagnostic": {
+      "name": "Newsletter diagnostic",
+      "eyebrow": "Eyebrow",
+      "heading": "Heading",
+      "body": "Body text",
+      "tiers_header": "Membership tier handles",
+      "tier_starter_handle": "Starter tier handle",
+      "tier_handle_info": "Links the quiz to /products/volt-membership-[handle]. Set the product handle suffix for each tier.",
+      "tier_performance_handle": "Performance tier handle",
+      "tier_elite_handle": "Elite tier handle",
+      "newsletter_header": "Newsletter capture",
+      "newsletter_heading": "Newsletter label",
+      "newsletter_body": "Newsletter body",
+      "consent_text": "Consent text"
+    },
+    "membership_tiers": {
+      "name": "Membership tiers",
+      "eyebrow": "Eyebrow",
+      "heading": "Heading",
+      "body": "Body text",
+      "show_countdown": "Show countdown on popular tier",
+      "countdown_end_date": "Countdown end date",
+      "countdown_end_date_info": "Format: 2026-12-31T23:59:59 (ISO date-time).",
+      "guarantee_text": "Guarantee text",
+      "blocks": {
+        "tier": {
+          "name": "Tier",
+          "tier_name": "Tier name",
+          "gauge_fill": "Gauge fill",
+          "price_monthly": "Monthly price",
+          "price_annual": "Annual price (per month)",
+          "billed_annual": "Annual savings line",
+          "cta_label": "Button label",
+          "cta_link": "Button link",
+          "is_popular": "Mark as most popular",
+          "accent": "Top accent color",
+          "accent_mid": "Neutral",
+          "accent_acid": "Acid",
+          "accent_ink": "Ink",
+          "features": "Features list"
+        }
+      },
+      "billing_toggle_label": "Billing period",
+      "monthly": "Monthly",
+      "annually": "Annually",
+      "save_badge": "Save 25%",
+      "most_popular": "Most popular",
+      "offer_ends": "Founding rate ends in",
+      "intensity": "Intensity",
+      "per_mo": "/mo",
+      "billed_monthly": "Billed monthly, cancel anytime",
+      "access_dashboard": "Access your dashboard"
+    },
+    "header_main": {
+      "logo": "Logo image",
+      "logo_width": "Logo width",
+      "enable_sticky": "Sticky header",
+      "global_note": "Logo text, navigation menu, mega menu, and transparent hero are set in Theme settings → Header.",
+      "skip_to_content": "Skip to content",
+      "open_menu": "Open menu",
+      "close_menu": "Close menu",
+      "primary_nav": "Primary",
+      "view_all": "View all",
+      "search": "Search",
+      "account": "Account",
+      "cart": "Cart",
+      "promo_eyebrow": "Members only",
+      "promo_title": "Train with data, not guesswork.",
+      "promo_body": "Recovery, strain, and sleep scoring built for the way you actually move.",
+      "promo_cta": "Start your protocol"
+    },
+    "footer_main": {
+      "name": "Footer",
+      "rights": "All rights reserved.",
+      "trust_secure": "Secure Checkout",
+      "trust_shipping": "Free Shipping $75+",
+      "trust_returns": "30-Day Returns",
+      "trust_nsf": "NSF Certified",
+      "blocks": {
+        "brand": {
+          "name": "Brand",
+          "tagline": "Tagline",
+          "social_header": "Social links",
+          "instagram": "Instagram URL",
+          "youtube": "YouTube URL",
+          "tiktok": "TikTok URL",
+          "strava": "Strava URL"
+        },
+        "menu": {
+          "name": "Menu column",
+          "title": "Column title",
+          "menu": "Menu",
+          "menu_info": "Pick a link list to display in this column."
+        }
+      }
+    },
+    "editorial_statement": {
+      "name": "Editorial statement",
+      "eyebrow": "Eyebrow",
+      "heading": "Heading",
+      "attribution": "Attribution",
+      "color_scheme": "Color scheme",
+      "scheme_default": "Background",
+      "scheme_surface": "Surface",
+      "scheme_ink": "Ink (dark)"
+    },
+    "performance_stats": {
+      "name": "Performance stats",
+      "heading": "Eyebrow",
+      "heading_info": "Short label above the stat grid",
+      "quote_header": "Member quote",
+      "show_quote": "Show quote column",
+      "quote": "Quote",
+      "quote_author": "Attribution",
+      "blocks": {
+        "stat": {
+          "name": "Stat",
+          "value": "Value",
+          "label": "Label"
+        }
+      },
+      "performance_stats": {
+        "name": "Performance stats",
+        "heading": "Eyebrow",
+        "heading_info": "Short label above the stat grid",
+        "quote_header": "Member quote",
+        "show_quote": "Show quote column",
+        "quote": "Quote",
+        "quote_author": "Attribution",
+        "blocks": {
+          "stat": {
+            "name": "Stat",
+            "value": "Value",
+            "label": "Label"
+          }
+        }
+      }
+    },
+    "product_grid": {
+      "name": "Product grid",
+      "title": {
+        "label": "Heading"
+      },
+      "subtitle": {
+        "label": "Eyebrow"
+      },
+      "collection": {
+        "label": "Collection"
+      },
+      "columns": {
+        "label": "Columns on desktop"
+      },
+      "show_view_all": {
+        "label": "Show \"View all\" link"
+      },
+      "card_header": {
+        "content": "Product card"
+      },
+      "image_radius": {
+        "label": "Image corner radius"
+      },
+      "hover_swap": {
+        "label": "Swap to second image on hover"
+      },
+      "quick_buy": {
+        "label": "Quick add to bag",
+        "info": "Slides an \"Add to bag\" button up from the bottom of the image on hover."
+      },
+      "stock_threshold": {
+        "label": "Low-stock threshold",
+        "info": "Show \"Only X left\" when remaining inventory is below this number."
+      },
+      "show_tasting_specs": {
+        "label": "Show spec line",
+        "info": "Displays the product's volt.specs metafield under the title."
+      },
+      "show_member_price": {
+        "label": "Show member price",
+        "info": "Shows the discounted member price to customers tagged volt-member."
+      }
+    },
+    "announcement_bar": {
+      "name": "Announcement bar",
+      "aria_label": "Announcement",
+      "dismiss": "Dismiss announcement",
+      "message": "Message",
+      "cta_text": "Button label",
+      "cta_url": "Button link",
+      "countdown_header": "Countdown",
+      "show_countdown": "Show countdown",
+      "countdown_end_date": "Countdown end date",
+      "countdown_end_date_info": "Format: YYYY-MM-DD. Counts down to end of day (DD:HH:MM:SS).",
+      "appearance_header": "Appearance",
+      "bg_color": "Background color",
+      "text_color": "Text color"
+    },
+    "hero_diagnostic": {
+      "name": "Hero / Diagnostic",
+      "eyebrow": "Eyebrow",
+      "heading": "Heading",
+      "heading_info": "Wrap one word in italics to render it in volt lime.",
+      "subheading": "Subheading",
+      "primary_label": "Primary button label",
+      "primary_link": "Primary button link",
+      "secondary_label": "Secondary button label",
+      "secondary_link": "Secondary button link",
+      "social_proof": "Social proof line",
+      "recovery_value": "Recovery gauge value",
+      "strain_label": "Strain value label",
+      "streak_current": "Streak — days completed",
+      "streak_total": "Streak — total days"
+    },
+    "vitals_strip": {
+      "name": "Vitals strip",
+      "speed": {
+        "label": "Scroll speed",
+        "slow": "Slow",
+        "normal": "Normal",
+        "fast": "Fast"
+      },
+      "blocks": {
+        "stat": {
+          "name": "Stat",
+          "text": {
+            "label": "Stat text"
+          }
+        }
+      }
+    },
+    "before_after": {
+      "name": "Before / After",
+      "eyebrow": "Eyebrow",
+      "heading": "Heading",
+      "images_header": "Comparison images",
+      "before_image": "Before image",
+      "after_image": "After image",
+      "before_label": "Before pill label",
+      "after_label": "After pill label",
+      "label_info": "Numbers render in DM Mono. Use the · separator for stats, e.g. MONTH 6 · 78KG · 8 PRs.",
+      "range_label": "Drag to compare before and after",
+      "blocks": {
+        "testimonial": {
+          "name": "Testimonial",
+          "quote": "Quote",
+          "name_label": "Member name",
+          "tier": "Membership tier",
+          "join_date": "Join date"
+        }
+      }
+    },
+    "how_it_works": {
+      "name": "How it works",
+      "eyebrow": "Eyebrow",
+      "heading": "Heading",
+      "blocks": {
+        "step": {
+          "name": "Step",
+          "label": "Phase label",
+          "title": "Title",
+          "body": "Body",
+          "image": "Image",
+          "link_text": "Link text",
+          "link_url": "Link URL"
+        }
+      }
+    },
+    "marquee": {
+      "name": "Marquee",
+      "speed": "Scroll speed",
+      "speed_slow": "Slow",
+      "speed_normal": "Normal",
+      "speed_fast": "Fast",
+      "text_style": "Text style",
+      "style_display": "Display (Syne)",
+      "style_mono": "Mono (DM Mono)",
+      "color_scheme": "Color scheme",
+      "scheme_default": "Default",
+      "scheme_surface": "Surface",
+      "scheme_ink": "Ink (dark)",
+      "scheme_acid": "Acid",
+      "aria_label": "Scrolling brand statement",
+      "item": {
+        "name": "Item",
+        "text": "Text"
+      }
+    }
+  },
   "settings": {
     "typography": {
       "name": "Typography",
