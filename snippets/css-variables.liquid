@@ -1,0 +1,79 @@
+{% style %}
+  {%- comment -%} Self-hosted display + mono (not in font_picker) {%- endcomment -%}
+  @font-face {
+    font-family: 'Syne';
+    font-style: normal;
+    font-weight: 700 800;
+    font-display: swap;
+    src: url({{ 'syne.woff2' | asset_url }}) format('woff2');
+  }
+  @font-face {
+    font-family: 'DM Mono';
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url({{ 'dm-mono.woff2' | asset_url }}) format('woff2');
+  }
+
+  {%- comment -%} Body font — load base + medium with display: swap {%- endcomment -%}
+  {%- if settings.type_body_font.family != blank -%}
+    {{ settings.type_body_font | font_face: font_display: 'swap' }}
+    {{ settings.type_body_font | font_modify: 'weight', '500' | font_face: font_display: 'swap' }}
+  {%- endif -%}
+  {%- comment -%} Heading font only when Syne is OFF {%- endcomment -%}
+  {%- unless settings.use_syne_heading -%}
+    {%- if settings.type_header_font.family != blank -%}
+      {{ settings.type_header_font | font_face: font_display: 'swap' }}
+      {{ settings.type_header_font | font_modify: 'weight', 'bold' | font_face: font_display: 'swap' }}
+    {%- endif -%}
+  {%- endunless -%}
+
+  :root {
+    {%- if settings.use_syne_heading -%}
+      --font-display: 'Syne', system-ui, sans-serif;
+      --font-display-weight: 800;
+      --font-display-weight-2: 700;
+    {%- else -%}
+      {%- if settings.type_header_font.family != blank -%}
+        --font-display: {{ settings.type_header_font.family | json }}, system-ui, sans-serif;
+        --font-display-weight: {{ settings.type_header_font.weight | default: 700 }};
+        --font-display-weight-2: 500;
+      {%- else -%}
+        --font-display: system-ui, sans-serif;
+        --font-display-weight: 700;
+        --font-display-weight-2: 500;
+      {%- endif -%}
+    {%- endif -%}
+
+    {%- if settings.type_body_font.family != blank -%}
+      --font-body: {{ settings.type_body_font.family | json }}, {{ settings.type_body_font.fallback_families }};
+    {%- else -%}
+      --font-body: system-ui, -apple-system, 'DM Sans', sans-serif;
+    {%- endif -%}
+    --font-mono: 'DM Mono', ui-monospace, monospace;
+
+    --color-bg: {% if settings.color_bg != blank %}{{ settings.color_bg }}{% else %}#F0EEEA{% endif %};
+    --color-surface: {% if settings.color_surface != blank %}{{ settings.color_surface }}{% else %}#E8E5E0{% endif %};
+    --color-ink: {% if settings.color_ink != blank %}{{ settings.color_ink }}{% else %}#0D0C0B{% endif %};
+    --color-acid: {% if settings.color_acid != blank %}{{ settings.color_acid }}{% else %}#D4FF00{% endif %};
+    --color-mid: {% if settings.color_mid != blank %}{{ settings.color_mid }}{% else %}#8A8784{% endif %};
+    --color-border: {% if settings.color_border != blank %}{{ settings.color_border }}{% else %}#D0CDC8{% endif %};
+    --color-danger: {% if settings.color_danger != blank %}{{ settings.color_danger }}{% else %}#E84040{% endif %};
+    --color-success: {% if settings.color_success != blank %}{{ settings.color_success }}{% else %}#2ECC71{% endif %};
+    {%- if settings.color_ink != blank -%}
+      --color-ink-10: {{ settings.color_ink | color_modify: 'alpha', 0.10 }};
+      --color-ink-06: {{ settings.color_ink | color_modify: 'alpha', 0.06 }};
+    {%- endif -%}
+    {%- if settings.color_acid != blank -%}
+      --color-acid-10: {{ settings.color_acid | color_modify: 'alpha', 0.10 }};
+    {%- endif -%}
+
+    --heading-scale: {{ settings.heading_scale | default: 100 | divided_by: 100.0 }};
+    --body-scale: {{ settings.body_scale | default: 100 | divided_by: 100.0 }};
+    --page-width: {{ settings.page_width | default: 1280 }}px;
+    --container-padding: {{ settings.container_padding | default: 56 }}px;
+    --header-height: {{ settings.header_height | default: 64 }}px;
+    --radius-image: {{ settings.image_radius | default: 0 }}px;
+    --wordmark-opacity: {{ settings.footer_wordmark_opacity | default: 3 | divided_by: 100.0 }};
+  }
+{% endstyle %}

@@ -1,0 +1,148 @@
+{
+  "general": {
+    "404": "Not found",
+    "article": "Article",
+    "block": "Block",
+    "blog": "Blog",
+    "cart": "Cart",
+    "collection": "Collection",
+    "collections": "Collections",
+    "collection_card": "Collection card",
+    "collections_grid": "Collections grid",
+    "colors": "Colors",
+    "column": "Column",
+    "content": "Content",
+    "custom_section": "Custom section",
+    "fonts": "Fonts",
+    "footer": "Footer",
+    "group": "Group",
+    "header": "Header",
+    "layout": "Layout",
+    "main": "Main",
+    "page": "Page",
+    "password": "Password",
+    "primary": "Primary",
+    "product": "Product",
+    "row": "Row",
+    "search": "Search",
+    "secondary": "Secondary",
+    "section": "Section",
+    "settings": "Settings",
+    "sidebar": "Sidebar",
+    "text": "Text",
+    "theme": "Theme",
+    "typography": "Typography"
+  },
+  "labels": {
+    "alignment": "Alignment",
+    "background": "Background",
+    "foreground": "Foreground",
+    "grid_gap": "Grid spacing",
+    "grid_item_width": "Grid item width",
+    "input_corner_radius": "Input corner radius",
+    "layout_direction": "Layout direction",
+    "menu": "Menu",
+    "customer_account_menu": "Customer account menu",
+    "padding": "Padding",
+    "page_margin": "Page margin",
+    "page_width": "Page width",
+    "show_payment_icons": "Show payment icons",
+    "text_style": "Text style",
+    "text": "Text"
+  },
+  "options": {
+    "alignment": {
+      "left": "Left",
+      "center": "Center",
+      "right": "Right"
+    },
+    "direction": {
+      "horizontal": "Horizontal",
+      "vertical": "Vertical"
+    },
+    "page_width": {
+      "narrow": "Narrow",
+      "wide": "Wide"
+    },
+    "size": {
+      "large": "Large",
+      "small": "Small"
+    },
+    "text_style": {
+      "title": "Title",
+      "subtitle": "Subtitle",
+      "normal": "Normal text"
+    }
+  },
+  "settings": {
+    "typography": {
+      "name": "Typography",
+      "fonts": "Fonts",
+      "use_syne": "Use Syne for headings",
+      "use_syne_info": "Loads the Syne display typeface from Google Fonts. Turn off to use the heading font picker instead.",
+      "header_font": "Heading font (fallback)",
+      "body_font": "Body font",
+      "heading_scale": "Heading scale",
+      "body_scale": "Body scale"
+    },
+    "colors": {
+      "name": "Colors",
+      "bg": "Background",
+      "surface": "Surface (cards, inputs)",
+      "ink": "Text / ink",
+      "acid": "Accent (Volt lime)",
+      "mid": "Secondary text",
+      "border": "Borders",
+      "danger": "Sale / error",
+      "success": "In-stock / success"
+    },
+    "membership": {
+      "name": "Membership",
+      "default_tier": "Recommended tier",
+      "tier_starter": "Starter",
+      "tier_performance": "Performance",
+      "tier_elite": "Elite",
+      "trial_offer": "Show free-trial badge",
+      "show_countdown": "Show countdown on recommended tier",
+      "countdown_end_date": "Countdown end date",
+      "countdown_info": "Format YYYY-MM-DD. The countdown hides after this date."
+    },
+    "animations": {
+      "name": "Animations & experience",
+      "smooth_scroll": "Smooth scroll (Lenis)",
+      "page_transitions": "Page transitions",
+      "gauge_animation": "Animate gauges on scroll",
+      "scroll_animations": "Reveal sections on scroll",
+      "grain_texture": "Grain texture overlay"
+    },
+    "layout": {
+      "name": "Layout",
+      "page_width": "Page width",
+      "container_padding": "Container padding"
+    },
+    "products": {
+      "name": "Products",
+      "quick_buy": "Enable quick add",
+      "hover_swap": "Swap to second image on hover",
+      "image_radius": "Image corner radius",
+      "stock_threshold": "Low-stock threshold",
+      "show_member_price": "Show member price on cards",
+      "show_tasting_specs": "Show spec line on cards"
+    },
+    "header": {
+      "name": "Header",
+      "logo_text": "Logo wordmark",
+      "menu": "Menu",
+      "header_height": "Header height",
+      "transparent_hero": "Transparent header over hero",
+      "mega_menu_enable": "Enable mega menu"
+    },
+    "footer": {
+      "name": "Footer",
+      "wordmark_text": "Wordmark text",
+      "wordmark_opacity": "Wordmark opacity",
+      "padding_top": "Padding top",
+      "padding_bottom": "Padding bottom"
+    }
+  }
+}

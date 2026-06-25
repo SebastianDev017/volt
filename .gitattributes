@@ -1,0 +1,4 @@
+*.json linguist-language=jsonc
+
+# Protect developer-owned config from Shopify GitHub write-backs
+config/settings_schema.json merge=ours

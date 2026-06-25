@@ -1,0 +1,334 @@
+[
+  {
+    "name": "theme_info",
+    "theme_name": "Volt",
+    "theme_version": "1.0.0",
+    "theme_author": "Sebastián Ruiz",
+    "theme_documentation_url": "https://sebastiandev017.github.io/volt/",
+    "theme_support_email": "sebas.ruizdigital@gmail.com"
+  },
+  {
+    "name": "t:settings.typography.name",
+    "settings": [
+      {
+        "type": "header",
+        "content": "t:settings.typography.fonts"
+      },
+      {
+        "type": "checkbox",
+        "id": "use_syne_heading",
+        "label": "t:settings.typography.use_syne",
+        "info": "t:settings.typography.use_syne_info",
+        "default": true
+      },
+      {
+        "type": "font_picker",
+        "id": "type_header_font",
+        "default": "dm_sans_n4",
+        "label": "t:settings.typography.header_font"
+      },
+      {
+        "type": "font_picker",
+        "id": "type_body_font",
+        "default": "dm_sans_n4",
+        "label": "t:settings.typography.body_font"
+      },
+      {
+        "type": "range",
+        "id": "heading_scale",
+        "min": 80,
+        "max": 130,
+        "step": 5,
+        "unit": "%",
+        "label": "t:settings.typography.heading_scale",
+        "default": 100
+      },
+      {
+        "type": "range",
+        "id": "body_scale",
+        "min": 90,
+        "max": 120,
+        "step": 5,
+        "unit": "%",
+        "label": "t:settings.typography.body_scale",
+        "default": 100
+      }
+    ]
+  },
+  {
+    "name": "t:settings.colors.name",
+    "settings": [
+      {
+        "type": "color",
+        "id": "color_bg",
+        "default": "#F0EEEA",
+        "label": "t:settings.colors.bg"
+      },
+      {
+        "type": "color",
+        "id": "color_surface",
+        "default": "#E8E5E0",
+        "label": "t:settings.colors.surface"
+      },
+      {
+        "type": "color",
+        "id": "color_ink",
+        "default": "#0D0C0B",
+        "label": "t:settings.colors.ink"
+      },
+      {
+        "type": "color",
+        "id": "color_acid",
+        "default": "#D4FF00",
+        "label": "t:settings.colors.acid"
+      },
+      {
+        "type": "color",
+        "id": "color_mid",
+        "default": "#8A8784",
+        "label": "t:settings.colors.mid"
+      },
+      {
+        "type": "color",
+        "id": "color_border",
+        "default": "#D0CDC8",
+        "label": "t:settings.colors.border"
+      },
+      {
+        "type": "color",
+        "id": "color_danger",
+        "default": "#E84040",
+        "label": "t:settings.colors.danger"
+      },
+      {
+        "type": "color",
+        "id": "color_success",
+        "default": "#2ECC71",
+        "label": "t:settings.colors.success"
+      }
+    ]
+  },
+  {
+    "name": "t:settings.membership.name",
+    "settings": [
+      {
+        "type": "select",
+        "id": "default_tier",
+        "label": "t:settings.membership.default_tier",
+        "options": [
+          { "value": "starter", "label": "t:settings.membership.tier_starter" },
+          { "value": "performance", "label": "t:settings.membership.tier_performance" },
+          { "value": "elite", "label": "t:settings.membership.tier_elite" }
+        ],
+        "default": "performance"
+      },
+      {
+        "type": "checkbox",
+        "id": "trial_offer",
+        "label": "t:settings.membership.trial_offer",
+        "default": false
+      },
+      {
+        "type": "checkbox",
+        "id": "show_countdown",
+        "label": "t:settings.membership.show_countdown",
+        "default": true
+      },
+      {
+        "type": "text",
+        "id": "countdown_end_date",
+        "label": "t:settings.membership.countdown_end_date",
+        "info": "t:settings.membership.countdown_info",
+        "default": "2025-12-31"
+      }
+    ]
+  },
+  {
+    "name": "t:settings.animations.name",
+    "settings": [
+      {
+        "type": "checkbox",
+        "id": "smooth_scroll",
+        "label": "t:settings.animations.smooth_scroll",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "page_transitions",
+        "label": "t:settings.animations.page_transitions",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "gauge_animation",
+        "label": "t:settings.animations.gauge_animation",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "scroll_animations",
+        "label": "t:settings.animations.scroll_animations",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "grain_texture",
+        "label": "t:settings.animations.grain_texture",
+        "default": true
+      }
+    ]
+  },
+  {
+    "name": "t:settings.layout.name",
+    "settings": [
+      {
+        "type": "range",
+        "id": "page_width",
+        "min": 1200,
+        "max": 1400,
+        "step": 20,
+        "unit": "px",
+        "label": "t:settings.layout.page_width",
+        "default": 1280
+      },
+      {
+        "type": "range",
+        "id": "container_padding",
+        "min": 16,
+        "max": 72,
+        "step": 4,
+        "unit": "px",
+        "label": "t:settings.layout.container_padding",
+        "default": 56
+      }
+    ]
+  },
+  {
+    "name": "t:settings.products.name",
+    "settings": [
+      {
+        "type": "checkbox",
+        "id": "quick_buy",
+        "label": "t:settings.products.quick_buy",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "hover_swap",
+        "label": "t:settings.products.hover_swap",
+        "default": true
+      },
+      {
+        "type": "range",
+        "id": "image_radius",
+        "min": 0,
+        "max": 16,
+        "step": 2,
+        "unit": "px",
+        "label": "t:settings.products.image_radius",
+        "default": 0
+      },
+      {
+        "type": "range",
+        "id": "stock_threshold",
+        "min": 3,
+        "max": 20,
+        "step": 1,
+        "label": "t:settings.products.stock_threshold",
+        "default": 8
+      },
+      {
+        "type": "checkbox",
+        "id": "show_member_price",
+        "label": "t:settings.products.show_member_price",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "show_tasting_specs",
+        "label": "t:settings.products.show_tasting_specs",
+        "default": true
+      }
+    ]
+  },
+  {
+    "name": "t:settings.header.name",
+    "settings": [
+      {
+        "type": "text",
+        "id": "logo_text",
+        "label": "t:settings.header.logo_text",
+        "default": "VOLT"
+      },
+      {
+        "type": "link_list",
+        "id": "menu",
+        "label": "t:settings.header.menu",
+        "default": "main-menu"
+      },
+      {
+        "type": "range",
+        "id": "header_height",
+        "min": 52,
+        "max": 80,
+        "step": 4,
+        "unit": "px",
+        "label": "t:settings.header.header_height",
+        "default": 64
+      },
+      {
+        "type": "checkbox",
+        "id": "transparent_hero",
+        "label": "t:settings.header.transparent_hero",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "mega_menu_enable",
+        "label": "t:settings.header.mega_menu_enable",
+        "default": true
+      }
+    ]
+  },
+  {
+    "name": "t:settings.footer.name",
+    "settings": [
+      {
+        "type": "text",
+        "id": "footer_wordmark_text",
+        "label": "t:settings.footer.wordmark_text",
+        "default": "VOLT"
+      },
+      {
+        "type": "range",
+        "id": "footer_wordmark_opacity",
+        "min": 0,
+        "max": 10,
+        "step": 1,
+        "unit": "%",
+        "label": "t:settings.footer.wordmark_opacity",
+        "default": 3
+      },
+      {
+        "type": "range",
+        "id": "footer_padding_top",
+        "min": 40,
+        "max": 160,
+        "step": 8,
+        "unit": "px",
+        "label": "t:settings.footer.padding_top",
+        "default": 96
+      },
+      {
+        "type": "range",
+        "id": "footer_padding_bottom",
+        "min": 40,
+        "max": 160,
+        "step": 8,
+        "unit": "px",
+        "label": "t:settings.footer.padding_bottom",
+        "default": 64
+      }
+    ]
+  }
+]

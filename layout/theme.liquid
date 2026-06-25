@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="{{ request.locale.iso_code }}">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <script>document.documentElement.classList.add('js');</script>
+
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%230D0C0B'/%3E%3Cpath d='M17 4 L8 18 H15 L13 28 L24 12 H16 Z' fill='%23D4FF00'/%3E%3C/svg%3E">
+
+    {% comment %} Syne + DM Mono are not in the font_picker — self-hosted in assets/ (see css-variables). DM Sans loads via the font_picker. {% endcomment %}
+
+    {% # Inlined CSS variables (settings → :root) %}
+    {% render 'css-variables' %}
+
+    {% # Theme stylesheet %}
+    {{ 'critical.css' | asset_url | stylesheet_tag: preload: true }}
+    {{ 'base.css' | asset_url | stylesheet_tag }}
+
+    {%- if settings.page_transitions != false -%}
+      <style>
+        @view-transition { navigation: auto; }
+        ::view-transition-old(root){ animation: 200ms ease both volt-vt-out; }
+        ::view-transition-new(root){ animation: 250ms ease both volt-vt-in; }
+        @keyframes volt-vt-out{ to{ opacity: 0; } }
+        @keyframes volt-vt-in{ from{ opacity: 0; } }
+        @media (prefers-reduced-motion: reduce){
+          ::view-transition-old(root), ::view-transition-new(root){ animation: none; }
+        }
+      </style>
+    {%- endif -%}
+
+    {% render 'meta-tags' %}
+    {{ content_for_header }}
+
+    <script src="{{ 'theme.js' | asset_url }}" defer></script>
+  </head>
+
+  <body
+    data-smooth-scroll="{{ settings.smooth_scroll }}"
+    data-animations="{{ settings.scroll_animations }}"
+    data-transitions="{{ settings.page_transitions }}"
+    data-gauge="{{ settings.gauge_animation }}"
+    data-grain="{{ settings.grain_texture }}"
+  >
+    <a class="skip-link" href="#main-content">{{ 'general.skip_to_content' | t: default: 'Skip to content' }}</a>
+
+    {% sections 'header-group' %}
+
+    <main id="main-content">
+      {{ content_for_layout }}
+    </main>
+
+    {% sections 'footer-group' %}
+  </body>
+</html>
