@@ -12,23 +12,85 @@
     "bundle_main": {
       "type": "main-product-bundle",
       "blocks": {
-        "info": { "type": "bundle_info", "settings": { "discount_percent": 20, "savings_label": "SAVE 20% vs buying individually", "badge_label": "Bundle Deal" } },
-        "b1": { "type": "bundle_benefit", "settings": { "icon": "⚡", "heading": "Engineered to stack", "description": "Each item is dosed to work with the others — no redundant ingredients, no wasted scoops." } },
-        "b2": { "type": "bundle_benefit", "settings": { "icon": "◆", "heading": "Cheaper together", "description": "Bundle pricing beats buying each product on its own — same gear, lower total." } },
-        "b3": { "type": "bundle_benefit", "settings": { "icon": "↻", "heading": "One-tap reorder", "description": "Your whole protocol in a single add-to-cart. Re-buy the stack in seconds." } }
+        "info": {
+          "type": "bundle_info",
+          "settings": {
+            "discount_percent": 20,
+            "savings_label": "SAVE 20% vs buying individually",
+            "badge_label": "Bundle Deal"
+          }
+        },
+        "b1": {
+          "type": "bundle_benefit",
+          "settings": {
+            "icon": "⚡",
+            "heading": "Engineered to stack",
+            "description": "Each item is dosed to work with the others — no redundant ingredients, no wasted scoops."
+          }
+        },
+        "b2": {
+          "type": "bundle_benefit",
+          "settings": {
+            "icon": "◆",
+            "heading": "Cheaper together",
+            "description": "Bundle pricing beats buying each product on its own — same gear, lower total."
+          }
+        },
+        "b3": {
+          "type": "bundle_benefit",
+          "settings": {
+            "icon": "↻",
+            "heading": "One-tap reorder",
+            "description": "Your whole protocol in a single add-to-cart. Re-buy the stack in seconds."
+          }
+        }
       },
-      "block_order": ["info", "b1", "b2", "b3"],
-      "settings": {}
+      "block_order": [
+        "info",
+        "b1",
+        "b2",
+        "b3"
+      ],
+      "settings": {
+        "social_proof": "Most popular protocol"
+      }
     },
     "bundle_statement": {
       "type": "editorial-statement",
-      "settings": { "eyebrow": "// The Stack", "heading": "Everything you need. <em>Nothing</em> you don't.", "color_scheme": "surface" }
+      "settings": {
+        "eyebrow": "// The Stack",
+        "heading": "Everything you need. <em>Nothing</em> you don't.",
+        "attribution": "",
+        "color_scheme": "surface"
+      }
     },
     "related": {
       "type": "product-grid",
-      "settings": { "eyebrow": "// Add-ons", "heading": "Round out the protocol.", "columns": 4 }
+      "settings": {
+        "eyebrow": "// Add-ons",
+        "heading": "Round out the protocol.",
+        "collection": "automated-collection",
+        "columns": 4,
+        "filter_menu": "",
+        "show_view_all": true,
+        "enable_animations": true,
+        "heading_animation": "split-chars",
+        "cards_animation": "stagger-up",
+        "section_delay": 0
+      }
     },
-    "recently_viewed": { "type": "recently-viewed", "settings": {} }
+    "recently_viewed": {
+      "type": "recently-viewed",
+      "settings": {
+        "heading": "Recently viewed",
+        "max_items": 6
+      }
+    }
   },
-  "order": ["bundle_main", "bundle_statement", "related", "recently_viewed"]
+  "order": [
+    "bundle_main",
+    "bundle_statement",
+    "related",
+    "recently_viewed"
+  ]
 }
