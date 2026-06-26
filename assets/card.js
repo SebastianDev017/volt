@@ -14,7 +14,11 @@
     var imgs = swImgs(card), label = swLabel(card);
     if (imgs.length && sw.dataset.swatchImage) {
       imgs.forEach(function (img) {
-        if (!img.dataset.origSrc) img.dataset.origSrc = img.currentSrc || img.src;
+        if (!img.dataset.origSrc) { img.dataset.origSrc = img.currentSrc || img.src; img.dataset.origSrcset = img.getAttribute('srcset') || ''; }
+        // The card image ships a responsive srcset which would otherwise win over
+        // a plain src change — clear it so the chosen variant image actually shows.
+        img.srcset = '';
+        img.removeAttribute('sizes');
         img.src = sw.dataset.swatchImage;
       });
       if (window.gsap) gsap.fromTo(imgs[0], { opacity: 0.7 }, { opacity: 1, duration: 0.25, ease: 'power2.out' });
@@ -26,7 +30,9 @@
   }
 
   function swRestore(card) {
-    swImgs(card).forEach(function (img) { if (img.dataset.origSrc) img.src = img.dataset.origSrc; });
+    swImgs(card).forEach(function (img) {
+      if (img.dataset.origSrc) { img.src = img.dataset.origSrc; img.srcset = img.dataset.origSrcset || ''; }
+    });
     var label = swLabel(card);
     if (label && label.dataset.orig) label.textContent = label.dataset.orig;
   }

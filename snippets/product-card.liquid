@@ -108,10 +108,13 @@
               {%- assign cart_variant = vfc_avail | default: vfc -%}
               {%- assign color_avail = false -%}
               {%- if vfc_avail != nil -%}{%- assign color_avail = true -%}{%- endif -%}
+              {%- comment -%} has_var_img → carry the variant image so a click always swaps the card image; has_img (distinct from featured) → also show it in the swatch circle {%- endcomment -%}
+              {%- assign has_var_img = false -%}
+              {%- if vfc.image != blank -%}{%- assign has_var_img = true -%}{%- endif -%}
               {%- assign has_img = false -%}
               {%- if vfc.image != blank and vfc.image.id != p.featured_image.id -%}{%- assign has_img = true -%}{%- endif -%}
               {%- assign ckey = cval | downcase | strip | replace: ' ', '-' | replace: '/', '-' -%}
-              <span class="card-swatch{% unless color_avail %} is-soldout{% endunless %}" role="listitem" aria-label="{{ cval | escape }}{% unless color_avail %} — {{ 'products.sold_out' | t: default: 'Sold out' }}{% endunless %}" title="{{ cval | escape }}" data-swatch-color="{{ ckey }}" data-color-name="{{ cval | escape }}" data-variant-id="{{ cart_variant.id }}" data-available="{{ color_avail }}"{% if has_img %} data-swatch-image="{{ vfc.image | image_url: width: 600 }}" style="background-image: url('{{ vfc.image | image_url: width: 120 }}');"{% endif %}></span>
+              <span class="card-swatch{% unless color_avail %} is-soldout{% endunless %}" role="listitem" aria-label="{{ cval | escape }}{% unless color_avail %} — {{ 'products.sold_out' | t: default: 'Sold out' }}{% endunless %}" title="{{ cval | escape }}" data-swatch-color="{{ ckey }}" data-color-name="{{ cval | escape }}" data-variant-id="{{ cart_variant.id }}" data-available="{{ color_avail }}"{% if has_var_img %} data-swatch-image="{{ vfc.image | image_url: width: 600 }}"{% endif %}{% if has_img %} style="background-image: url('{{ vfc.image | image_url: width: 120 }}');"{% endif %}></span>
             {%- endfor -%}
             {%- if color_opt.values.size > 6 -%}<span class="card-swatches__overflow">+{{ color_opt.values.size | minus: 6 }}</span>{%- endif -%}
           </div>
