@@ -5,21 +5,30 @@
   assign delay = section.settings.section_delay | default: 0 | divided_by: 1000.0
   assign overlay = section.settings.overlay_opacity | default: 40 | divided_by: 100.0
   assign aria_heading = section.settings.heading_pre | append: ' ' | append: section.settings.heading_highlight | append: ' ' | append: section.settings.heading_post | strip
+
+  assign carousel_coll = section.settings.carousel_collection
+  assign carousel_lim = section.settings.carousel_limit | default: 12
+  if carousel_coll != blank and carousel_coll.products.size > 0
+    assign slider_products = carousel_coll.products
+  else
+    assign slider_products = collections.all.products
+  endif
+  assign qv_lbl = 'products.quick_view' | t: default: 'Quick view'
 -%}
 <section class="hero-split" data-layout="{{ layout }}">
 
-  {%- comment -%} Backgrounds — absolute, never affect the text flow {%- endcomment -%}
+  {%- comment -%} Backgrounds — absolute, span the FULL 95vh (content + slider) {%- endcomment -%}
   <div class="hero-split__left" aria-hidden="true"></div>
   <div class="hero-split__right" aria-hidden="true">
     {%- if img != blank -%}
-      <div class="hero-split__imgwrap"{% if anim %} data-parallax="0.08"{% endif %}>
+      <div class="hero-split__imgwrap"{% if anim %} data-parallax="0.06"{% endif %}>
         {{ img | image_url: width: 1600 | image_tag: loading: 'eager', fetchpriority: 'high', class: 'hero-split__image', widths: '600, 900, 1200, 1600', sizes: '(max-width: 768px) 100vw, 50vw', alt: '' }}
       </div>
     {%- endif -%}
     <div class="hero-split__overlay" style="--overlay-opacity: {{ overlay }};"></div>
   </div>
 
-  {%- comment -%} Content — centered over the full width, text crosses the divide {%- endcomment -%}
+  {%- comment -%} ZONE 1 — split content (~58vh), text crosses the divide {%- endcomment -%}
   <div class="hero-split__content">
 
     {%- if section.settings.eyebrow != blank -%}
@@ -54,60 +63,126 @@
       </div>
     {%- endif -%}
 
-    {%- if section.settings.show_scroll_indicator -%}
-      <div class="scroll-indicator" aria-hidden="true"><span class="scroll-indicator__line"></span></div>
-    {%- endif -%}
-
   </div>
+
+  {%- comment -%} ZONE 2 — integrated infinite product slider (~37vh) {%- endcomment -%}
+  {%- if slider_products.size > 0 -%}
+    <div class="hero-slider-zone">
+      {%- if section.settings.carousel_label != blank -%}
+        <div class="hero-eyebrow-wrap hero-slider__label-wrap">
+          <div class="hero-eyebrow hero-eyebrow--ink" aria-hidden="true">{{ section.settings.carousel_label }}</div>
+          <div class="hero-eyebrow hero-eyebrow--cream" aria-hidden="true">{{ section.settings.carousel_label }}</div>
+          <span class="visually-hidden">{{ section.settings.carousel_label }}</span>
+        </div>
+      {%- endif -%}
+
+      <div class="hero-slider" data-hero-slider>
+        <button type="button" class="hero-slider__btn hero-slider__btn--prev" data-slider-prev aria-label="{{ 'sections.slideshow.previous' | t: default: 'Previous' }}">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>
+        </button>
+        <div class="hero-slider__viewport" data-slider-viewport>
+          <ul class="hero-slider__track" data-slider-track>
+            {%- for product in slider_products limit: carousel_lim -%}
+              <li class="hero-slide">
+                <a href="{{ product.url }}" class="hero-slide__link">
+                  <span class="hero-slide__media">
+                    {%- if product.featured_image != blank -%}
+                      {{ product.featured_image | image_url: width: 320 | image_tag: loading: 'lazy', widths: '160, 240, 320', sizes: '160px', class: 'hero-slide__img', alt: product.featured_image.alt | default: product.title | escape }}
+                    {%- else -%}<span class="hero-slide__ph"></span>{%- endif -%}
+                  </span>
+                  <span class="hero-slide__info">
+                    <span class="hero-slide__title">{{ product.title | truncate: 22 }}</span>
+                    <span class="hero-slide__price">{{ product.price | money }}</span>
+                  </span>
+                </a>
+                {%- if settings.quick_view and product.template_suffix == blank -%}
+                  <div class="hero-slide__overlay">
+                    <button type="button" class="hero-slide__qv" data-quick-view data-handle="{{ product.handle }}" aria-label="{{ qv_lbl | escape }} {{ product.title | escape }}">{{ qv_lbl | upcase }}</button>
+                  </div>
+                {%- endif -%}
+              </li>
+            {%- endfor -%}
+          </ul>
+        </div>
+        <button type="button" class="hero-slider__btn hero-slider__btn--next" data-slider-next aria-label="{{ 'sections.slideshow.next' | t: default: 'Next' }}">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg>
+        </button>
+      </div>
+    </div>
+  {%- endif -%}
 
   {%- comment -%} sentinel for the header transparent→solid scroll state {%- endcomment -%}
   <div class="header-sentinel" aria-hidden="true"></div>
 </section>
 
 {% stylesheet %}
-  .hero-split { position: relative; min-height: 100svh; display: flex; align-items: center; overflow: hidden; }
+  .hero-split { position: relative; min-height: 95vh; display: flex; flex-direction: column; overflow: hidden; }
 
-  /* Background halves (absolute) */
+  /* Background halves (absolute) — span the full section height incl. slider */
   .hero-split__left { position: absolute; top: 0; bottom: 0; left: 0; width: 50%; background: var(--color-bg); z-index: 0; }
   .hero-split__right { position: absolute; top: 0; bottom: 0; right: 0; width: 50%; z-index: 0; overflow: hidden; background: var(--color-ink); }
   .hero-split__imgwrap { position: absolute; top: -5%; left: 0; right: 0; height: 110%; }
   .hero-split__image { width: 100%; height: 100%; object-fit: cover; object-position: center; }
   .hero-split__overlay { position: absolute; inset: 0; background: rgba(13, 12, 11, var(--overlay-opacity, 0)); }
 
-  /* Content layer */
-  .hero-split__content { position: relative; z-index: 2; width: 100%; max-width: 100%; display: flex; flex-direction: column; align-items: center; text-align: center; padding: clamp(100px, 12vh, 160px) clamp(24px, 5vw, 80px); gap: 24px; }
+  /* Content zone (~58vh) */
+  .hero-split__content { position: relative; z-index: 2; flex: 0 0 auto; min-height: 58vh; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: clamp(80px, 9vh, 120px) clamp(24px, 5vw, 80px) clamp(20px, 3vh, 36px); gap: 20px; }
 
-  /* Eyebrow — duplicated, clipped per half */
-  .hero-eyebrow-wrap { position: relative; width: 100%; display: flex; justify-content: center; margin-bottom: 4px; }
-  .hero-eyebrow { display: flex; align-items: center; gap: 10px; font-family: var(--font-mono); font-size: 10px; font-weight: 500; letter-spacing: .22em; text-transform: uppercase; }
+  /* Eyebrow — duplicated, clipped per half (also reused for the slider label) */
+  .hero-eyebrow-wrap { position: relative; width: 100%; display: flex; justify-content: center; margin-bottom: 2px; }
+  .hero-eyebrow { display: flex; align-items: center; gap: 10px; font-family: var(--font-mono); font-size: 10px; font-weight: 500; letter-spacing: .22em; text-transform: uppercase; white-space: nowrap; }
   .hero-eyebrow--ink { color: var(--color-acid-accessible); clip-path: inset(0 50% 0 0); }
   .hero-eyebrow--cream { color: var(--color-acid); position: absolute; top: 0; left: 0; width: 100%; display: flex; justify-content: center; clip-path: inset(0 0 0 50%); }
   .hero-eyebrow__dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; flex-shrink: 0; }
 
   /* Heading — the dual-colour crossover */
   .hero-heading-wrap { position: relative; width: 100%; }
-  .hero-h1 { font-family: var(--font-display); font-weight: var(--font-display-weight); font-size: clamp(46px, 7.5vw, 108px); line-height: .94; letter-spacing: -.025em; text-transform: uppercase; width: 100%; text-align: center; margin: 0; }
+  .hero-h1 { font-family: var(--font-display); font-weight: var(--font-display-weight); font-size: clamp(40px, 6vw, 88px); line-height: .94; letter-spacing: -.025em; text-transform: uppercase; width: 100%; text-align: center; margin: 0; }
   .hero-h1--ink { color: var(--color-ink); clip-path: inset(0 50% 0 0); }
-  .hero-h1--cream { color: #FFFFFF; position: absolute; top: 0; left: 0; width: 100%; clip-path: inset(0 0 0 50%); }
+  /* cream = the colour that contrasts the ink/image half — use --color-bg so it works in every preset */
+  .hero-h1--cream { color: var(--color-bg); position: absolute; top: 0; left: 0; width: 100%; clip-path: inset(0 0 0 50%); }
   .hero-h1__hl { font-style: italic; margin-left: .12em; }
   .hero-h1__hl--dark { color: var(--color-acid-accessible); }
   .hero-h1__hl--light { color: var(--color-acid); }
 
   /* Subheading — duplicated, clipped per half */
-  .hero-sub-wrap { position: relative; width: 100%; display: flex; justify-content: center; margin-top: 4px; }
-  .hero-sub { font-size: 16px; line-height: 1.7; max-width: 520px; margin: 0; text-align: center; }
+  .hero-sub-wrap { position: relative; width: 100%; display: flex; justify-content: center; margin-top: 2px; }
+  .hero-sub { font-size: 15px; line-height: 1.65; max-width: 500px; margin: 0; text-align: center; }
   .hero-sub--ink { color: var(--color-mid); clip-path: inset(0 50% 0 0); }
-  .hero-sub--cream { color: rgba(255, 255, 255, .78); position: absolute; top: 0; left: 0; right: 0; margin-inline: auto; clip-path: inset(0 0 0 50%); }
+  .hero-sub--cream { color: var(--color-mid); position: absolute; top: 0; left: 0; right: 0; margin-inline: auto; clip-path: inset(0 0 0 50%); }
 
-  .hero-ctas { display: flex; gap: 14px; flex-wrap: wrap; justify-content: center; margin-top: 8px; }
+  .hero-ctas { display: flex; gap: 14px; flex-wrap: wrap; justify-content: center; margin-top: 6px; }
   .hero-split__outline { border: 1.5px solid rgba(13, 12, 11, .35); background: rgba(240, 238, 234, .14); backdrop-filter: blur(8px); color: var(--color-ink); }
   .hero-split__outline:hover { background: rgba(240, 238, 234, .3); }
 
-  .scroll-indicator { position: absolute; bottom: 26px; left: 50%; transform: translateX(-50%); z-index: 3; }
-  .scroll-indicator__line { display: block; width: 1px; height: 42px; background: var(--color-border); position: relative; overflow: hidden; }
-  .scroll-indicator__line::after { content: ""; position: absolute; top: -100%; left: 0; width: 100%; height: 100%; background: var(--color-acid-accessible); animation: hero-scrollline 1.6s ease-in-out infinite; }
-  @keyframes hero-scrollline { 0% { top: -100%; } 100% { top: 100%; } }
-  @media (prefers-reduced-motion: reduce) { .scroll-indicator__line::after { animation: none; } }
+  /* Slider zone (~37vh) */
+  .hero-slider-zone { position: relative; z-index: 2; flex: 0 0 auto; height: 37vh; min-height: 268px; display: flex; flex-direction: column; justify-content: center; gap: 14px; padding-bottom: clamp(16px, 3vh, 32px); }
+  .hero-slider__label-wrap { margin-bottom: 0; }
+
+  .hero-slider { position: relative; display: flex; align-items: center; gap: 8px; padding: 0 clamp(16px, 4vw, 48px); }
+  .hero-slider__viewport { position: relative; flex: 1 1 auto; overflow-x: auto; overflow-y: hidden; scrollbar-width: none; }
+  .hero-slider__viewport::-webkit-scrollbar { display: none; }
+  .hero-slider__track { display: flex; gap: 16px; list-style: none; margin: 0; padding: 4px 0; width: max-content; }
+
+  .hero-slide { position: relative; flex: 0 0 160px; width: 160px; height: 210px; background: var(--color-bg); border: 1px solid var(--color-border); }
+  .hero-slide__link { display: flex; flex-direction: column; height: 100%; text-decoration: none; }
+  .hero-slide__media { position: relative; display: block; height: 75%; overflow: hidden; background: var(--color-surface); }
+  .hero-slide__img { width: 100%; height: 100%; object-fit: cover; transition: transform .5s var(--ease); }
+  .hero-slide:hover .hero-slide__img { transform: scale(1.05); }
+  .hero-slide__ph { display: block; width: 100%; height: 100%; background: linear-gradient(135deg, var(--color-surface) 0%, var(--color-border) 100%); }
+  /* overlay covers only the media area; pointer-events:none lets image clicks fall to the card link, visibility gates the QV button so it's only interactive on hover */
+  .hero-slide__overlay { position: absolute; top: 0; left: 0; right: 0; height: 75%; z-index: 2; display: flex; align-items: flex-end; padding: 8px; opacity: 0; visibility: hidden; pointer-events: none; background: rgba(13, 12, 11, .42); transition: opacity .25s var(--ease), visibility .25s var(--ease); }
+  .hero-slide:hover .hero-slide__overlay, .hero-slide:focus-within .hero-slide__overlay { opacity: 1; visibility: visible; }
+  .hero-slide__qv { pointer-events: auto; width: 100%; border: 0; cursor: pointer; background: var(--color-acid); color: var(--on-acid); font-family: var(--font-mono); font-size: 8px; font-weight: 500; letter-spacing: .14em; text-transform: uppercase; padding: 8px 6px; }
+  .hero-slide__qv:hover { background: var(--color-bg); color: var(--color-ink); }
+  @media (hover: none) { .hero-slide__overlay { display: none; } }
+  .hero-slide__info { height: 25%; display: flex; flex-direction: column; justify-content: center; gap: 2px; padding: 0 10px; }
+  .hero-slide__title { font-family: var(--font-display); font-weight: var(--font-display-weight-2); font-size: 12px; line-height: 1.05; color: var(--color-ink); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .hero-slide__price { font-family: var(--font-mono); font-size: 11px; color: var(--color-mid); }
+
+  .hero-slider__btn { flex: 0 0 auto; width: 38px; height: 38px; display: grid; place-items: center; cursor: pointer; background: var(--color-bg); color: var(--color-ink); border: 1px solid var(--color-border); transition: background .2s var(--ease), color .2s var(--ease); }
+  .hero-slider__btn:hover { background: var(--color-ink); color: var(--color-bg); }
+  .hero-slider__btn svg { width: 18px; height: 18px; }
 
   /* ── Layout: image-left (mirror the divide) ── */
   [data-layout="split-image-left"] .hero-split__left { left: auto; right: 0; }
@@ -140,23 +215,33 @@
   [data-layout="full-bg"] .hero-sub--ink { position: relative; clip-path: none; }
   [data-layout="full-bg"] .hero-eyebrow--ink { position: relative; clip-path: none; }
 
-  /* ── Mobile: split stacks vertically; clip horizontal → vertical ── */
+  /* ── Mobile: no horizontal split — one full-bleed backdrop + single-colour text.
+        (A vertical clip can't align with a single horizontal background divide, so
+         the crossover is desktop-only; mobile shows one legible copy per element.) ── */
   @media (max-width: 768px) {
-    .hero-split__left { width: 100%; height: 50%; top: 0; bottom: auto; }
-    .hero-split__right { width: 100%; height: 50%; top: auto; bottom: 0; right: 0; left: 0; }
-    [data-layout="split-image-right"] .hero-h1--ink,
-    [data-layout="split-image-left"] .hero-h1--ink,
-    [data-layout="split-image-right"] .hero-eyebrow--ink,
-    [data-layout="split-image-left"] .hero-eyebrow--ink,
-    [data-layout="split-image-right"] .hero-sub--ink,
-    [data-layout="split-image-left"] .hero-sub--ink { clip-path: inset(0 0 50% 0); }
-    [data-layout="split-image-right"] .hero-h1--cream,
-    [data-layout="split-image-left"] .hero-h1--cream,
-    [data-layout="split-image-right"] .hero-eyebrow--cream,
-    [data-layout="split-image-left"] .hero-eyebrow--cream,
-    [data-layout="split-image-right"] .hero-sub--cream,
-    [data-layout="split-image-left"] .hero-sub--cream { clip-path: inset(50% 0 0 0); }
-    .hero-h1 { font-size: clamp(40px, 13vw, 64px); }
+    .hero-split { min-height: 0; }
+    .hero-h1 { font-size: clamp(38px, 12vw, 60px); }
+    .hero-split__content { min-height: 62vh; }
+    .hero-slider-zone { height: auto; background: var(--color-bg); padding-top: 24px; }
+
+    /* Image layouts: image/ink fills the whole content backdrop; show only the light (cream) copy */
+    [data-layout="split-image-right"] .hero-split__left,
+    [data-layout="split-image-left"] .hero-split__left,
+    [data-layout="full-image"] .hero-split__left { display: none; }
+    [data-layout="split-image-right"] .hero-split__right,
+    [data-layout="split-image-left"] .hero-split__right,
+    [data-layout="full-image"] .hero-split__right { left: 0; right: 0; top: 0; bottom: 0; width: 100%; height: 100%; }
+    [data-layout="split-image-right"] .hero-h1--ink, [data-layout="split-image-left"] .hero-h1--ink, [data-layout="full-image"] .hero-h1--ink,
+    [data-layout="split-image-right"] .hero-eyebrow--ink, [data-layout="split-image-left"] .hero-eyebrow--ink, [data-layout="full-image"] .hero-eyebrow--ink,
+    [data-layout="split-image-right"] .hero-sub--ink, [data-layout="split-image-left"] .hero-sub--ink, [data-layout="full-image"] .hero-sub--ink { display: none; }
+    [data-layout="split-image-right"] .hero-h1--cream, [data-layout="split-image-left"] .hero-h1--cream, [data-layout="full-image"] .hero-h1--cream,
+    [data-layout="split-image-right"] .hero-eyebrow--cream, [data-layout="split-image-left"] .hero-eyebrow--cream, [data-layout="full-image"] .hero-eyebrow--cream,
+    [data-layout="split-image-right"] .hero-sub--cream, [data-layout="split-image-left"] .hero-sub--cream, [data-layout="full-image"] .hero-sub--cream { position: relative; clip-path: none; left: auto; right: auto; }
+    .hero-split__outline { border-color: rgba(255, 255, 255, .4); color: var(--color-bg); background: rgba(13, 12, 11, .25); }
+
+    /* Carousel label: single accessible-acid copy over the solid slider backdrop (override the layout hide rules) */
+    .hero-slider__label-wrap .hero-eyebrow--ink { display: flex; clip-path: none; color: var(--color-acid-accessible); }
+    .hero-slider__label-wrap .hero-eyebrow--cream { display: none; }
   }
 {% endstylesheet %}
 
@@ -174,18 +259,21 @@
     ] },
     { "type": "image_picker", "id": "hero_image", "label": "t:sections.hero_diagnostic.hero_image" },
     { "type": "range", "id": "overlay_opacity", "min": 0, "max": 70, "step": 5, "unit": "%", "label": "t:sections.hero_diagnostic.overlay_opacity", "default": 40 },
-    { "type": "checkbox", "id": "show_scroll_indicator", "label": "t:sections.hero_diagnostic.show_scroll_indicator", "default": true },
     { "type": "header", "content": "t:sections.hero_diagnostic.content_header" },
     { "type": "text", "id": "eyebrow", "label": "t:sections.hero_diagnostic.eyebrow", "default": "Member Protocol 2025" },
-    { "type": "text", "id": "heading_pre", "label": "t:sections.hero_diagnostic.heading_pre", "default": "Train with " },
+    { "type": "text", "id": "heading_pre", "label": "t:sections.hero_diagnostic.heading_pre", "default": "Train with" },
     { "type": "text", "id": "heading_highlight", "label": "t:sections.hero_diagnostic.heading_highlight", "default": "data" },
-    { "type": "text", "id": "heading_post", "label": "t:sections.hero_diagnostic.heading_post", "default": " not guesswork" },
+    { "type": "text", "id": "heading_post", "label": "t:sections.hero_diagnostic.heading_post", "default": ", not guesswork." },
     { "type": "textarea", "id": "subheading", "label": "t:sections.hero_diagnostic.subheading", "default": "Track your strain, protect your recovery, and train with purpose. Your membership is a performance system — not a punch card." },
     { "type": "header", "content": "t:sections.hero_diagnostic.cta_header" },
     { "type": "text", "id": "primary_label", "label": "t:sections.hero_diagnostic.primary_label", "default": "Start your protocol" },
     { "type": "url", "id": "primary_link", "label": "t:sections.hero_diagnostic.primary_link" },
     { "type": "text", "id": "secondary_label", "label": "t:sections.hero_diagnostic.secondary_label", "default": "Diagnose your level" },
     { "type": "url", "id": "secondary_link", "label": "t:sections.hero_diagnostic.secondary_link" },
+    { "type": "header", "content": "t:sections.hero_diagnostic.carousel_header" },
+    { "type": "collection", "id": "carousel_collection", "label": "t:sections.hero_diagnostic.carousel_collection" },
+    { "type": "range", "id": "carousel_limit", "min": 6, "max": 20, "step": 1, "label": "t:sections.hero_diagnostic.carousel_limit", "default": 12 },
+    { "type": "text", "id": "carousel_label", "label": "t:sections.hero_diagnostic.carousel_label", "default": "Explore the protocol" },
     { "type": "header", "content": "t:sections.animation.header" },
     { "type": "checkbox", "id": "enable_animations", "label": "t:sections.animation.enable", "default": true },
     { "type": "range", "id": "section_delay", "label": "t:sections.animation.delay", "min": 0, "max": 800, "step": 50, "unit": "ms", "default": 300 }

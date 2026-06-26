@@ -54,12 +54,109 @@
     VoltAnim.flipLayoutTransition();
     VoltAnim.draggableCarousel();
     VoltAnim.floatCarousel();
+    VoltAnim.heroSlider();
 
     reveal();
     if (window.ScrollTrigger) ScrollTrigger.refresh();
   }
 
   var sp = function () { return CFG.speed || 1; };
+
+  // ── GSAP seamless infinite loop helper (official GreenSock utility) ──
+  // Lays items in a row and builds a wrapping timeline; optional draggable
+  // (Draggable + Inertia) gives drag-with-snap WITHOUT pinning the page, so
+  // vertical scroll is never blocked. Returns the timeline (with next/previous/
+  // toIndex/current helpers) or null if GSAP is unavailable.
+  function horizontalLoop(items, config) {
+    items = gsap.utils.toArray(items);
+    config = config || {};
+    var tl = gsap.timeline({
+        repeat: config.repeat, paused: config.paused, defaults: { ease: 'none' },
+        onReverseComplete: function () { tl.totalTime(tl.rawTime() + tl.duration() * 100); }
+      }),
+      length = items.length, startX = items[0].offsetLeft, times = [], widths = [],
+      xPercents = [], curIndex = 0, pixelsPerSecond = (config.speed || 1) * 100,
+      snap = config.snap === false ? function (v) { return v; } : gsap.utils.snap(config.snap || 1),
+      totalWidth, curX, distanceToStart, distanceToLoop, item, i, timeWrap, proxy;
+    gsap.set(items, {
+      xPercent: function (i, el) {
+        var w = widths[i] = parseFloat(gsap.getProperty(el, 'width', 'px'));
+        xPercents[i] = snap(parseFloat(gsap.getProperty(el, 'x', 'px')) / w * 100 + gsap.getProperty(el, 'xPercent'));
+        return xPercents[i];
+      }
+    });
+    gsap.set(items, { x: 0 });
+    totalWidth = items[length - 1].offsetLeft + xPercents[length - 1] / 100 * widths[length - 1] - startX + items[length - 1].offsetWidth * gsap.getProperty(items[length - 1], 'scaleX') + (parseFloat(config.paddingRight) || 0);
+    for (i = 0; i < length; i++) {
+      item = items[i];
+      curX = xPercents[i] / 100 * widths[i];
+      distanceToStart = item.offsetLeft + curX - startX;
+      distanceToLoop = distanceToStart + widths[i] * gsap.getProperty(item, 'scaleX');
+      tl.to(item, { xPercent: snap((curX - distanceToLoop) / widths[i] * 100), duration: distanceToLoop / pixelsPerSecond }, 0)
+        .fromTo(item, { xPercent: snap((curX - distanceToLoop + totalWidth) / widths[i] * 100) }, { xPercent: xPercents[i], duration: (curX - distanceToLoop + totalWidth - curX) / pixelsPerSecond, immediateRender: false }, distanceToLoop / pixelsPerSecond)
+        .add('label' + i, distanceToStart / pixelsPerSecond);
+      times[i] = distanceToStart / pixelsPerSecond;
+    }
+    timeWrap = gsap.utils.wrap(0, tl.duration());
+    function toIndex(index, vars) {
+      vars = vars || {};
+      if (Math.abs(index - curIndex) > length / 2) { index += index > curIndex ? -length : length; }
+      var newIndex = gsap.utils.wrap(0, length, index), time = times[newIndex];
+      if (time > tl.time() !== index > curIndex) {
+        vars.modifiers = { time: timeWrap };
+        time += tl.duration() * (index > curIndex ? 1 : -1);
+      }
+      curIndex = newIndex;
+      vars.overwrite = true;
+      return tl.tweenTo(time, vars);
+    }
+    tl.next = function (vars) { return toIndex(curIndex + 1, vars); };
+    tl.previous = function (vars) { return toIndex(curIndex - 1, vars); };
+    tl.current = function () { return curIndex; };
+    tl.toIndex = function (index, vars) { return toIndex(index, vars); };
+    tl.times = times;
+    tl.progress(1, true).progress(0, true);
+    if (config.reversed) { tl.vars.onReverseComplete(); tl.reverse(); }
+    if (config.draggable && typeof Draggable === 'function') {
+      proxy = document.createElement('div');
+      var wrap = gsap.utils.wrap(0, 1), ratio, startProgress, draggable, lastSnap, initChangeX,
+        align = function () { tl.progress(wrap(startProgress + (draggable.startX - draggable.x) * ratio)); },
+        syncIndex = function () { tl.closestIndex && tl.closestIndex(true); };
+      draggable = Draggable.create(proxy, {
+        trigger: items[0].parentNode, type: 'x', inertia: !!window.InertiaPlugin, overshootTolerance: 0,
+        onPressInit: function () {
+          var x = this.x;
+          gsap.killTweensOf(tl); tl.pause();
+          startProgress = tl.progress();
+          ratio = 1 / totalWidth;
+          initChangeX = (startProgress / -ratio) - x;
+          gsap.set(proxy, { x: startProgress / -ratio });
+        },
+        onDrag: align, onThrowUpdate: align,
+        snap: function (value) {
+          if (Math.abs(startProgress / -ratio - this.x) < 10) { return lastSnap + initChangeX; }
+          var time = -(value * ratio) * tl.duration(), wrapped = timeWrap(time),
+            closest = times[getClosest(times, wrapped, tl.duration())], dif = closest - wrapped;
+          if (Math.abs(dif) > tl.duration() / 2) { dif += dif < 0 ? tl.duration() : -tl.duration(); }
+          lastSnap = (time + dif) / tl.duration() / -ratio;
+          return lastSnap;
+        },
+        onRelease: syncIndex, onThrowComplete: syncIndex
+      })[0];
+      tl.draggable = draggable;
+    }
+    function getClosest(values, value, wrapVal) {
+      var i = values.length, closest = 1e10, index = 0, d;
+      while (i--) { d = Math.abs(values[i] - value); if (d > wrapVal / 2) { d = wrapVal - d; } if (d < closest) { closest = d; index = i; } }
+      return index;
+    }
+    tl.closestIndex = function (setCurrent) {
+      var index = getClosest(times, tl.time(), tl.duration());
+      if (setCurrent) { curIndex = index; }
+      return index;
+    };
+    return tl;
+  }
 
   var VoltAnim = {
 
@@ -319,6 +416,41 @@
       var d = Draggable.get(track);
       stage.style.overflowX = 'hidden'; // Draggable owns movement now
       window.addEventListener('resize', function () { if (d) d.applyBounds(bounds()); });
+    },
+
+    // ── Hero infinite slider (seamless loop, drag-snap, autoplay, no pin) ──
+    heroSlider: function () {
+      var root = document.querySelector('[data-hero-slider]');
+      if (!root) return;
+      var viewport = root.querySelector('[data-slider-viewport]');
+      var track = root.querySelector('[data-slider-track]');
+      var slides = root.querySelectorAll('.hero-slide');
+      if (!slides.length || !track) return;
+      // Only take over when the rail actually overflows; a short rail would show a
+      // travelling gap in the loop, so leave the native overflow-x:auto fallback.
+      var avail = viewport ? viewport.clientWidth : root.clientWidth;
+      if (track.scrollWidth <= avail + 1) return;
+
+      var loop = horizontalLoop(slides, { paused: true, draggable: true, speed: 1, repeat: -1, snap: false });
+      if (viewport) viewport.style.overflow = 'hidden'; // loop owns movement now
+
+      var DELAY = 3, isHovering = false, timer = gsap.delayedCall(DELAY, spin);
+      function spin() { loop.next({ duration: 0.8, ease: 'power2.inOut' }); timer.restart(true); }
+      function pause() { timer.pause(); }
+      function play() { if (!isHovering) timer.restart(true); }
+
+      root.addEventListener('mouseenter', function () { isHovering = true; pause(); });
+      root.addEventListener('mouseleave', function () { isHovering = false; play(); });
+
+      var prev = root.querySelector('[data-slider-prev]');
+      var next = root.querySelector('[data-slider-next]');
+      if (prev) prev.addEventListener('click', function () { loop.previous({ duration: 0.5, ease: 'power2.inOut' }); });
+      if (next) next.addEventListener('click', function () { loop.next({ duration: 0.5, ease: 'power2.inOut' }); });
+
+      if (loop.draggable) {
+        loop.draggable.addEventListener('press', pause);
+        loop.draggable.addEventListener('release', play);
+      }
     },
 
     // ── 10 · FLIP layout transitions (grid/list, filters, reorder) ────

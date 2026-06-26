@@ -299,7 +299,11 @@
       "overlay_opacity": "Image overlay opacity",
       "show_dashboard_panel": "Show dashboard panel (when no image)",
       "show_scroll_indicator": "Show scroll indicator",
-      "content_header": "Content"
+      "content_header": "Content",
+      "carousel_header": "Product carousel",
+      "carousel_collection": "Carousel collection",
+      "carousel_limit": "Products to show",
+      "carousel_label": "Carousel label"
     },
     "vitals_strip": {
       "name": "Vitals strip",

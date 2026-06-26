@@ -38,17 +38,10 @@
         "enable_animations": true,
         "heading_animation": "split-chars",
         "body_animation": "fade-up",
-        "section_delay": 500
-      }
-    },
-    "hero_carousel_1b": {
-      "type": "hero-carousel",
-      "settings": {
-        "carousel_heading": "Explore the protocol",
-        "carousel_collection": "hydrogen",
-        "carousel_limit": 8,
-        "view_all_url": "",
-        "view_all_label": "View all products"
+        "section_delay": 500,
+        "carousel_collection": "",
+        "carousel_limit": 12,
+        "carousel_label": "Explore the protocol"
       }
     },
     "vitals_strip_2": {
@@ -374,7 +367,6 @@
   },
   "order": [
     "hero_diagnostic_1",
-    "hero_carousel_1b",
     "vitals_strip_2",
     "membership_tiers_3",
     "product_grid_4",
