@@ -32,7 +32,7 @@
       endif
     endfor
   -%}
-  <div class="volt-card volt-card--{{ tpl | default: 'standard' }}" data-stagger-item>
+  <div class="volt-card volt-card--{{ tpl | default: 'standard' }}" data-stagger-item data-selected-variant="{{ v.id }}" data-selected-available="{{ v.available }}">
     <div class="volt-card__media">
       <a href="{{ p.url }}" class="volt-card__imglink">
         {%- if p.featured_image -%}
@@ -68,8 +68,8 @@
 
       {%- if settings.quick_buy and p.available and tpl == blank -%}
         {%- form 'product', p, class: 'volt-card__qa' -%}
-          <input type="hidden" name="id" value="{{ v.id }}">
-          <button type="submit" name="add" class="volt-card__qabtn">{{ 'products.quick_add' | t: default: '+ Quick Add' }}</button>
+          <input type="hidden" name="id" value="{{ v.id }}" data-qa-id>
+          <button type="submit" name="add" class="volt-card__qabtn" data-qa-btn data-add-label="{{ 'products.quick_add' | t: default: '+ Quick Add' }}" data-sold-label="{{ 'products.sold_out' | t: default: 'Sold out' }}">{{ 'products.quick_add' | t: default: '+ Quick Add' }}</button>
         {%- endform -%}
       {%- endif -%}
     </div>
@@ -94,13 +94,20 @@
           <div class="card-swatches" role="list" aria-label="Available colours">
             {%- for cval in color_opt.values limit: 6 -%}
               {%- assign vfc = nil -%}
+              {%- assign vfc_avail = nil -%}
               {%- for variant in p.variants -%}
-                {%- if variant.options[color_idx] == cval -%}{%- assign vfc = variant -%}{%- break -%}{%- endif -%}
+                {%- if variant.options[color_idx] == cval -%}
+                  {%- if vfc == nil -%}{%- assign vfc = variant -%}{%- endif -%}
+                  {%- if vfc_avail == nil and variant.available -%}{%- assign vfc_avail = variant -%}{%- endif -%}
+                {%- endif -%}
               {%- endfor -%}
+              {%- assign cart_variant = vfc_avail | default: vfc -%}
+              {%- assign color_avail = false -%}
+              {%- if vfc_avail != nil -%}{%- assign color_avail = true -%}{%- endif -%}
               {%- assign has_img = false -%}
               {%- if vfc.image != blank and vfc.image.id != p.featured_image.id -%}{%- assign has_img = true -%}{%- endif -%}
               {%- assign ckey = cval | downcase | strip | replace: ' ', '-' | replace: '/', '-' -%}
-              <span class="card-swatch" role="listitem" aria-label="{{ cval | escape }}" title="{{ cval | escape }}" data-swatch-color="{{ ckey }}" data-color-name="{{ cval | escape }}" data-variant-id="{{ vfc.id }}"{% if has_img %} data-swatch-image="{{ vfc.image | image_url: width: 600 }}" style="background-image: url('{{ vfc.image | image_url: width: 120 }}');"{% endif %}></span>
+              <span class="card-swatch{% unless color_avail %} is-soldout{% endunless %}" role="listitem" aria-label="{{ cval | escape }}{% unless color_avail %} — {{ 'products.sold_out' | t: default: 'Sold out' }}{% endunless %}" title="{{ cval | escape }}" data-swatch-color="{{ ckey }}" data-color-name="{{ cval | escape }}" data-variant-id="{{ cart_variant.id }}" data-available="{{ color_avail }}"{% if has_img %} data-swatch-image="{{ vfc.image | image_url: width: 600 }}" style="background-image: url('{{ vfc.image | image_url: width: 120 }}');"{% endif %}></span>
             {%- endfor -%}
             {%- if color_opt.values.size > 6 -%}<span class="card-swatches__overflow">+{{ color_opt.values.size | minus: 6 }}</span>{%- endif -%}
           </div>

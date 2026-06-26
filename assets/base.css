@@ -368,6 +368,8 @@ html:has(#smooth-wrapper) .volt-header{ position: relative; top: auto; }
 }
 .card-swatch:hover{ transform: scale(1.2); border-color: var(--color-mid); }
 .card-swatch.is-active{ border-color: var(--color-ink); box-shadow: 0 0 0 2px var(--color-bg), 0 0 0 3.5px var(--color-ink); }
+.card-swatch.is-soldout{ opacity: .5; }
+.card-swatch.is-soldout::after{ content: ""; position: absolute; inset: 0; background: linear-gradient(to top right, transparent 45%, var(--color-mid) 45%, var(--color-mid) 55%, transparent 55%); }
 .card-swatch[data-swatch-image]{ background-size: cover; background-position: center; border-color: var(--color-border); }
 .card-swatch-label{ font-family: var(--font-mono); font-size: 9px; font-weight: 500; letter-spacing: .12em; text-transform: uppercase; color: var(--color-mid); display: block; margin-top: 5px; min-height: 12px; }
 .card-swatches__overflow{ font-family: var(--font-mono); font-size: 9px; color: var(--color-mid); align-self: center; line-height: 20px; }
