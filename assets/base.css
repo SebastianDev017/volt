@@ -455,9 +455,11 @@ html:has(#smooth-wrapper) .volt-header{ position: relative; top: auto; }
 .card-swatch:hover, .volt-card__badge:hover, .badge:hover{ transition-delay: .06s; }
 
 /* ---- Liquid cursor (desktop pointer:fine only; JS adds the body class) ---- */
-.volt-cursor-dot, .volt-cursor-follower{ position: fixed; top: 0; left: 0; z-index: 100000; pointer-events: none; border-radius: 50%; will-change: transform; }
-.volt-cursor-dot{ width: 10px; height: 10px; margin: -5px 0 0 -5px; background: color-mix(in srgb, var(--color-ink) 90%, transparent); }
-.volt-cursor-follower{ width: 36px; height: 36px; margin: -18px 0 0 -18px; background: color-mix(in srgb, var(--color-ink) 8%, transparent); border: 1px solid color-mix(in srgb, var(--color-ink) 20%, transparent); }
+/* mix-blend-mode:difference inverts the cursor against ANY background (white on
+   dark, dark on light) — no manual per-section colour switching. */
+.volt-cursor-dot, .volt-cursor-follower{ position: fixed; top: 0; left: 0; pointer-events: none; border-radius: 50%; will-change: transform; mix-blend-mode: difference; }
+.volt-cursor-dot{ width: 10px; height: 10px; margin: -5px 0 0 -5px; background: #ffffff; z-index: 99999; }
+.volt-cursor-follower{ width: 36px; height: 36px; margin: -18px 0 0 -18px; background: rgba(255, 255, 255, .08); border: 1px solid #ffffff; z-index: 99998; }
 body.has-custom-cursor, body.has-custom-cursor *{ cursor: none; }
 @media (hover: none), (pointer: coarse){ .volt-cursor-dot, .volt-cursor-follower{ display: none !important; } }
 @media (prefers-reduced-motion: reduce){ .volt-cursor-dot, .volt-cursor-follower{ display: none; } }

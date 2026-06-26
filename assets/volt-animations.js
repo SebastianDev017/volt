@@ -548,6 +548,19 @@
       document.body.classList.add('has-custom-cursor');
       gsap.set([dot, fol], { transformOrigin: '50% 50%' });
 
+      // A modal <dialog> renders in the top layer (above any z-index), which clips
+      // a body-level cursor. Re-parent the cursor into whichever dialog is open so
+      // it stays visible inside Quick View etc.; move it back to body on close.
+      // position:fixed keeps the transform viewport-relative across re-parenting.
+      function relocateCursor() {
+        var dlg = document.querySelector('dialog[open]');
+        var host = dlg || document.body;
+        if (dot.parentNode !== host) { host.appendChild(dot); host.appendChild(fol); }
+      }
+      if (window.MutationObserver) {
+        new MutationObserver(relocateCursor).observe(document.body, { attributes: true, attributeFilter: ['open'], subtree: true });
+      }
+
       var dotX = gsap.quickSetter(dot, 'x', 'px'), dotY = gsap.quickSetter(dot, 'y', 'px');
       var xTo = gsap.quickTo(fol, 'x', { duration: 0.12, ease: 'power3' });
       var yTo = gsap.quickTo(fol, 'y', { duration: 0.12, ease: 'power3' });
