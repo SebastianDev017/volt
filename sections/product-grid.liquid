@@ -8,7 +8,7 @@
     <div class="volt-grid__head">
       <div>
         {%- if section.settings.eyebrow != blank -%}<div class="volt-grid__eyebrow">{{ section.settings.eyebrow }}</div>{%- endif -%}
-        {%- if section.settings.heading != blank -%}<h2 class="volt-grid__title">{{ section.settings.heading }}</h2>{%- endif -%}
+        {%- if section.settings.heading != blank -%}<h2 class="volt-grid__title" {% render 'anim-attrs', value: section.settings.heading_animation, enabled: section.settings.enable_animations, delay_ms: section.settings.section_delay %}>{{ section.settings.heading }}</h2>{%- endif -%}
       </div>
       {%- if section.settings.filter_menu != blank and linklists[section.settings.filter_menu].links.size > 0 -%}
         <div class="volt-grid__pills">
@@ -20,7 +20,7 @@
         <a href="{{ coll.url }}" class="volt-grid__viewall">View all &rarr;</a>
       {%- endif -%}
     </div>
-    <div class="volt-grid__grid" style="--cols: {{ cols }}">
+    <div class="volt-grid__grid" style="--cols: {{ cols }}" {% render 'anim-attrs', value: section.settings.cards_animation, enabled: section.settings.enable_animations %}>
       {%- if coll != blank and coll.products.size > 0 -%}
         {%- for product in coll.products limit: lim -%}
           {% render 'product-card', card_product: product %}
@@ -59,7 +59,26 @@
     { "type": "collection", "id": "collection", "label": "t:sections.product_grid.collection" },
     { "type": "range", "id": "columns", "min": 2, "max": 4, "step": 1, "label": "t:sections.product_grid.columns", "default": 4 },
     { "type": "link_list", "id": "filter_menu", "label": "t:sections.product_grid.filter_menu", "info": "t:sections.product_grid.filter_menu_info" },
-    { "type": "checkbox", "id": "show_view_all", "label": "t:sections.product_grid.show_view_all", "default": true }
+    { "type": "checkbox", "id": "show_view_all", "label": "t:sections.product_grid.show_view_all", "default": true },
+    { "type": "header", "content": "t:sections.animation.header" },
+    { "type": "checkbox", "id": "enable_animations", "label": "t:sections.animation.enable", "default": true },
+    { "type": "select", "id": "heading_animation", "label": "t:sections.animation.heading", "default": "split-words", "options": [
+      { "value": "none", "label": "t:sections.animation.opt_none" },
+      { "value": "split-chars", "label": "t:sections.animation.opt_split_chars" },
+      { "value": "split-words", "label": "t:sections.animation.opt_split_words" },
+      { "value": "split-lines", "label": "t:sections.animation.opt_split_lines" },
+      { "value": "fade-up", "label": "t:sections.animation.opt_fade_up" },
+      { "value": "clip-bottom", "label": "t:sections.animation.opt_clip_bottom" },
+      { "value": "clip-left", "label": "t:sections.animation.opt_clip_left" }
+    ] },
+    { "type": "select", "id": "cards_animation", "label": "t:sections.animation.cards", "default": "stagger-up", "options": [
+      { "value": "none", "label": "t:sections.animation.opt_none" },
+      { "value": "stagger-up", "label": "t:sections.animation.opt_stagger_up" },
+      { "value": "stagger-fade", "label": "t:sections.animation.opt_stagger_fade" },
+      { "value": "stagger-scale", "label": "t:sections.animation.opt_stagger_scale" },
+      { "value": "stagger-rotate", "label": "t:sections.animation.opt_stagger_rotate" }
+    ] },
+    { "type": "range", "id": "section_delay", "label": "t:sections.animation.delay", "min": 0, "max": 800, "step": 50, "unit": "ms", "default": 0 }
   ],
   "presets": [
     { "name": "t:sections.product_grid.name" }

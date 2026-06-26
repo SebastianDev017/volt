@@ -7,6 +7,30 @@
     {%- comment -%} VOLT 1.0.0 — build marker (re-sync nudge) {%- endcomment -%}
     <script>document.documentElement.classList.add('js');</script>
 
+    {%- if settings.use_gsap != false -%}
+      {%- comment -%} GSAP motion config + anti-FOUC class (added before paint) {%- endcomment -%}
+      <script>
+        (function () {
+          var reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+          var respect = {% if settings.respect_reduced_motion != false %}true{% else %}false{% endif %};
+          if (!reduced || !respect) {
+            var d = document.documentElement;
+            d.classList.add('gsap-anim');
+            setTimeout(function () { d.classList.add('gsap-ready'); }, 2400);
+          }
+          window.VoltAnimConfig = {
+            speed: {{ settings.animation_speed | default: 1 }},
+            stagger: {{ settings.animation_stagger | default: 6 | divided_by: 100.0 }},
+            parallaxIntensity: {{ settings.parallax_intensity | default: 30 }},
+            ease: {{ settings.animation_ease | default: 'power3.out' | json }},
+            respectReducedMotion: respect,
+            smoother: {% if settings.use_scroll_smoother %}true{% else %}false{% endif %},
+            smootherAmount: {{ settings.scroll_smooth_amount | default: 4 }}
+          };
+        })();
+      </script>
+    {%- endif -%}
+
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%230D0C0B'/%3E%3Cpath d='M17 4 L8 18 H15 L13 28 L24 12 H16 Z' fill='%23D4FF00'/%3E%3C/svg%3E">
 
     {% comment %} Syne + DM Mono are not in the font_picker — self-hosted in assets/ (see css-variables). DM Sans loads via the font_picker. {% endcomment %}
@@ -46,6 +70,8 @@
   >
     <a class="skip-link" href="#main-content">{{ 'general.skip_to_content' | t: default: 'Skip to content' }}</a>
 
+    {%- if settings.use_scroll_smoother -%}<div id="smooth-wrapper"><div id="smooth-content">{%- endif -%}
+
     {% sections 'header-group' %}
 
     <main id="main-content">
@@ -53,5 +79,26 @@
     </main>
 
     {% sections 'footer-group' %}
+
+    {%- if settings.use_scroll_smoother -%}</div></div>{%- endif -%}
+
+    {%- if settings.use_gsap != false -%}
+      {%- comment -%} GSAP 3.13 — standard (free) license incl. all plugins. Loaded from CDN by design choice (off the Theme-Store remote-asset path). {%- endcomment -%}
+      {%- # theme-check-disable RemoteAsset -%}
+      <script src="https://cdn.jsdelivr.net/npm/gsap@3.13/dist/gsap.min.js" defer></script>
+      <script src="https://cdn.jsdelivr.net/npm/gsap@3.13/dist/ScrollTrigger.min.js" defer></script>
+      <script src="https://cdn.jsdelivr.net/npm/gsap@3.13/dist/SplitText.min.js" defer></script>
+      <script src="https://cdn.jsdelivr.net/npm/gsap@3.13/dist/DrawSVGPlugin.min.js" defer></script>
+      <script src="https://cdn.jsdelivr.net/npm/gsap@3.13/dist/MorphSVGPlugin.min.js" defer></script>
+      <script src="https://cdn.jsdelivr.net/npm/gsap@3.13/dist/Flip.min.js" defer></script>
+      {%- if settings.use_scroll_smoother -%}
+        <script src="https://cdn.jsdelivr.net/npm/gsap@3.13/dist/ScrollSmoother.min.js" defer></script>
+      {%- endif -%}
+      {%- # theme-check-enable RemoteAsset -%}
+      {%- # theme-check-disable AssetSizeJavaScript -%}
+      {%- comment -%} Animation engine; deferred + gated by use_gsap, intentionally above the lean-asset budget. {%- endcomment -%}
+      <script src="{{ 'volt-animations.js' | asset_url }}" defer></script>
+      {%- # theme-check-enable AssetSizeJavaScript -%}
+    {%- endif -%}
   </body>
 </html>

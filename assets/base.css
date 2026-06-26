@@ -221,3 +221,55 @@ product-info, volt-dashboard, cart-drawer, predictive-search, diagnostic-quiz, b
   *, *::before, *::after{ animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition-duration: 0.001ms !important; scroll-behavior: auto !important; }
   .js [data-animate]{ opacity: 1; transform: none; }
 }
+
+/* =====================================================================
+   GSAP motion layer
+   ===================================================================== */
+/* Anti-FOUC: hide GSAP-animated elements until the engine sets their
+   start state. A 2.4s failsafe in theme.liquid reveals them if the CDN
+   never loads, so content is never permanently hidden. */
+html.gsap-anim:not(.gsap-ready) [data-split],
+html.gsap-anim:not(.gsap-ready) [data-clip],
+html.gsap-anim:not(.gsap-ready) [data-anim],
+html.gsap-anim:not(.gsap-ready) [data-stagger-group] [data-stagger-item]{ visibility: hidden; }
+[data-magnetic]{ will-change: transform; }
+[data-split]{ display: inline-block; }
+
+/* ScrollSmoother (opt-in). Header stays in-flow inside the transformed
+   content — sticky is disabled here to avoid a broken transform context. */
+html:has(#smooth-wrapper) .volt-header{ position: relative; top: auto; }
+#smooth-wrapper{ overflow: hidden; }
+
+/* =====================================================================
+   Dialog primitive — quick view, promo popup, size chart, age gate
+   ===================================================================== */
+.volt-dialog{
+  position: fixed; inset: 0; margin: auto;
+  border: 1px solid var(--color-border); border-radius: 0;
+  background: var(--color-bg); color: var(--color-ink);
+  padding: clamp(28px, 4vw, 48px);
+  max-width: 540px; width: calc(100vw - 32px); max-height: calc(100vh - 32px);
+  box-shadow: 0 40px 80px rgba(0,0,0,0.18);
+}
+.volt-dialog[open]{ animation: volt-dialog-in var(--dur-med) var(--ease); }
+.volt-dialog::backdrop{ background: rgba(13,12,11,0.6); backdrop-filter: blur(8px); }
+.volt-dialog__close{
+  position: absolute; top: 12px; right: 12px; width: 38px; height: 38px;
+  display: inline-flex; align-items: center; justify-content: center;
+  color: var(--color-ink); z-index: 2;
+}
+.volt-dialog__close:hover{ color: var(--color-mid); }
+.volt-dialog__close svg{ width: 20px; height: 20px; }
+@keyframes volt-dialog-in{ from{ opacity: 0; transform: translateY(20px) scale(0.97); } }
+@media (prefers-reduced-motion: reduce){ .volt-dialog[open]{ animation: none; } }
+
+/* =====================================================================
+   RTL support
+   ===================================================================== */
+[dir="rtl"]{ direction: rtl; }
+[dir="rtl"] .link-arrow,
+[dir="rtl"] .section-head{ flex-direction: row-reverse; }
+[dir="rtl"] .eyebrow{ letter-spacing: 0; }
+[dir="rtl"] .volt-dialog__close{ right: auto; left: 12px; }
+[dir="rtl"] .vitals-track{ animation-name: volt-marquee-rtl; }
+@keyframes volt-marquee-rtl{ to{ transform: translateX(50%); } }

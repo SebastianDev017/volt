@@ -1,9 +1,25 @@
 <section class="volt-stats" data-animate>
   <div class="volt-stats__inner">
-    <div class="volt-stats__grid">
+    <div class="volt-stats__grid" {% render 'anim-attrs', value: section.settings.cards_animation, enabled: section.settings.enable_animations %}>
       {%- for block in section.blocks -%}
-        <div class="volt-stats__cell" {{ block.shopify_attributes }}>
-          <div class="volt-stats__num">{{ block.settings.value }}{%- if block.settings.suffix != blank -%}<span>{{ block.settings.suffix }}</span>{%- endif -%}</div>
+        {%- liquid
+          assign raw = block.settings.value | strip
+          assign numeric = raw | remove: ','
+          assign parts = numeric | split: '.'
+          assign decimals = 0
+          if parts.size > 1
+            assign decimals = parts[1] | size
+          endif
+        -%}
+        <div class="volt-stats__cell" data-stagger-item {{ block.shopify_attributes }}>
+          <div class="volt-stats__num">
+            {%- if section.settings.enable_animations != false -%}
+              <span class="volt-stats__count" data-counter="{{ numeric }}"{% if raw contains ',' %} data-counter-sep="true"{% endif %}{% if decimals > 0 %} data-counter-decimals="{{ decimals }}"{% endif %}>{{ block.settings.value }}</span>
+            {%- else -%}
+              <span class="volt-stats__count">{{ block.settings.value }}</span>
+            {%- endif -%}
+            {%- if block.settings.suffix != blank -%}<span class="volt-stats__suffix">{{ block.settings.suffix }}</span>{%- endif -%}
+          </div>
           <div class="volt-stats__bar"></div>
           <div class="volt-stats__label">{{ block.settings.label }}</div>
         </div>
@@ -17,7 +33,8 @@
   .volt-stats__grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: var(--color-border); border: 1px solid var(--color-border); }
   .volt-stats__cell { background: var(--color-bg); padding: 40px 28px; }
   .volt-stats__num { font-family: var(--font-display); font-weight: 800; font-size: clamp(40px, 4.4vw, 60px); line-height: 1; letter-spacing: -.02em; }
-  .volt-stats__num span { color: var(--color-acid); }
+  .volt-stats__count { color: var(--color-ink); }
+  .volt-stats__suffix { color: var(--color-acid); }
   .volt-stats__bar { width: 34px; height: 4px; background: var(--color-acid); margin: 16px 0 12px; }
   .volt-stats__label { font-family: var(--font-mono); font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: var(--color-mid); }
   @media (max-width: 860px) { .volt-stats__grid { grid-template-columns: 1fr 1fr; } }
@@ -38,6 +55,17 @@
         { "type": "text", "id": "label", "label": "t:sections.performance_stats.blocks.stat.label", "default": "Active members" }
       ]
     }
+  ],
+  "settings": [
+    { "type": "header", "content": "t:sections.animation.header" },
+    { "type": "checkbox", "id": "enable_animations", "label": "t:sections.animation.enable", "default": true },
+    { "type": "select", "id": "cards_animation", "label": "t:sections.animation.cards", "default": "stagger-up", "options": [
+      { "value": "none", "label": "t:sections.animation.opt_none" },
+      { "value": "stagger-up", "label": "t:sections.animation.opt_stagger_up" },
+      { "value": "stagger-fade", "label": "t:sections.animation.opt_stagger_fade" },
+      { "value": "stagger-scale", "label": "t:sections.animation.opt_stagger_scale" },
+      { "value": "stagger-rotate", "label": "t:sections.animation.opt_stagger_rotate" }
+    ] }
   ],
   "max_blocks": 4,
   "presets": [

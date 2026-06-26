@@ -2,10 +2,10 @@
   <div class="volt-ba__inner">
     <div class="volt-ba__head">
       {%- if section.settings.eyebrow != blank -%}<div class="volt-ba__eyebrow">{{ section.settings.eyebrow }}</div>{%- endif -%}
-      {%- if section.settings.heading != blank -%}<h2 class="volt-ba__title">{{ section.settings.heading }}</h2>{%- endif -%}
+      {%- if section.settings.heading != blank -%}<h2 class="volt-ba__title" {% render 'anim-attrs', value: section.settings.heading_animation, enabled: section.settings.enable_animations, delay_ms: section.settings.section_delay %}>{{ section.settings.heading }}</h2>{%- endif -%}
     </div>
     <div class="volt-ba__grid">
-      <before-after-slider class="volt-ba__viewer" style="--pos: 50%">
+      <before-after-slider class="volt-ba__viewer" style="--pos: 50%" {% render 'anim-attrs', value: section.settings.image_animation, enabled: section.settings.enable_animations %}>
         <div class="volt-ba__layer">
           {%- if section.settings.before_image != blank -%}
             {{ section.settings.before_image | image_url: width: 900 | image_tag: loading: 'lazy', class: 'volt-ba__img', alt: '' }}
@@ -37,9 +37,9 @@
           </div>
         </div>
         {%- if section.blocks.size > 0 -%}
-          <div class="volt-ba__stats">
+          <div class="volt-ba__stats" {% render 'anim-attrs', value: section.settings.cards_animation, enabled: section.settings.enable_animations %}>
             {%- for block in section.blocks -%}
-              <div class="volt-ba__stat" {{ block.shopify_attributes }}>
+              <div class="volt-ba__stat" data-stagger-item {{ block.shopify_attributes }}>
                 <div class="volt-ba__statval">{{ block.settings.value }}{%- if block.settings.unit != blank -%}<span>{{ block.settings.unit }}</span>{%- endif -%}</div>
                 <div class="volt-ba__statlabel">{{ block.settings.label }}</div>
               </div>
@@ -116,7 +116,33 @@
     { "type": "text", "id": "author_name", "label": "t:sections.before_after.author_name", "default": "Marcus T." },
     { "type": "image_picker", "id": "author_avatar", "label": "t:sections.before_after.author_avatar" },
     { "type": "text", "id": "author_tier", "label": "t:sections.before_after.author_tier", "default": "Performance" },
-    { "type": "text", "id": "author_since", "label": "t:sections.before_after.author_since", "default": "Member since 2024" }
+    { "type": "text", "id": "author_since", "label": "t:sections.before_after.author_since", "default": "Member since 2024" },
+    { "type": "header", "content": "t:sections.animation.header" },
+    { "type": "checkbox", "id": "enable_animations", "label": "t:sections.animation.enable", "default": true },
+    { "type": "select", "id": "heading_animation", "label": "t:sections.animation.heading", "default": "split-words", "options": [
+      { "value": "none", "label": "t:sections.animation.opt_none" },
+      { "value": "split-chars", "label": "t:sections.animation.opt_split_chars" },
+      { "value": "split-words", "label": "t:sections.animation.opt_split_words" },
+      { "value": "split-lines", "label": "t:sections.animation.opt_split_lines" },
+      { "value": "fade-up", "label": "t:sections.animation.opt_fade_up" },
+      { "value": "clip-bottom", "label": "t:sections.animation.opt_clip_bottom" },
+      { "value": "clip-left", "label": "t:sections.animation.opt_clip_left" }
+    ] },
+    { "type": "select", "id": "image_animation", "label": "t:sections.animation.image", "default": "clip-bottom", "options": [
+      { "value": "none", "label": "t:sections.animation.opt_none" },
+      { "value": "parallax", "label": "t:sections.animation.opt_parallax" },
+      { "value": "clip-bottom", "label": "t:sections.animation.opt_clip_bottom" },
+      { "value": "scale-in", "label": "t:sections.animation.opt_scale_in" },
+      { "value": "fade-in", "label": "t:sections.animation.opt_fade_in" }
+    ] },
+    { "type": "select", "id": "cards_animation", "label": "t:sections.animation.cards", "default": "stagger-scale", "options": [
+      { "value": "none", "label": "t:sections.animation.opt_none" },
+      { "value": "stagger-up", "label": "t:sections.animation.opt_stagger_up" },
+      { "value": "stagger-fade", "label": "t:sections.animation.opt_stagger_fade" },
+      { "value": "stagger-scale", "label": "t:sections.animation.opt_stagger_scale" },
+      { "value": "stagger-rotate", "label": "t:sections.animation.opt_stagger_rotate" }
+    ] },
+    { "type": "range", "id": "section_delay", "label": "t:sections.animation.delay", "min": 0, "max": 800, "step": 50, "unit": "ms", "default": 0 }
   ],
   "blocks": [
     {

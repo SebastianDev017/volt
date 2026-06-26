@@ -9,7 +9,7 @@
   assign show_member = settings.show_member_price
 -%}
 {%- if p == blank -%}
-  <div class="volt-card volt-card--placeholder">
+  <div class="volt-card volt-card--placeholder" data-stagger-item>
     <div class="volt-card__media"><div class="volt-card__imglink">{{ 'product-1' | placeholder_svg_tag: 'volt-card__ph' }}</div></div>
     <div class="volt-card__body">
       <span class="volt-card__cat">Category</span>
@@ -27,7 +27,7 @@
     assign sp = p.metafields.volt.specs.value
     assign bundle_discount = p.metafields.volt.bundle_discount
   -%}
-  <div class="volt-card volt-card--{{ tpl | default: 'standard' }}">
+  <div class="volt-card volt-card--{{ tpl | default: 'standard' }}" data-stagger-item>
     <div class="volt-card__media">
       <a href="{{ p.url }}" class="volt-card__imglink">
         {%- if p.featured_image -%}

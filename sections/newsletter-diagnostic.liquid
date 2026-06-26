@@ -10,8 +10,8 @@
     {%- comment -%} LEFT — diagnostic quiz {%- endcomment -%}
     <div class="volt-diag__left">
       {%- if section.settings.eyebrow != blank -%}<p class="volt-diag__eyebrow">{{ section.settings.eyebrow }}</p>{%- endif -%}
-      <h2 class="volt-diag__heading">{{ section.settings.heading }}</h2>
-      {%- if section.settings.body != blank -%}<p class="volt-diag__body">{{ section.settings.body }}</p>{%- endif -%}
+      <h2 class="volt-diag__heading" {% render 'anim-attrs', value: section.settings.heading_animation, enabled: section.settings.enable_animations, delay_ms: section.settings.section_delay %}>{{ section.settings.heading }}</h2>
+      {%- if section.settings.body != blank -%}<p class="volt-diag__body" {% render 'anim-attrs', value: 'fade-up', enabled: section.settings.enable_animations %}>{{ section.settings.body }}</p>{%- endif -%}
 
       <diagnostic-quiz
         class="volt-quiz"
@@ -207,7 +207,19 @@
     { "type": "header", "content": "t:sections.newsletter_diagnostic.newsletter_header" },
     { "type": "text", "id": "newsletter_heading", "label": "t:sections.newsletter_diagnostic.newsletter_heading", "default": "Or join the dispatch" },
     { "type": "textarea", "id": "newsletter_body", "label": "t:sections.newsletter_diagnostic.newsletter_body", "default": "Weekly performance science, member protocols and early access to drops. No filler." },
-    { "type": "text", "id": "consent_text", "label": "t:sections.newsletter_diagnostic.consent_text", "default": "By subscribing you agree to receive marketing emails. Unsubscribe anytime." }
+    { "type": "text", "id": "consent_text", "label": "t:sections.newsletter_diagnostic.consent_text", "default": "By subscribing you agree to receive marketing emails. Unsubscribe anytime." },
+    { "type": "header", "content": "t:sections.animation.header" },
+    { "type": "checkbox", "id": "enable_animations", "label": "t:sections.animation.enable", "default": true },
+    { "type": "select", "id": "heading_animation", "label": "t:sections.animation.heading", "default": "split-words", "options": [
+      { "value": "none", "label": "t:sections.animation.opt_none" },
+      { "value": "split-chars", "label": "t:sections.animation.opt_split_chars" },
+      { "value": "split-words", "label": "t:sections.animation.opt_split_words" },
+      { "value": "split-lines", "label": "t:sections.animation.opt_split_lines" },
+      { "value": "fade-up", "label": "t:sections.animation.opt_fade_up" },
+      { "value": "clip-bottom", "label": "t:sections.animation.opt_clip_bottom" },
+      { "value": "clip-left", "label": "t:sections.animation.opt_clip_left" }
+    ] },
+    { "type": "range", "id": "section_delay", "label": "t:sections.animation.delay", "min": 0, "max": 800, "step": 50, "unit": "ms", "default": 0 }
   ],
   "presets": [
     { "name": "t:sections.newsletter_diagnostic.name" }

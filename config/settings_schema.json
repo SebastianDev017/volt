@@ -175,6 +175,88 @@
         "id": "grain_texture",
         "label": "t:settings.animations.grain_texture",
         "default": true
+      },
+      {
+        "type": "header",
+        "content": "t:settings.animations.gsap_header"
+      },
+      {
+        "type": "checkbox",
+        "id": "use_gsap",
+        "label": "t:settings.animations.use_gsap",
+        "info": "t:settings.animations.use_gsap_info",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "respect_reduced_motion",
+        "label": "t:settings.animations.reduced_motion",
+        "default": true
+      },
+      {
+        "type": "select",
+        "id": "animation_speed",
+        "label": "t:settings.animations.speed",
+        "options": [
+          { "value": "1.6", "label": "t:settings.animations.speed_slow" },
+          { "value": "1", "label": "t:settings.animations.speed_normal" },
+          { "value": "0.6", "label": "t:settings.animations.speed_fast" }
+        ],
+        "default": "1"
+      },
+      {
+        "type": "range",
+        "id": "animation_stagger",
+        "label": "t:settings.animations.stagger",
+        "min": 2,
+        "max": 15,
+        "step": 1,
+        "default": 6,
+        "info": "t:settings.animations.stagger_info"
+      },
+      {
+        "type": "range",
+        "id": "parallax_intensity",
+        "label": "t:settings.animations.parallax",
+        "min": 0,
+        "max": 60,
+        "step": 5,
+        "unit": "px",
+        "default": 30
+      },
+      {
+        "type": "select",
+        "id": "animation_ease",
+        "label": "t:settings.animations.ease",
+        "options": [
+          { "value": "power3.out", "label": "Smooth (Power3)" },
+          { "value": "expo.out", "label": "Snappy (Expo)" },
+          { "value": "elastic.out(1,0.5)", "label": "Bouncy (Elastic)" },
+          { "value": "back.out(1.7)", "label": "Overshoot (Back)" },
+          { "value": "sine.inOut", "label": "Gentle (Sine)" }
+        ],
+        "default": "power3.out"
+      },
+      {
+        "type": "header",
+        "content": "t:settings.animations.scroll_header"
+      },
+      {
+        "type": "checkbox",
+        "id": "use_scroll_smoother",
+        "label": "t:settings.animations.scroll_smoother",
+        "info": "t:settings.animations.scroll_smoother_info",
+        "default": false
+      },
+      {
+        "type": "range",
+        "id": "scroll_smooth_amount",
+        "label": "t:settings.animations.scroll_smooth",
+        "min": 1,
+        "max": 10,
+        "step": 1,
+        "default": 4,
+        "info": "t:settings.animations.scroll_smooth_info"
       }
     ]
   },

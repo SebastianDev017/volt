@@ -3,12 +3,12 @@
     <div class="volt-tiers__head">
       <div>
         {%- if section.settings.eyebrow != blank -%}<div class="volt-tiers__eyebrow">{{ section.settings.eyebrow }}</div>{%- endif -%}
-        {%- if section.settings.heading != blank -%}<h2 class="volt-tiers__title">{{ section.settings.heading }}</h2>{%- endif -%}
+        {%- if section.settings.heading != blank -%}<h2 class="volt-tiers__title" {% render 'anim-attrs', value: section.settings.heading_animation, enabled: section.settings.enable_animations, delay_ms: section.settings.section_delay %}>{{ section.settings.heading }}</h2>{%- endif -%}
       </div>
-      {%- if section.settings.body != blank -%}<p class="volt-tiers__body">{{ section.settings.body }}</p>{%- endif -%}
+      {%- if section.settings.body != blank -%}<p class="volt-tiers__body" {% render 'anim-attrs', value: 'fade-up', enabled: section.settings.enable_animations %}>{{ section.settings.body }}</p>{%- endif -%}
     </div>
 
-    <div class="volt-tiers__grid">
+    <div class="volt-tiers__grid" {% render 'anim-attrs', value: section.settings.cards_animation, enabled: section.settings.enable_animations %}>
       {%- for block in section.blocks -%}
         {%- liquid
           assign len = 157.08
@@ -18,7 +18,7 @@
           assign popular = block.settings.popular
           assign accent = block.settings.accent | default: 'mid'
         -%}
-        <div class="volt-tier volt-tier--{{ accent }}{% if popular %} volt-tier--popular{% endif %}" {{ block.shopify_attributes }}>
+        <div class="volt-tier volt-tier--{{ accent }}{% if popular %} volt-tier--popular{% endif %}" data-stagger-item {{ block.shopify_attributes }}>
           {%- if popular -%}<div class="volt-tier__flag">{{ 'sections.membership_tiers.most_popular' | t: default: 'Most Popular' }}</div>{%- endif -%}
           <div class="volt-tier__top">
             <div>
@@ -152,7 +152,26 @@
     { "type": "textarea", "id": "body", "label": "t:sections.membership_tiers.body", "default": "Three tiers, one system. Every membership unlocks the dashboard, class booking, and member pricing on gear." },
     { "type": "text", "id": "countdown_end_date", "label": "t:sections.membership_tiers.countdown_end_date", "info": "t:sections.membership_tiers.countdown_end_date_info", "default": "2026-12-31T23:59:59" },
     { "type": "text", "id": "dashboard_link_label", "label": "t:sections.membership_tiers.dashboard_link_label", "default": "Already a member? Access your dashboard →" },
-    { "type": "url", "id": "dashboard_link", "label": "t:sections.membership_tiers.dashboard_link" }
+    { "type": "url", "id": "dashboard_link", "label": "t:sections.membership_tiers.dashboard_link" },
+    { "type": "header", "content": "t:sections.animation.header" },
+    { "type": "checkbox", "id": "enable_animations", "label": "t:sections.animation.enable", "default": true },
+    { "type": "select", "id": "heading_animation", "label": "t:sections.animation.heading", "default": "split-words", "options": [
+      { "value": "none", "label": "t:sections.animation.opt_none" },
+      { "value": "split-chars", "label": "t:sections.animation.opt_split_chars" },
+      { "value": "split-words", "label": "t:sections.animation.opt_split_words" },
+      { "value": "split-lines", "label": "t:sections.animation.opt_split_lines" },
+      { "value": "fade-up", "label": "t:sections.animation.opt_fade_up" },
+      { "value": "clip-bottom", "label": "t:sections.animation.opt_clip_bottom" },
+      { "value": "clip-left", "label": "t:sections.animation.opt_clip_left" }
+    ] },
+    { "type": "select", "id": "cards_animation", "label": "t:sections.animation.cards", "default": "stagger-up", "options": [
+      { "value": "none", "label": "t:sections.animation.opt_none" },
+      { "value": "stagger-up", "label": "t:sections.animation.opt_stagger_up" },
+      { "value": "stagger-fade", "label": "t:sections.animation.opt_stagger_fade" },
+      { "value": "stagger-scale", "label": "t:sections.animation.opt_stagger_scale" },
+      { "value": "stagger-rotate", "label": "t:sections.animation.opt_stagger_rotate" }
+    ] },
+    { "type": "range", "id": "section_delay", "label": "t:sections.animation.delay", "min": 0, "max": 800, "step": 50, "unit": "ms", "default": 0 }
   ],
   "blocks": [
     {

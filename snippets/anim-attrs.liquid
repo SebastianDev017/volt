@@ -1,0 +1,37 @@
+{% doc %}
+  Maps a per-section animation setting to the GSAP data-attributes read by
+  assets/volt-animations.js. Keeps section markup free of animation logic.
+
+  @param {string} value - the setting value (e.g. 'split-words', 'fade-up', 'parallax', 'stagger-up', 'none')
+  @param {boolean} [enabled] - section.settings.enable_animations; when false, nothing is emitted
+  @param {number} [delay_ms] - section.settings.section_delay in milliseconds
+  @example
+  <h2 {% render 'anim-attrs', value: section.settings.heading_animation, enabled: section.settings.enable_animations, delay_ms: section.settings.section_delay %}>…</h2>
+{% enddoc %}
+{%- liquid
+  assign v = value | default: 'none'
+  if enabled == false
+    assign v = 'none'
+  endif
+-%}
+{%- case v -%}
+  {%- when 'split-chars' -%}data-split="chars"
+  {%- when 'split-words' -%}data-split="words"
+  {%- when 'split-lines' -%}data-split="lines"
+  {%- when 'fade-up' -%}data-anim="fade-up"
+  {%- when 'fade-in' -%}data-anim="fade-in"
+  {%- when 'slide-left' -%}data-anim="slide-left"
+  {%- when 'slide-right' -%}data-anim="slide-right"
+  {%- when 'scale-in' -%}data-anim="scale-in"
+  {%- when 'clip-bottom' -%}data-clip="bottom"
+  {%- when 'clip-top' -%}data-clip="top"
+  {%- when 'clip-left' -%}data-clip="left"
+  {%- when 'clip-right' -%}data-clip="right"
+  {%- when 'clip-center' -%}data-clip="center"
+  {%- when 'parallax' -%}data-parallax="0.18"
+  {%- when 'stagger-up' -%}data-stagger-group data-stagger-dir="up"
+  {%- when 'stagger-fade' -%}data-stagger-group data-stagger-dir="fade"
+  {%- when 'stagger-scale' -%}data-stagger-group data-stagger-dir="scale"
+  {%- when 'stagger-rotate' -%}data-stagger-group data-stagger-dir="rotate"
+{%- endcase -%}
+{%- if v != 'none' and delay_ms != blank and delay_ms != 0 -%} data-anim-delay="{{ delay_ms | divided_by: 1000.0 }}"{%- endif -%}

@@ -7,13 +7,13 @@
     <div class="volt-journal__head">
       <div>
         {%- if section.settings.eyebrow != blank -%}<div class="volt-journal__eyebrow">{{ section.settings.eyebrow }}</div>{%- endif -%}
-        {%- if section.settings.heading != blank -%}<h2 class="volt-journal__title">{{ section.settings.heading }}</h2>{%- endif -%}
+        {%- if section.settings.heading != blank -%}<h2 class="volt-journal__title" {% render 'anim-attrs', value: section.settings.heading_animation, enabled: section.settings.enable_animations, delay_ms: section.settings.section_delay %}>{{ section.settings.heading }}</h2>{%- endif -%}
       </div>
       {%- if blog != blank -%}
         <a href="{{ blog.url }}" class="volt-journal__all">{{ section.settings.view_all_label }} &rarr;</a>
       {%- endif -%}
     </div>
-    <div class="volt-journal__grid">
+    <div class="volt-journal__grid" {% render 'anim-attrs', value: section.settings.cards_animation, enabled: section.settings.enable_animations %}>
       {%- if posts != blank and posts.size > 0 -%}
         {%- for article in posts limit: 3 -%}
           {%- liquid
@@ -21,7 +21,7 @@
             assign read = words | divided_by: 200 | at_least: 1
             assign cat = article.metafields.volt.category | default: article.tags.first | default: 'Training'
           -%}
-          <article class="volt-jcard">
+          <article class="volt-jcard" data-stagger-item>
             <a href="{{ article.url }}" class="volt-jcard__media">
               {%- if article.image -%}{{ article.image | image_url: width: 700 | image_tag: loading: 'lazy', widths: '300, 500, 700', class: 'volt-jcard__img', alt: article.title | escape }}
               {%- else -%}{{ 'image' | placeholder_svg_tag: 'volt-jcard__img' }}{%- endif -%}
@@ -38,7 +38,7 @@
         {%- assign ph_meta = '8 MIN READ · STRENGTH · INTERMEDIATE|6 MIN READ · NUTRITION · ALL LEVELS|5 MIN READ · RECOVERY · BEGINNER' | split: '|' -%}
         {%- assign ph_ex = 'The data behind training readiness — and how to stop leaving PRs on the table.|What the research actually says about the anabolic window and daily targets.|How HRV and resting heart rate reveal whether you are actually recovering.' | split: '|' -%}
         {%- for i in (0..2) -%}
-          <article class="volt-jcard">
+          <article class="volt-jcard" data-stagger-item>
             <span class="volt-jcard__media">{{ 'image' | placeholder_svg_tag: 'volt-jcard__img' }}</span>
             <span class="volt-jcard__cat">{{ ph_cats[i] }}</span>
             <div class="volt-jcard__meta">{{ ph_meta[i] }}</div>
@@ -79,7 +79,26 @@
     { "type": "text", "id": "eyebrow", "label": "t:sections.journal.eyebrow", "default": "// Journal" },
     { "type": "text", "id": "heading", "label": "t:sections.journal.heading", "default": "Read the protocol." },
     { "type": "blog", "id": "blog", "label": "t:sections.journal.blog" },
-    { "type": "text", "id": "view_all_label", "label": "t:sections.journal.view_all_label", "default": "All articles" }
+    { "type": "text", "id": "view_all_label", "label": "t:sections.journal.view_all_label", "default": "All articles" },
+    { "type": "header", "content": "t:sections.animation.header" },
+    { "type": "checkbox", "id": "enable_animations", "label": "t:sections.animation.enable", "default": true },
+    { "type": "select", "id": "heading_animation", "label": "t:sections.animation.heading", "default": "split-words", "options": [
+      { "value": "none", "label": "t:sections.animation.opt_none" },
+      { "value": "split-chars", "label": "t:sections.animation.opt_split_chars" },
+      { "value": "split-words", "label": "t:sections.animation.opt_split_words" },
+      { "value": "split-lines", "label": "t:sections.animation.opt_split_lines" },
+      { "value": "fade-up", "label": "t:sections.animation.opt_fade_up" },
+      { "value": "clip-bottom", "label": "t:sections.animation.opt_clip_bottom" },
+      { "value": "clip-left", "label": "t:sections.animation.opt_clip_left" }
+    ] },
+    { "type": "select", "id": "cards_animation", "label": "t:sections.animation.cards", "default": "stagger-up", "options": [
+      { "value": "none", "label": "t:sections.animation.opt_none" },
+      { "value": "stagger-up", "label": "t:sections.animation.opt_stagger_up" },
+      { "value": "stagger-fade", "label": "t:sections.animation.opt_stagger_fade" },
+      { "value": "stagger-scale", "label": "t:sections.animation.opt_stagger_scale" },
+      { "value": "stagger-rotate", "label": "t:sections.animation.opt_stagger_rotate" }
+    ] },
+    { "type": "range", "id": "section_delay", "label": "t:sections.animation.delay", "min": 0, "max": 800, "step": 50, "unit": "ms", "default": 0 }
   ],
   "presets": [
     { "name": "t:sections.journal.name" }
