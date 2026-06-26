@@ -21,7 +21,7 @@
   // Reveal pre-hidden elements no matter what (CDN failure failsafe also in theme.liquid).
   function reveal() { document.documentElement.classList.add('gsap-ready'); }
 
-  ready(function () {
+  function init() {
     if (!window.gsap) { reveal(); return; }
 
     var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -54,7 +54,7 @@
 
     reveal();
     if (window.ScrollTrigger) ScrollTrigger.refresh();
-  });
+  }
 
   var sp = function () { return CFG.speed || 1; };
 
@@ -266,4 +266,9 @@
   };
 
   window.VoltAnim = VoltAnim;
+
+  // Defined last so the object literal above is assigned before init runs
+  // (deferred scripts execute at readyState 'interactive', so ready() may
+  // fire synchronously).
+  ready(init);
 })();
