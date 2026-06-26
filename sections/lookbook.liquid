@@ -1,0 +1,159 @@
+{%- liquid
+  assign layout = section.settings.layout | default: 'scroll'
+-%}
+<section class="volt-lookbook volt-lookbook--{{ layout }}" data-animate>
+  <div class="volt-lookbook__inner">
+    <div class="volt-lookbook__head">
+      {%- if section.settings.eyebrow != blank -%}<div class="volt-lookbook__eyebrow">{{ section.settings.eyebrow }}</div>{%- endif -%}
+      {%- if section.settings.heading != blank -%}<h2 class="volt-lookbook__title">{{ section.settings.heading }}</h2>{%- endif -%}
+    </div>
+  </div>
+
+  {%- if section.blocks.size > 0 -%}
+    {%- if layout == 'mosaic' -%}
+      <div class="volt-lookbook__inner">
+        <div class="volt-lookbook__mosaic" data-stagger-group data-stagger-dir="scale">
+          {%- for block in section.blocks -%}
+            {%- liquid
+              assign img = block.settings.image
+              assign url = block.settings.collection_url
+            -%}
+            {%- if url != blank -%}
+              <a class="volt-lkitem volt-lkitem--mosaic" href="{{ url }}" data-stagger-item {{ block.shopify_attributes }}>
+            {%- else -%}
+              <div class="volt-lkitem volt-lkitem--mosaic" data-stagger-item {{ block.shopify_attributes }}>
+            {%- endif -%}
+                <span class="volt-lkitem__media">
+                  {%- if img != blank -%}
+                    {{ img | image_url: width: 1000 | image_tag: loading: 'lazy', widths: '400,700,1000', class: 'volt-lkitem__img', alt: block.settings.title | default: section.settings.heading | escape }}
+                  {%- else -%}
+                    {{ 'image' | placeholder_svg_tag: 'volt-lkitem__img' }}
+                  {%- endif -%}
+                  <span class="volt-lkitem__scrim"></span>
+                </span>
+                <span class="volt-lkitem__overlay">
+                  {%- if block.settings.badge != blank -%}<span class="volt-lkitem__badge">{{ block.settings.badge }}</span>{%- endif -%}
+                  {%- if block.settings.title != blank -%}<span class="volt-lkitem__name">{{ block.settings.title }}</span>{%- endif -%}
+                </span>
+            {%- if url != blank -%}</a>{%- else -%}</div>{%- endif -%}
+          {%- endfor -%}
+        </div>
+      </div>
+    {%- else -%}
+      <div class="volt-lookbook__hwrap" data-horizontal-scroll>
+        <div class="volt-lookbook__htrack" data-h-track>
+          {%- for block in section.blocks -%}
+            {%- liquid
+              assign img = block.settings.image
+              assign url = block.settings.collection_url
+            -%}
+            {%- if url != blank -%}
+              <a class="volt-lkitem volt-lkitem--panel" href="{{ url }}" {{ block.shopify_attributes }}>
+            {%- else -%}
+              <div class="volt-lkitem volt-lkitem--panel" {{ block.shopify_attributes }}>
+            {%- endif -%}
+                <span class="volt-lkitem__media">
+                  {%- if img != blank -%}
+                    {{ img | image_url: width: 1000 | image_tag: loading: 'lazy', widths: '400,700,1000', class: 'volt-lkitem__img', alt: block.settings.title | default: section.settings.heading | escape }}
+                  {%- else -%}
+                    {{ 'image' | placeholder_svg_tag: 'volt-lkitem__img' }}
+                  {%- endif -%}
+                  <span class="volt-lkitem__scrim"></span>
+                </span>
+                <span class="volt-lkitem__overlay">
+                  {%- if block.settings.badge != blank -%}<span class="volt-lkitem__badge">{{ block.settings.badge }}</span>{%- endif -%}
+                  {%- if block.settings.title != blank -%}<span class="volt-lkitem__name">{{ block.settings.title }}</span>{%- endif -%}
+                </span>
+            {%- if url != blank -%}</a>{%- else -%}</div>{%- endif -%}
+          {%- endfor -%}
+        </div>
+      </div>
+    {%- endif -%}
+  {%- endif -%}
+</section>
+
+{% stylesheet %}
+  .volt-lookbook { background: var(--color-bg); border-top: 1px solid var(--color-border); padding: 84px 0; }
+  .volt-lookbook__inner { max-width: var(--page-width); margin-inline: auto; padding-inline: 28px; }
+  .volt-lookbook__head { margin-bottom: 40px; }
+  .volt-lookbook__eyebrow { font-family: var(--font-mono); font-size: 11px; letter-spacing: .18em; text-transform: uppercase; color: var(--color-acid); }
+  .volt-lookbook__title { font-family: var(--font-display); font-weight: 700; font-size: clamp(30px, 3vw, 46px); line-height: 1.02; letter-spacing: -.01em; margin: 14px 0 0; }
+
+  /* shared item */
+  .volt-lkitem { position: relative; display: block; overflow: hidden; background: var(--color-surface); color: var(--color-bg); text-decoration: none; }
+  .volt-lkitem__media { display: block; position: relative; width: 100%; height: 100%; overflow: hidden; }
+  .volt-lkitem__img { width: 100%; height: 100%; object-fit: cover; transition: transform var(--dur-slow) var(--ease); }
+  a.volt-lkitem:hover .volt-lkitem__img { transform: scale(1.04); }
+  .volt-lkitem__scrim { position: absolute; inset: 0; background: linear-gradient(180deg, transparent 35%, rgba(13,12,11,0.72) 100%); pointer-events: none; }
+  .volt-lkitem__overlay { position: absolute; left: 0; right: 0; bottom: 0; display: flex; flex-direction: column; align-items: flex-start; gap: 10px; padding: 22px; z-index: 1; }
+  .volt-lkitem__badge { font-family: var(--font-mono); font-size: 10px; letter-spacing: .12em; text-transform: uppercase; background: var(--color-acid); color: var(--color-ink); padding: 4px 9px; }
+  .volt-lkitem__name { font-family: var(--font-display); font-weight: 700; font-size: clamp(20px, 2vw, 28px); line-height: 1.06; color: var(--color-bg); }
+
+  /* scroll layout — horizontal pinned track (desktop) */
+  .volt-lookbook__hwrap { overflow: hidden; }
+  .volt-lookbook__htrack { display: flex; gap: 24px; padding: 0 28px; will-change: transform; }
+  .volt-lkitem--panel { flex: 0 0 auto; min-width: clamp(280px, 42vw, 520px); aspect-ratio: 3 / 4; }
+
+  /* mosaic layout — editorial irregular grid */
+  .volt-lookbook__mosaic { display: grid; grid-template-columns: repeat(6, 1fr); grid-auto-rows: 220px; gap: 24px; }
+  .volt-lkitem--mosaic { grid-column: span 2; grid-row: span 1; }
+  .volt-lkitem--mosaic:first-child { grid-column: span 4; grid-row: span 2; }
+  .volt-lkitem--mosaic:nth-child(4) { grid-column: span 3; }
+  .volt-lkitem--mosaic:nth-child(5) { grid-column: span 3; }
+
+  /* fallback / responsive */
+  @media (max-width: 860px) {
+    .volt-lookbook__hwrap { overflow-x: auto; -webkit-overflow-scrolling: touch; scroll-snap-type: x mandatory; }
+    .volt-lookbook__htrack { transform: none !important; }
+    .volt-lkitem--panel { scroll-snap-align: start; min-width: 78vw; aspect-ratio: 4 / 5; }
+    .volt-lookbook__mosaic { grid-template-columns: repeat(2, 1fr); grid-auto-rows: 200px; gap: 16px; }
+    .volt-lkitem--mosaic,
+    .volt-lkitem--mosaic:first-child,
+    .volt-lkitem--mosaic:nth-child(4),
+    .volt-lkitem--mosaic:nth-child(5) { grid-column: span 2; grid-row: span 1; }
+    .volt-lkitem--mosaic:first-child { grid-row: span 2; }
+  }
+  @media (max-width: 540px) {
+    .volt-lookbook__mosaic { grid-template-columns: 1fr; }
+    .volt-lkitem--mosaic,
+    .volt-lkitem--mosaic:first-child { grid-column: span 1; grid-row: span 1; }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:sections.lookbook.name",
+  "tag": "section",
+  "settings": [
+    { "type": "text", "id": "eyebrow", "label": "t:sections.lookbook.eyebrow", "default": "// Lookbook" },
+    { "type": "text", "id": "heading", "label": "t:sections.lookbook.heading", "default": "In the field." },
+    { "type": "select", "id": "layout", "label": "t:sections.lookbook.layout.label", "default": "scroll", "options": [
+      { "value": "scroll", "label": "t:sections.lookbook.layout.scroll" },
+      { "value": "mosaic", "label": "t:sections.lookbook.layout.mosaic" }
+    ] }
+  ],
+  "blocks": [
+    {
+      "type": "lookbook_item",
+      "name": "t:sections.lookbook.blocks.lookbook_item.name",
+      "settings": [
+        { "type": "image_picker", "id": "image", "label": "t:sections.lookbook.blocks.lookbook_item.image" },
+        { "type": "text", "id": "title", "label": "t:sections.lookbook.blocks.lookbook_item.title" },
+        { "type": "text", "id": "badge", "label": "t:sections.lookbook.blocks.lookbook_item.badge", "info": "t:sections.lookbook.blocks.lookbook_item.badge_info" },
+        { "type": "url", "id": "collection_url", "label": "t:sections.lookbook.blocks.lookbook_item.collection_url" }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.lookbook.name",
+      "blocks": [
+        { "type": "lookbook_item" },
+        { "type": "lookbook_item" },
+        { "type": "lookbook_item" },
+        { "type": "lookbook_item" }
+      ]
+    }
+  ]
+}
+{% endschema %}

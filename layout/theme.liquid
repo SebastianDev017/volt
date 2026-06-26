@@ -82,6 +82,8 @@
 
     {%- if settings.use_scroll_smoother -%}</div></div>{%- endif -%}
 
+    {% render 'quick-view' %}
+
     {%- if settings.use_gsap != false -%}
       {%- comment -%} GSAP 3.13 — standard (free) license incl. all plugins. Loaded from CDN by design choice (off the Theme-Store remote-asset path). {%- endcomment -%}
       {%- # theme-check-disable RemoteAsset -%}

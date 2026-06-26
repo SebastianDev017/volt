@@ -53,6 +53,10 @@
 
       {%- if show_member and tpl == blank -%}<span class="volt-card__member">{{ 'products.member_off' | t: default: 'Member −20%' }}</span>{%- endif -%}
 
+      {%- if settings.quick_view and tpl == blank -%}
+        <button type="button" class="volt-card__qv" data-quick-view data-handle="{{ p.handle }}" data-magnetic data-magnetic-strength="0.2">{{ 'products.quick_view' | t: default: 'Quick view' }}</button>
+      {%- endif -%}
+
       {%- if settings.quick_buy and p.available and tpl == blank -%}
         {%- form 'product', p, class: 'volt-card__qa' -%}
           <input type="hidden" name="id" value="{{ v.id }}">
@@ -104,6 +108,10 @@
   .volt-card__badge--acid { background: var(--color-acid); color: var(--color-ink); }
   .volt-card__badge--danger { background: var(--color-danger); color: #fff; }
   .volt-card__member { position: absolute; top: 0; right: 0; z-index: 2; font-family: var(--font-mono); font-size: 9px; letter-spacing: .1em; text-transform: uppercase; background: var(--color-acid); color: var(--color-ink); padding: 5px 9px; }
+  .volt-card__qv { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%) scale(.96); z-index: 3; opacity: 0; background: var(--color-bg); color: var(--color-ink); border: 1px solid var(--color-ink); font-family: var(--font-mono); font-size: 10px; letter-spacing: .1em; text-transform: uppercase; padding: 10px 16px; cursor: pointer; transition: opacity .3s var(--ease), background .2s var(--ease), color .2s var(--ease); }
+  .volt-card:hover .volt-card__qv, .volt-card:focus-within .volt-card__qv { opacity: 1; }
+  .volt-card__qv:hover { background: var(--color-acid); }
+  @media (hover: none) { .volt-card__qv { display: none; } }
   .volt-card__qa { position: absolute; left: 0; right: 0; bottom: 0; z-index: 2; transform: translateY(101%); transition: transform .35s var(--ease); }
   .volt-card:hover .volt-card__qa, .volt-card:focus-within .volt-card__qa { transform: translateY(0); }
   .volt-card__qabtn { width: 100%; border: none; background: var(--color-ink); color: var(--color-bg); font-family: var(--font-body); font-weight: 500; font-size: 12px; letter-spacing: .08em; text-transform: uppercase; padding: 13px; cursor: pointer; }

@@ -263,6 +263,25 @@ html:has(#smooth-wrapper) .volt-header{ position: relative; top: auto; }
 @keyframes volt-dialog-in{ from{ opacity: 0; transform: translateY(20px) scale(0.97); } }
 @media (prefers-reduced-motion: reduce){ .volt-dialog[open]{ animation: none; } }
 
+/* ---------- Quick View modal ---------- */
+.volt-quick-view{ max-width: 760px; padding: 0; }
+.volt-quick-view .volt-dialog__close{ color: var(--color-ink); background: var(--color-bg); }
+.volt-qv__loading{ padding: 80px; text-align: center; font-family: var(--font-mono); font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: var(--color-mid); }
+.volt-qv__grid{ display: grid; grid-template-columns: 1fr 1fr; }
+.volt-qv__media{ background: var(--color-surface); aspect-ratio: 1/1; }
+.volt-qv__media img{ width: 100%; height: 100%; object-fit: cover; }
+.volt-qv__info{ padding: clamp(24px, 3vw, 40px); display: flex; flex-direction: column; gap: 12px; }
+.volt-qv__cat{ font-family: var(--font-mono); font-size: 10px; letter-spacing: .14em; text-transform: uppercase; color: var(--color-mid); }
+.volt-qv__title{ font-family: var(--font-display); font-weight: 800; font-size: clamp(22px, 2.4vw, 30px); line-height: 1.05; margin: 0; }
+.volt-qv__price{ font-family: var(--font-display); font-weight: 800; font-size: 24px; }
+.volt-qv__opts{ display: flex; flex-direction: column; gap: 8px; }
+.volt-qv__optlabel{ font-family: var(--font-mono); font-size: 10px; letter-spacing: .12em; text-transform: uppercase; color: var(--color-mid); }
+.volt-qv__select{ width: 100%; background: var(--color-bg); color: var(--color-ink); border: 1px solid var(--color-ink); border-radius: 0; padding: 12px 14px; font-family: var(--font-body); font-size: 14px; }
+.volt-qv__add{ margin-top: 6px; background: var(--color-acid); border: 0; color: var(--on-acid); font-family: var(--font-body); font-weight: 500; font-size: 13px; letter-spacing: .05em; text-transform: uppercase; padding: 15px; cursor: pointer; }
+.volt-qv__add[disabled]{ background: var(--color-border); color: var(--color-mid); cursor: not-allowed; }
+.volt-qv__full{ font-family: var(--font-mono); font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--color-ink); border-bottom: 2px solid var(--color-acid); align-self: flex-start; padding-bottom: 2px; }
+@media (max-width: 680px){ .volt-qv__grid{ grid-template-columns: 1fr; } .volt-qv__media{ aspect-ratio: 16/9; } }
+
 /* =====================================================================
    RTL support
    ===================================================================== */

@@ -3,6 +3,8 @@
   assign v = p.selected_or_first_available_variant
   assign member = p.price | times: 0.8
   assign sp = p.metafields.volt.specs.value
+  assign shipping_blocks = section.blocks | where: 'type', 'shipping_info'
+  assign size_chart = section.blocks | where: 'type', 'size_chart' | first
 -%}
 <section class="volt-pdp" data-animate>
   <div class="volt-pdp__crumbs">
@@ -17,20 +19,27 @@
     <div class="volt-pdp__grid">
       {%- comment -%} GALLERY {%- endcomment -%}
       <div class="volt-pdp__gallery">
-        <div class="volt-pdp__main">
+        <div class="volt-pdp__main{% if section.settings.enable_zoom %} volt-pdp__main--zoom{% endif %}"{% if section.settings.enable_zoom %} data-pdp-zoom-open role="button" tabindex="0" aria-label="{{ 'products.zoom' | t: default: 'Zoom image' }}"{% endif %}>
           {%- if p.featured_image -%}
             {{ p.featured_image | image_url: width: 1000 | image_tag: loading: 'eager', widths: '500, 700, 1000', class: 'volt-pdp__mainimg', data-pdp-main: '', alt: p.featured_image.alt | default: p.title | escape }}
           {%- else -%}{{ 'product-1' | placeholder_svg_tag: 'volt-pdp__mainimg' }}{%- endif -%}
           {%- if settings.show_member_price -%}<span class="volt-pdp__memberpill">Member &minus;20%</span>{%- endif -%}
+          {%- if section.settings.enable_zoom -%}<span class="volt-pdp__zoomhint" aria-hidden="true">⤢</span>{%- endif -%}
         </div>
         {%- if p.images.size > 1 -%}
           <div class="volt-pdp__thumbs">
             {%- for img in p.images limit: 5 -%}
-              <button type="button" class="volt-pdp__thumb{% if forloop.first %} is-active{% endif %}" data-pdp-thumb data-img="{{ img | image_url: width: 1000 }}">
+              <button type="button" class="volt-pdp__thumb{% if forloop.first %} is-active{% endif %}" data-pdp-thumb data-img="{{ img | image_url: width: 1600 }}">
                 {{ img | image_url: width: 200 | image_tag: loading: 'lazy', alt: '' }}
               </button>
             {%- endfor -%}
           </div>
+        {%- endif -%}
+        {%- if section.settings.enable_zoom and p.featured_image -%}
+          <dialog class="volt-dialog volt-zoom" data-pdp-zoom>
+            <button type="button" class="volt-dialog__close" data-zoom-close aria-label="{{ 'products.close' | t: default: 'Close' }}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+            <img data-zoom-img src="{{ p.featured_image | image_url: width: 2000 }}" width="{{ p.featured_image.width }}" height="{{ p.featured_image.height }}" alt="{{ p.title | escape }}">
+          </dialog>
         {%- endif -%}
       </div>
 
@@ -66,6 +75,10 @@
               {%- endfor -%}
             </div>
           {%- endunless -%}
+
+          {%- if size_chart -%}
+            <button type="button" class="volt-pdp__sizelink" data-sizechart-open>{{ size_chart.settings.link_label | default: 'Size guide' }} &rarr;</button>
+          {%- endif -%}
 
           {%- if p.selling_plan_groups.size > 0 -%}
             <div class="volt-pdp__plans">
@@ -103,6 +116,27 @@
             <span><i>&#9670;</i> Free shipping $75+</span><span><i>&#9670;</i> 30-day guarantee</span><span><i>&#9670;</i> NSF certified</span>
           </div>
         {%- endform -%}
+
+        {%- if shipping_blocks.size > 0 -%}
+          {%- for block in shipping_blocks -%}
+            <div class="volt-pdp__ship" {{ block.shopify_attributes }}>
+              <svg class="volt-pdp__shipicon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M1 4h13v10H1zM14 7h4l3 3v4h-7zM5.5 17.5a2 2 0 1 0 0-.01M17.5 17.5a2 2 0 1 0 0-.01"/></svg>
+              <div class="volt-pdp__shipbody">
+                {%- if block.settings.heading != blank -%}<div class="volt-pdp__shiptitle">{{ block.settings.heading }}</div>{%- endif -%}
+                {%- if block.settings.estimated_days != blank -%}<div class="volt-pdp__shipline">{{ block.settings.estimated_days }}{% if block.settings.carrier != blank %} &middot; {{ block.settings.carrier }}{% endif %}</div>{%- endif -%}
+                {%- if block.settings.free_threshold != blank -%}<div class="volt-pdp__shipline volt-pdp__shipfree">{{ block.settings.free_threshold }}</div>{%- endif -%}
+              </div>
+            </div>
+          {%- endfor -%}
+        {%- endif -%}
+
+        {%- if size_chart -%}
+          <dialog class="volt-dialog volt-sizechart" data-sizechart {{ size_chart.shopify_attributes }}>
+            <button type="button" class="volt-dialog__close" data-sizechart-close aria-label="{{ 'products.close' | t: default: 'Close' }}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+            {%- if size_chart.settings.heading != blank -%}<h3 class="volt-sizechart__title">{{ size_chart.settings.heading }}</h3>{%- endif -%}
+            {%- if size_chart.settings.size_data != blank -%}<div class="rte volt-sizechart__table">{{ size_chart.settings.size_data }}</div>{%- endif -%}
+          </dialog>
+        {%- endif -%}
 
         {%- if p.description != blank -%}<div class="volt-pdp__desc rte">{{ p.description }}</div>{%- endif -%}
       </div>
@@ -247,6 +281,23 @@
   .volt-pdp__trust i { color: var(--color-acid); font-style: normal; }
   .volt-pdp__desc { font-size: 15px; line-height: 1.65; color: var(--color-mid); margin-top: 24px; border-top: 1px solid var(--color-border); padding-top: 22px; }
 
+  .volt-pdp__main--zoom { cursor: zoom-in; }
+  .volt-pdp__zoomhint { position: absolute; bottom: 10px; right: 10px; z-index: 2; width: 30px; height: 30px; display: grid; place-items: center; background: var(--color-ink); color: var(--color-bg); font-size: 15px; pointer-events: none; opacity: .85; }
+  .volt-zoom { max-width: 94vw; width: auto; padding: 0; }
+  .volt-zoom img { display: block; max-width: 94vw; max-height: 88vh; width: auto; height: auto; object-fit: contain; background: var(--color-surface); }
+  .volt-pdp__sizelink { display: inline-block; margin-top: 16px; background: none; border: 0; padding: 0; font-family: var(--font-mono); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--color-ink); border-bottom: 2px solid var(--color-acid); cursor: pointer; }
+  .volt-pdp__sizelink:hover { color: var(--color-mid); }
+  .volt-sizechart { max-width: 640px; }
+  .volt-sizechart__title { font-family: var(--font-display); font-weight: 700; font-size: 22px; margin: 0 0 16px; }
+  .volt-sizechart__table table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .volt-sizechart__table th, .volt-sizechart__table td { border: 1px solid var(--color-border); padding: 9px 12px; text-align: left; font-family: var(--font-mono); }
+  .volt-sizechart__table th { background: var(--color-surface); }
+  .volt-pdp__ship { display: flex; gap: 14px; align-items: flex-start; border: 1px solid var(--color-border); padding: 16px; margin-top: 18px; }
+  .volt-pdp__shipicon { width: 24px; height: 24px; color: var(--color-acid); flex-shrink: 0; }
+  .volt-pdp__shiptitle { font-family: var(--font-display); font-weight: 700; font-size: 14px; }
+  .volt-pdp__shipline { font-family: var(--font-mono); font-size: 11px; color: var(--color-mid); margin-top: 3px; }
+  .volt-pdp__shipfree { color: var(--color-ink); }
+
   .volt-nut { border: 1px solid var(--color-border); margin-top: 64px; }
   .volt-nut__tabs { display: flex; border-bottom: 1px solid var(--color-border); flex-wrap: wrap; }
   .volt-nut__tabs label { flex: 1; min-width: 140px; text-align: center; cursor: pointer; font-family: var(--font-mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--color-mid); padding: 18px 16px; border-bottom: 2px solid transparent; }
@@ -319,6 +370,24 @@
         var dec = this.querySelector('[data-pdp-dec]'), inc = this.querySelector('[data-pdp-inc]'), qty = this.querySelector('[data-pdp-qty]');
         if (dec && qty) dec.addEventListener('click', () => { qty.value = Math.max(1, (parseInt(qty.value, 10) || 1) - 1); });
         if (inc && qty) inc.addEventListener('click', () => { qty.value = (parseInt(qty.value, 10) || 1) + 1; });
+
+        var zoomOpen = this.querySelector('[data-pdp-zoom-open]'), zoomDlg = this.querySelector('[data-pdp-zoom]');
+        if (zoomOpen && zoomDlg && zoomDlg.showModal) {
+          var zimg = zoomDlg.querySelector('[data-zoom-img]');
+          var openZoom = () => { if (main && zimg) zimg.src = main.currentSrc ? main.currentSrc.replace(/width=\d+/, 'width=2000') : main.src; zoomDlg.showModal(); };
+          zoomOpen.addEventListener('click', openZoom);
+          zoomOpen.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openZoom(); } });
+          var zclose = zoomDlg.querySelector('[data-zoom-close]');
+          if (zclose) zclose.addEventListener('click', () => zoomDlg.close());
+          zoomDlg.addEventListener('click', (e) => { if (e.target === zoomDlg) zoomDlg.close(); });
+        }
+        var scOpen = this.querySelector('[data-sizechart-open]'), scDlg = this.querySelector('[data-sizechart]');
+        if (scOpen && scDlg && scDlg.showModal) {
+          scOpen.addEventListener('click', () => scDlg.showModal());
+          var scClose = scDlg.querySelector('[data-sizechart-close]');
+          if (scClose) scClose.addEventListener('click', () => scDlg.close());
+          scDlg.addEventListener('click', (e) => { if (e.target === scDlg) scDlg.close(); });
+        }
       }
       money(cents) {
         try { return new Intl.NumberFormat(document.documentElement.lang || 'en', { style: 'currency', currency: window.Shopify && Shopify.currency ? Shopify.currency.active : 'USD' }).format(cents / 100); }
@@ -344,6 +413,8 @@
   "name": "t:sections.main_product.name",
   "tag": "section",
   "settings": [
+    { "type": "header", "content": "t:sections.main_product.gallery_header" },
+    { "type": "checkbox", "id": "enable_zoom", "label": "t:sections.main_product.enable_zoom", "default": true },
     { "type": "header", "content": "t:sections.main_product.rating_header" },
     { "type": "checkbox", "id": "show_rating", "label": "t:sections.main_product.show_rating", "default": true },
     { "type": "text", "id": "rating", "label": "t:sections.main_product.rating", "default": "4.9" },
@@ -373,6 +444,27 @@
       "settings": [
         { "type": "text", "id": "question", "label": "t:sections.main_product.blocks.faq.question", "default": "How do I use this?" },
         { "type": "richtext", "id": "answer", "label": "t:sections.main_product.blocks.faq.answer", "default": "<p>Mix one scoop with 250ml of water or milk, post-workout or any time you need protein.</p>" }
+      ]
+    },
+    {
+      "type": "shipping_info",
+      "name": "t:sections.main_product.blocks.shipping_info.name",
+      "limit": 1,
+      "settings": [
+        { "type": "text", "id": "heading", "label": "t:sections.main_product.blocks.shipping_info.heading", "default": "Fast, tracked shipping" },
+        { "type": "text", "id": "estimated_days", "label": "t:sections.main_product.blocks.shipping_info.estimated_days", "default": "Ships in 2–3 business days" },
+        { "type": "text", "id": "carrier", "label": "t:sections.main_product.blocks.shipping_info.carrier", "default": "FedEx / UPS" },
+        { "type": "text", "id": "free_threshold", "label": "t:sections.main_product.blocks.shipping_info.free_threshold", "default": "Free over $75" }
+      ]
+    },
+    {
+      "type": "size_chart",
+      "name": "t:sections.main_product.blocks.size_chart.name",
+      "limit": 1,
+      "settings": [
+        { "type": "text", "id": "link_label", "label": "t:sections.main_product.blocks.size_chart.link_label", "default": "Size guide" },
+        { "type": "text", "id": "heading", "label": "t:sections.main_product.blocks.size_chart.heading", "default": "Size guide" },
+        { "type": "richtext", "id": "size_data", "label": "t:sections.main_product.blocks.size_chart.size_data", "info": "t:sections.main_product.blocks.size_chart.size_data_info" }
       ]
     }
   ]

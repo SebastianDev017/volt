@@ -1,0 +1,89 @@
+{% comment %}
+  Global Quick View modal shell. Rendered once in layout/theme.liquid.
+  Populated on demand by the ProductQuickView controller in assets/theme.js
+  (fetches /products/{handle}.js when a [data-quick-view] trigger is clicked).
+{% endcomment %}
+{%- if settings.quick_view -%}
+  <dialog id="volt-quick-view" class="volt-dialog volt-quick-view" aria-label="{{ 'products.quick_view' | t: default: 'Quick view' }}">
+    <button type="button" class="volt-dialog__close" data-qv-close aria-label="{{ 'products.close' | t: default: 'Close' }}">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 6l12 12M18 6L6 18"/></svg>
+    </button>
+    <div class="volt-qv__body" data-qv-body
+      data-add-label="{{ 'products.add' | t: default: 'Add to cart' }}"
+      data-sold-label="{{ 'products.sold_out' | t: default: 'Sold out' }}"
+      data-view-label="{{ 'products.view_details' | t: default: 'View full details' }}">
+      <div class="volt-qv__loading">{{ 'products.loading' | t: default: 'Loading…' }}</div>
+    </div>
+  </dialog>
+
+  <script>
+    (function () {
+      var dlg = document.getElementById('volt-quick-view');
+      if (!dlg || !dlg.showModal) return;
+      var body = dlg.querySelector('[data-qv-body]');
+      var esc = function (s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); };
+      var money = function (c) {
+        try { return new Intl.NumberFormat(document.documentElement.lang || 'en', { style: 'currency', currency: (window.Shopify && Shopify.currency && Shopify.currency.active) || 'USD' }).format(c / 100); }
+        catch (e) { return '$' + (c / 100).toFixed(2); }
+      };
+      var product = null, variant = null;
+      function update() {
+        var sels = Array.prototype.map.call(body.querySelectorAll('[data-qv-opt]'), function (s) { return s.value; });
+        var m = product.variants.find(function (v) { return v.options.every(function (o, i) { return o === sels[i]; }); });
+        if (!m) return;
+        variant = m;
+        var pe = body.querySelector('[data-qv-price]'); if (pe) pe.textContent = money(m.price);
+        var ab = body.querySelector('[data-qv-add]'); if (ab) { ab.disabled = !m.available; ab.textContent = m.available ? ab.dataset.label : ab.dataset.sold; }
+      }
+      function add() {
+        if (!variant) return;
+        var ab = body.querySelector('[data-qv-add]'); if (ab) { ab.disabled = true; ab.textContent = '…'; }
+        fetch('/cart/add.js', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ items: [{ id: variant.id, quantity: 1 }] }) })
+          .then(function (r) { if (!r.ok) throw 0; return fetch('/cart.js'); }).then(function (r) { return r.json(); }).then(function (cart) {
+            document.querySelectorAll('[data-cart-count]').forEach(function (n) { n.textContent = cart.item_count; });
+            document.dispatchEvent(new CustomEvent('volt:cart:open'));
+            document.dispatchEvent(new CustomEvent('cart:updated', { detail: { item_count: cart.item_count } }));
+            if (ab) ab.textContent = '✓';
+            setTimeout(function () { dlg.close(); }, 850);
+          }).catch(function () { if (ab) { ab.disabled = false; ab.textContent = ab.dataset.label; } });
+      }
+      function render(p) {
+        product = p;
+        variant = p.variants.find(function (v) { return v.available; }) || p.variants[0];
+        var img = p.featured_image || (p.images && p.images[0]) || '';
+        var opts = '';
+        var single = p.variants.length === 1 && p.variants[0].title === 'Default Title';
+        if (!single) {
+          p.options.forEach(function (name, i) {
+            var seen = {}, vals = [];
+            p.variants.forEach(function (v) { var val = v.options[i]; if (!seen[val]) { seen[val] = 1; vals.push(val); } });
+            opts += '<label class="volt-qv__optlabel">' + esc(name) + '</label><select class="volt-qv__select" data-qv-opt="' + i + '">' +
+              vals.map(function (val) { return '<option>' + esc(val) + '</option>'; }).join('') + '</select>';
+          });
+        }
+        var lbl = body.dataset.addLabel, sold = body.dataset.soldLabel, view = body.dataset.viewLabel;
+        body.innerHTML =
+          '<div class="volt-qv__grid"><div class="volt-qv__media">' + (img ? '<img src="' + esc(img) + '" alt="' + esc(p.title) + '">' : '') + '</div>' +
+          '<div class="volt-qv__info">' + (p.type ? '<div class="volt-qv__cat">' + esc(p.type) + '</div>' : '') +
+          '<h2 class="volt-qv__title">' + esc(p.title) + '</h2>' +
+          '<div class="volt-qv__price" data-qv-price>' + money(variant.price) + '</div>' +
+          '<div class="volt-qv__opts">' + opts + '</div>' +
+          '<button type="button" class="volt-qv__add" data-qv-add data-label="' + esc(lbl) + '" data-sold="' + esc(sold) + '"' + (variant.available ? '' : ' disabled') + '>' + (variant.available ? esc(lbl) : esc(sold)) + '</button>' +
+          '<a class="volt-qv__full" href="' + esc(p.url) + '">' + esc(view) + ' &rarr;</a></div></div>';
+        body.querySelectorAll('[data-qv-opt]').forEach(function (s) { s.addEventListener('change', update); });
+        var addBtn = body.querySelector('[data-qv-add]'); if (addBtn) addBtn.addEventListener('click', add);
+      }
+      function open(handle) {
+        body.innerHTML = '<div class="volt-qv__loading">…</div>';
+        dlg.showModal();
+        fetch('/products/' + handle + '.js').then(function (r) { return r.json(); }).then(render).catch(function () { body.innerHTML = '<div class="volt-qv__loading">—</div>'; });
+      }
+      document.addEventListener('click', function (e) {
+        var t = e.target.closest('[data-quick-view]');
+        if (t && t.dataset.handle) { e.preventDefault(); open(t.dataset.handle); }
+      });
+      var qc = dlg.querySelector('[data-qv-close]'); if (qc) qc.addEventListener('click', function () { dlg.close(); });
+      dlg.addEventListener('click', function (e) { if (e.target === dlg) dlg.close(); });
+    })();
+  </script>
+{%- endif -%}

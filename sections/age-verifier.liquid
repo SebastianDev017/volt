@@ -1,0 +1,83 @@
+{%- if section.settings.enable_age_gate -%}
+  <dialog class="volt-dialog volt-age-gate" id="VoltAgeGate-{{ section.id }}" data-min-age="{{ section.settings.minimum_age }}">
+    <div class="volt-age-gate__inner">
+      <div class="volt-age-gate__mark">VOLT</div>
+      {%- if section.settings.heading != blank -%}
+        <h2 class="volt-age-gate__heading">{{ section.settings.heading }}</h2>
+      {%- endif -%}
+      {%- if section.settings.body != blank -%}
+        <p class="volt-age-gate__body">{{ section.settings.body }}</p>
+      {%- endif -%}
+      <div class="volt-age-gate__actions">
+        <button type="button" class="btn btn--acid volt-age-gate__confirm">{{ section.settings.confirm_label }}</button>
+        <a href="{{ section.settings.decline_url }}" class="btn btn--outline volt-age-gate__decline" rel="nofollow">{{ section.settings.decline_label }}</a>
+      </div>
+      {%- if section.settings.legal_text != blank -%}
+        <div class="volt-age-gate__legal">{{ section.settings.legal_text }}</div>
+      {%- endif -%}
+    </div>
+  </dialog>
+
+  {% stylesheet %}
+    .volt-age-gate{ text-align: center; max-width: 460px; }
+    .volt-age-gate__inner{ display: flex; flex-direction: column; align-items: center; gap: 18px; }
+    .volt-age-gate__mark{ font-family: var(--font-display); font-weight: 800; font-size: 22px; letter-spacing: 0.04em; text-transform: uppercase; line-height: 1; color: var(--color-ink); }
+    .volt-age-gate__mark::after{ content: ""; display: block; width: 28px; height: 3px; background: var(--color-acid); margin: 12px auto 0; }
+    .volt-age-gate__heading{ font-family: var(--font-display); font-weight: 800; font-size: clamp(26px, 3.4vw, 38px); line-height: 1; letter-spacing: -0.02em; color: var(--color-ink); margin: 0; }
+    .volt-age-gate__body{ font-family: var(--font-body); font-size: 15px; line-height: 1.6; color: var(--color-mid); margin: 0; max-width: 36ch; }
+    .volt-age-gate__actions{ display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; margin-top: 4px; }
+    .volt-age-gate__legal{ font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.02em; line-height: 1.5; color: var(--color-mid); margin-top: 6px; }
+    .volt-age-gate__legal a{ color: var(--color-ink); text-decoration: underline; text-underline-offset: 2px; }
+    @media (max-width: 480px){ .volt-age-gate__actions{ flex-direction: column; width: 100%; } .volt-age-gate__actions .btn{ width: 100%; } }
+  {% endstylesheet %}
+
+  <script>
+    (function () {
+      var gate = document.getElementById('VoltAgeGate-{{ section.id }}');
+      if (!gate || typeof gate.showModal !== 'function') return;
+
+      var KEY = 'volt-age-verified';
+      var confirmBtn = gate.querySelector('.volt-age-gate__confirm');
+
+      try {
+        if (sessionStorage.getItem(KEY) !== '1') {
+          if (!gate.open) gate.showModal();
+        }
+      } catch (e) {
+        if (!gate.open) gate.showModal();
+      }
+
+      if (confirmBtn) {
+        confirmBtn.addEventListener('click', function () {
+          try { sessionStorage.setItem(KEY, '1'); } catch (e) {}
+          gate.close();
+        });
+      }
+
+      // It's a gate: block Esc and backdrop-cancel from dismissing it.
+      gate.addEventListener('cancel', function (e) {
+        e.preventDefault();
+      });
+    })();
+  </script>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "t:sections.age_verifier.name",
+  "tag": "section",
+  "settings": [
+    { "type": "checkbox", "id": "enable_age_gate", "label": "t:sections.age_verifier.enable_age_gate", "default": false },
+    { "type": "range", "id": "minimum_age", "label": "t:sections.age_verifier.minimum_age", "min": 18, "max": 25, "step": 1, "default": 18 },
+    { "type": "text", "id": "heading", "label": "t:sections.age_verifier.heading", "default": "Are you 18 or older?" },
+    { "type": "textarea", "id": "body", "label": "t:sections.age_verifier.body", "default": "You must confirm your age to enter this store." },
+    { "type": "text", "id": "confirm_label", "label": "t:sections.age_verifier.confirm_label", "default": "Yes, enter" },
+    { "type": "text", "id": "decline_label", "label": "t:sections.age_verifier.decline_label", "default": "No, leave" },
+    { "type": "url", "id": "decline_url", "label": "t:sections.age_verifier.decline_url", "default": "https://www.google.com" },
+    { "type": "richtext", "id": "legal_text", "label": "t:sections.age_verifier.legal_text", "info": "t:sections.age_verifier.legal_text_info" }
+  ],
+  "presets": [
+    { "name": "t:sections.age_verifier.name" }
+  ]
+}
+{% endschema %}

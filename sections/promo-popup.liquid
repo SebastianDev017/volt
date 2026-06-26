@@ -1,0 +1,251 @@
+{%- if section.settings.enable_popup -%}
+  <dialog
+    class="volt-dialog volt-promo-popup"
+    data-volt-promo
+    data-enabled="true"
+    data-trigger="{{ section.settings.popup_trigger }}"
+    data-delay="{{ section.settings.popup_delay }}"
+    data-cookie-days="{{ section.settings.cookie_days }}"
+    aria-label="{{ section.settings.heading | default: 'Promotion' | escape }}"
+  >
+    <button type="button" class="volt-dialog__close" data-promo-close aria-label="{{ 'sections.promo_popup.close' | t: default: 'Close' }}">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false" width="20" height="20">
+        <path d="M18 6 6 18M6 6l12 12"/>
+      </svg>
+    </button>
+
+    <div class="volt-promo-popup__body">
+      {%- if section.settings.image != blank -%}
+        <div class="volt-promo-popup__media">
+          {{
+            section.settings.image
+            | image_url: width: 1080
+            | image_tag:
+              loading: 'lazy',
+              class: 'volt-promo-popup__img',
+              widths: '360, 540, 720, 1080',
+              sizes: '(max-width: 540px) 100vw, 480px',
+              alt: section.settings.heading | default: '' | escape
+          }}
+        </div>
+      {%- endif -%}
+
+      <p class="volt-promo-popup__eyebrow">{{ 'sections.promo_popup.eyebrow' | t: default: 'Members only' }}</p>
+
+      {%- if section.settings.heading != blank -%}
+        <h2 class="volt-promo-popup__heading">{{ section.settings.heading }}</h2>
+      {%- endif -%}
+
+      {%- if section.settings.body != blank -%}
+        <div class="volt-promo-popup__text">{{ section.settings.body }}</div>
+      {%- endif -%}
+
+      {%- if section.settings.discount_code != blank -%}
+        <div class="volt-promo-popup__code">
+          <code class="volt-promo-popup__code-val">{{ section.settings.discount_code }}</code>
+          <button
+            type="button"
+            class="volt-promo-popup__copy"
+            data-promo-copy
+            data-code="{{ section.settings.discount_code | escape }}"
+            data-label-copy="{{ 'sections.promo_popup.copy' | t: default: 'Copy' }}"
+            data-label-copied="{{ 'sections.promo_popup.copied' | t: default: 'Copied ✓' }}"
+          >{{ 'sections.promo_popup.copy' | t: default: 'Copy' }}</button>
+        </div>
+      {%- endif -%}
+
+      {%- if section.settings.show_email_input -%}
+        {%- form 'customer', class: 'volt-promo-popup__form' -%}
+          <input type="hidden" name="contact[tags]" value="newsletter">
+          {%- if form.posted_successfully? -%}
+            <p class="volt-promo-popup__success" role="status">{{ 'sections.promo_popup.success' | t: default: 'You are in. Watch your inbox.' }}</p>
+          {%- else -%}
+            <label class="visually-hidden" for="VoltPromoEmail-{{ section.id }}">{{ 'sections.promo_popup.email_label' | t: default: 'Email address' }}</label>
+            <div class="volt-promo-popup__field">
+              <input
+                id="VoltPromoEmail-{{ section.id }}"
+                class="volt-promo-popup__input"
+                type="email"
+                name="contact[email]"
+                autocomplete="email"
+                required
+                placeholder="{{ 'sections.promo_popup.email_placeholder' | t: default: 'Email address' }}"
+              >
+              <button type="submit" class="volt-promo-popup__submit">{{ 'sections.promo_popup.email_submit' | t: default: 'Join' }}</button>
+            </div>
+            {%- if form.errors -%}
+              <p class="volt-promo-popup__error" role="alert">{{ form.errors | default_errors }}</p>
+            {%- endif -%}
+          {%- endif -%}
+        {%- endform -%}
+      {%- endif -%}
+
+      {%- if section.settings.cta_label != blank and section.settings.cta_url != blank -%}
+        <a class="volt-promo-popup__cta" href="{{ section.settings.cta_url }}" data-magnetic>{{ section.settings.cta_label }}</a>
+      {%- endif -%}
+    </div>
+  </dialog>
+
+  {% stylesheet %}
+    .volt-promo-popup { text-align: left; }
+    .volt-promo-popup__body { display: flex; flex-direction: column; gap: 16px; }
+    .volt-promo-popup__media { margin: -8px -8px 4px; aspect-ratio: 16 / 9; overflow: hidden; border: 1px solid var(--color-border); }
+    .volt-promo-popup__img { width: 100%; height: 100%; object-fit: cover; }
+    .volt-promo-popup__eyebrow { font-family: var(--font-mono); font-size: 10px; letter-spacing: .16em; text-transform: uppercase; color: var(--color-acid); margin: 0; }
+    .volt-promo-popup__heading { font-family: var(--font-display); font-weight: 800; font-size: clamp(28px, 4vw, 40px); line-height: 1; letter-spacing: -.02em; text-transform: uppercase; color: var(--color-ink); margin: 0; }
+    .volt-promo-popup__text { font-family: var(--font-body); font-size: 15px; line-height: 1.6; color: var(--color-ink); }
+    .volt-promo-popup__text p { margin: 0; }
+    .volt-promo-popup__text p + p { margin-top: 10px; }
+
+    .volt-promo-popup__code { display: flex; align-items: stretch; gap: 0; border: 1px dashed var(--color-ink); }
+    .volt-promo-popup__code-val { flex: 1 1 auto; display: flex; align-items: center; font-family: var(--font-mono); font-size: 14px; letter-spacing: .12em; text-transform: uppercase; color: var(--color-ink); padding: 12px 16px; }
+    .volt-promo-popup__copy { flex: 0 0 auto; background: var(--color-ink); color: var(--color-bg); font-family: var(--font-mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; padding: 12px 18px; transition: background var(--dur-fast) var(--ease); }
+    .volt-promo-popup__copy:hover { background: var(--color-mid); }
+    .volt-promo-popup__copy[data-copied="true"] { background: var(--color-acid); color: var(--on-acid); }
+
+    .volt-promo-popup__form { display: flex; flex-direction: column; gap: 8px; }
+    .volt-promo-popup__field { display: flex; gap: 8px; }
+    .volt-promo-popup__input { flex: 1 1 auto; min-width: 0; background: var(--color-bg); border: 1px solid var(--color-border); border-radius: 0; color: var(--color-ink); font-family: var(--font-body); font-size: 15px; padding: 13px 14px; transition: border-color var(--dur-fast) var(--ease); }
+    .volt-promo-popup__input::placeholder { color: var(--color-mid); }
+    .volt-promo-popup__input:focus { outline: none; border-color: var(--color-ink); }
+    .volt-promo-popup__submit { flex: 0 0 auto; background: var(--color-ink); color: var(--color-bg); border: 0; border-radius: 0; font-family: var(--font-body); font-weight: 500; font-size: 12px; letter-spacing: .12em; text-transform: uppercase; padding: 13px 20px; transition: background var(--dur-fast) var(--ease); }
+    .volt-promo-popup__submit:hover { background: var(--color-mid); }
+    .volt-promo-popup__success { font-family: var(--font-mono); font-size: 13px; color: var(--color-success); margin: 0; }
+    .volt-promo-popup__error { font-family: var(--font-mono); font-size: 12px; color: var(--color-danger); margin: 0; }
+
+    .volt-promo-popup__cta { display: inline-flex; align-items: center; justify-content: center; width: 100%; background: var(--color-acid); color: var(--on-acid); border: 1px solid transparent; border-radius: 0; font-family: var(--font-body); font-weight: 500; font-size: 12px; letter-spacing: .12em; text-transform: uppercase; padding: 15px 28px; transition: filter var(--dur-med) var(--ease), box-shadow var(--dur-med) var(--ease), transform var(--dur-fast) var(--ease); }
+    .volt-promo-popup__cta:hover { filter: brightness(1.05); box-shadow: 0 0 0 4px var(--color-acid-10); }
+    .volt-promo-popup__cta:active { transform: translateY(1px); }
+
+    @media (max-width: 540px) {
+      .volt-promo-popup__field { flex-direction: column; }
+      .volt-promo-popup__submit { width: 100%; }
+    }
+  {% endstylesheet %}
+
+  <script>
+    (function () {
+      var dialog = document.currentScript.parentElement.querySelector('[data-volt-promo]');
+      if (!dialog || dialog.getAttribute('data-enabled') !== 'true') return;
+      if (typeof dialog.showModal !== 'function') return;
+
+      var STORE_KEY = 'volt-popup-dismissed';
+      var trigger = dialog.getAttribute('data-trigger') || 'delay';
+      var delay = parseFloat(dialog.getAttribute('data-delay')) || 0;
+      var cookieDays = parseFloat(dialog.getAttribute('data-cookie-days')) || 7;
+      var opened = false;
+
+      function recentlyDismissed() {
+        try {
+          var stored = parseInt(localStorage.getItem(STORE_KEY), 10);
+          if (!stored) return false;
+          return (Date.now() - stored) < cookieDays * 86400000;
+        } catch (e) { return false; }
+      }
+
+      function dismiss() {
+        try { localStorage.setItem(STORE_KEY, String(Date.now())); } catch (e) {}
+      }
+
+      function open() {
+        if (opened || dialog.open) return;
+        opened = true;
+        cleanup();
+        try { dialog.showModal(); } catch (e) {}
+      }
+
+      function onScroll() {
+        var docH = document.documentElement.scrollHeight - window.innerHeight;
+        if (docH <= 0 || (window.scrollY / docH) >= 0.5) open();
+      }
+
+      function onExit(e) {
+        if (e.clientY <= 0) open();
+      }
+
+      var timer = null;
+      function cleanup() {
+        if (timer) { clearTimeout(timer); timer = null; }
+        window.removeEventListener('scroll', onScroll);
+        document.removeEventListener('mouseout', onExit);
+      }
+
+      // Closing handlers (button, Esc via 'close' event, backdrop click).
+      var closeBtn = dialog.querySelector('[data-promo-close]');
+      if (closeBtn) closeBtn.addEventListener('click', function () { dialog.close(); });
+      dialog.addEventListener('close', dismiss);
+      dialog.addEventListener('click', function (e) {
+        if (e.target === dialog) dialog.close();
+      });
+
+      // Copy-to-clipboard for the discount code chip.
+      var copyBtn = dialog.querySelector('[data-promo-copy]');
+      if (copyBtn) {
+        copyBtn.addEventListener('click', function () {
+          var code = copyBtn.getAttribute('data-code') || '';
+          var done = function () {
+            copyBtn.textContent = copyBtn.getAttribute('data-label-copied') || 'Copied';
+            copyBtn.setAttribute('data-copied', 'true');
+            setTimeout(function () {
+              copyBtn.textContent = copyBtn.getAttribute('data-label-copy') || 'Copy';
+              copyBtn.removeAttribute('data-copied');
+            }, 1800);
+          };
+          if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(code).then(done).catch(done);
+          } else {
+            done();
+          }
+        });
+      }
+
+      // In the theme editor, show the popup so merchants can style it.
+      if (window.Shopify && window.Shopify.designMode) {
+        try { dialog.showModal(); } catch (e) {}
+        return;
+      }
+
+      if (recentlyDismissed()) return;
+
+      if (trigger === 'scroll') {
+        window.addEventListener('scroll', onScroll, { passive: true });
+        onScroll();
+      } else if (trigger === 'exit') {
+        document.addEventListener('mouseout', onExit);
+      } else {
+        timer = setTimeout(open, delay * 1000);
+      }
+    })();
+  </script>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "t:sections.promo_popup.name",
+  "tag": "section",
+  "settings": [
+    { "type": "checkbox", "id": "enable_popup", "label": "t:sections.promo_popup.enable_popup", "default": false },
+    { "type": "select", "id": "popup_trigger", "label": "t:sections.promo_popup.popup_trigger", "default": "delay", "options": [
+      { "value": "delay", "label": "t:sections.promo_popup.trigger_delay" },
+      { "value": "exit", "label": "t:sections.promo_popup.trigger_exit" },
+      { "value": "scroll", "label": "t:sections.promo_popup.trigger_scroll" }
+    ] },
+    { "type": "range", "id": "popup_delay", "label": "t:sections.promo_popup.popup_delay", "min": 0, "max": 30, "step": 1, "unit": "s", "default": 5, "info": "t:sections.promo_popup.popup_delay_info" },
+    { "type": "header", "content": "t:sections.promo_popup.content_header" },
+    { "type": "image_picker", "id": "image", "label": "t:sections.promo_popup.image" },
+    { "type": "text", "id": "heading", "label": "t:sections.promo_popup.heading", "default": "Join the protocol" },
+    { "type": "richtext", "id": "body", "label": "t:sections.promo_popup.body", "default": "<p>Unlock member pricing, weekly performance science and early access to every drop.</p>" },
+    { "type": "header", "content": "t:sections.promo_popup.offer_header" },
+    { "type": "text", "id": "discount_code", "label": "t:sections.promo_popup.discount_code", "info": "t:sections.promo_popup.discount_code_info" },
+    { "type": "text", "id": "cta_label", "label": "t:sections.promo_popup.cta_label", "default": "Claim offer" },
+    { "type": "url", "id": "cta_url", "label": "t:sections.promo_popup.cta_url" },
+    { "type": "header", "content": "t:sections.promo_popup.email_header" },
+    { "type": "checkbox", "id": "show_email_input", "label": "t:sections.promo_popup.show_email_input", "default": true },
+    { "type": "header", "content": "t:sections.promo_popup.behavior_header" },
+    { "type": "range", "id": "cookie_days", "label": "t:sections.promo_popup.cookie_days", "min": 1, "max": 30, "step": 1, "unit": "d", "default": 7, "info": "t:sections.promo_popup.cookie_days_info" }
+  ],
+  "presets": [
+    { "name": "t:sections.promo_popup.name" }
+  ]
+}
+{% endschema %}

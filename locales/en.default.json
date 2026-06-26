@@ -124,6 +124,26 @@
     },
     "vitals_strip": {
       "aria": "Member stats"
+    },
+    "promo_popup": {
+      "eyebrow": "Members only",
+      "email_label": "Email address",
+      "email_placeholder": "Email address",
+      "email_submit": "Join",
+      "success": "You are in. Watch your inbox.",
+      "copy": "Copy",
+      "copied": "Copied ✓",
+      "close": "Close"
+    },
+    "slideshow": {
+      "previous": "Previous slide",
+      "next": "Next slide",
+      "go_to": "Go to slide"
+    },
+    "image_hotspot": {
+      "view_product": "View product",
+      "learn_more": "Learn more",
+      "toggle_label": "Show details"
     }
   },
   "products": {
@@ -138,6 +158,12 @@
     "per_mo": "/mo",
     "join_now": "Join now",
     "get_bundle": "Get the bundle",
-    "member": "member"
+    "member": "member",
+    "quick_view": "Quick view",
+    "close": "Close",
+    "loading": "Loading…",
+    "zoom": "Zoom image",
+    "add": "Add to cart",
+    "view_details": "View full details"
   }
 }

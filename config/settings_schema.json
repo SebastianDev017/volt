@@ -296,6 +296,13 @@
       },
       {
         "type": "checkbox",
+        "id": "quick_view",
+        "label": "t:settings.products.quick_view",
+        "info": "t:settings.products.quick_view_info",
+        "default": true
+      },
+      {
+        "type": "checkbox",
         "id": "hover_swap",
         "label": "t:settings.products.hover_swap",
         "default": true

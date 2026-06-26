@@ -1,0 +1,184 @@
+<section class="volt-hs" data-animate>
+  <div class="volt-hs__inner">
+    {%- if section.settings.eyebrow != blank or section.settings.heading != blank -%}
+      <div class="volt-hs__head">
+        {%- if section.settings.eyebrow != blank -%}<div class="eyebrow volt-hs__eyebrow">{{ section.settings.eyebrow }}</div>{%- endif -%}
+        {%- if section.settings.heading != blank -%}<h2 class="volt-hs__title">{{ section.settings.heading }}</h2>{%- endif -%}
+      </div>
+    {%- endif -%}
+
+    <hotspot-scene class="volt-hs__scene" style="aspect-ratio: {{ section.settings.aspect }};">
+      {%- if section.settings.image != blank -%}
+        {{ section.settings.image | image_url: width: 2000 | image_tag: loading: 'lazy', widths: '600,1000,1500,2000', sizes: '(max-width: 1280px) 100vw, 1280px', class: 'volt-hs__img', alt: section.settings.image.alt | default: section.settings.heading | escape }}
+      {%- else -%}
+        {{ 'lifestyle-1' | placeholder_svg_tag: 'volt-hs__img' }}
+      {%- endif -%}
+
+      {%- for block in section.blocks -%}
+        {%- liquid
+          assign p = block.settings.product
+          assign x = block.settings.position_x
+          assign y = block.settings.position_y
+        -%}
+        <div class="volt-hs__hotspot" style="left: {{ x }}%; top: {{ y }}%;" {{ block.shopify_attributes }}>
+          <button
+            type="button"
+            class="volt-hs__dot"
+            data-magnetic
+            aria-expanded="false"
+            aria-label="{%- if p != blank -%}{{ p.title | escape }}{%- elsif block.settings.custom_label != blank -%}{{ block.settings.custom_label | escape }}{%- else -%}{{ 'sections.image_hotspot.toggle_label' | t: default: 'Show details' }}{%- endif -%}"
+          >
+            <span class="volt-hs__pulse" aria-hidden="true"></span>
+          </button>
+
+          <div class="volt-hs__popup" role="group">
+            {%- if p != blank -%}
+              <a href="{{ p.url }}" class="volt-hs__media" tabindex="-1" aria-hidden="true">
+                {%- if p.featured_image -%}
+                  {{ p.featured_image | image_url: width: 200 | image_tag: loading: 'lazy', widths: '100,200', class: 'volt-hs__thumb', alt: p.featured_image.alt | default: p.title | escape }}
+                {%- else -%}
+                  {{ 'product-1' | placeholder_svg_tag: 'volt-hs__thumb' }}
+                {%- endif -%}
+              </a>
+              <div class="volt-hs__body">
+                <a href="{{ p.url }}" class="volt-hs__ptitle">{{ p.title }}</a>
+                <div class="volt-hs__price">{{ p.price | money }}</div>
+                <a href="{{ p.url }}" class="volt-hs__cta">{{ 'sections.image_hotspot.view_product' | t: default: 'View product' }} &rarr;</a>
+              </div>
+            {%- else -%}
+              <div class="volt-hs__body">
+                {%- if block.settings.custom_label != blank -%}<div class="volt-hs__ptitle">{{ block.settings.custom_label }}</div>{%- endif -%}
+                {%- if block.settings.custom_description != blank -%}<p class="volt-hs__desc">{{ block.settings.custom_description }}</p>{%- endif -%}
+                {%- if block.settings.url != blank -%}<a href="{{ block.settings.url }}" class="volt-hs__cta">{{ 'sections.image_hotspot.learn_more' | t: default: 'Learn more' }} &rarr;</a>{%- endif -%}
+              </div>
+            {%- endif -%}
+          </div>
+        </div>
+      {%- endfor -%}
+    </hotspot-scene>
+  </div>
+</section>
+
+{% stylesheet %}
+  .volt-hs { background: var(--color-bg); color: var(--color-ink); }
+  .volt-hs__inner { max-width: var(--page-width); margin-inline: auto; padding: 84px 28px; }
+  .volt-hs__head { text-align: center; margin-bottom: 36px; }
+  .volt-hs__eyebrow { margin-bottom: 14px; }
+  .volt-hs__title { font-family: var(--font-display); font-weight: 800; font-size: clamp(30px, 3vw, 46px); line-height: 1.02; letter-spacing: -.01em; margin: 0; color: var(--color-ink); }
+  .volt-hs__scene { position: relative; display: block; overflow: hidden; background: var(--color-surface); border: 1px solid var(--color-border); }
+  .volt-hs__img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+
+  .volt-hs__hotspot { position: absolute; transform: translate(-50%, -50%); z-index: 2; }
+  .volt-hs__dot { position: relative; display: block; width: 26px; height: 26px; padding: 0; border: 2px solid var(--color-ink); border-radius: 50%; background: var(--color-acid); cursor: pointer; box-shadow: 0 2px 10px rgba(13,12,11,.35); transition: transform var(--dur-fast) var(--ease); }
+  .volt-hs__dot:hover { transform: scale(1.12); }
+  .volt-hs__dot:focus-visible { outline: 2px solid var(--color-ink); outline-offset: 3px; }
+  .volt-hs__pulse { position: absolute; inset: -2px; border-radius: 50%; border: 2px solid var(--color-acid); pointer-events: none; animation: volt-hs-pulse 2.2s var(--ease) infinite; }
+  @keyframes volt-hs-pulse { 0% { transform: scale(1); opacity: .8; } 70% { transform: scale(2.4); opacity: 0; } 100% { transform: scale(2.4); opacity: 0; } }
+
+  .volt-hs__popup { position: absolute; left: 50%; bottom: calc(100% + 16px); transform: translateX(-50%) translateY(8px); width: 248px; display: flex; gap: 12px; padding: 12px; background: var(--color-bg); border: 1px solid var(--color-border); box-shadow: 0 14px 40px rgba(13,12,11,.28); opacity: 0; visibility: hidden; pointer-events: none; transition: opacity var(--dur-med) var(--ease), transform var(--dur-med) var(--ease), visibility var(--dur-med); z-index: 3; }
+  .volt-hs__hotspot:hover .volt-hs__popup,
+  .volt-hs__hotspot:focus-within .volt-hs__popup,
+  .volt-hs__hotspot.is-open .volt-hs__popup { opacity: 1; visibility: visible; pointer-events: auto; transform: translateX(-50%) translateY(0); }
+  .volt-hs__popup::after { content: ""; position: absolute; top: 100%; left: 50%; transform: translateX(-50%); border: 7px solid transparent; border-top-color: var(--color-bg); filter: drop-shadow(0 1px 0 var(--color-border)); }
+
+  .volt-hs__media { display: block; flex-shrink: 0; width: 64px; height: 64px; overflow: hidden; background: var(--color-surface); position: relative; }
+  .volt-hs__thumb { width: 100%; height: 100%; object-fit: cover; }
+  .volt-hs__body { display: flex; flex-direction: column; gap: 5px; min-width: 0; }
+  .volt-hs__ptitle { font-family: var(--font-display); font-weight: 700; font-size: 14px; line-height: 1.12; color: var(--color-ink); text-decoration: none; }
+  a.volt-hs__ptitle:hover { color: var(--color-mid); }
+  .volt-hs__price { font-family: var(--font-mono); font-size: 13px; color: var(--color-ink); }
+  .volt-hs__desc { font-family: var(--font-body); font-size: 12px; line-height: 1.5; color: var(--color-mid); margin: 0; }
+  .volt-hs__cta { font-family: var(--font-mono); font-size: 10px; letter-spacing: .1em; text-transform: uppercase; color: var(--color-ink); text-decoration: none; border-bottom: 2px solid var(--color-acid); padding-bottom: 3px; align-self: flex-start; margin-top: 2px; }
+  .volt-hs__cta:hover { color: var(--color-mid); }
+
+  @media (max-width: 600px) { .volt-hs__inner { padding: 56px 20px; } .volt-hs__popup { width: 210px; } }
+  @media (prefers-reduced-motion: reduce) { .volt-hs__pulse { animation: none; } }
+{% endstylesheet %}
+
+<script>
+  (function () {
+    var scenes = document.querySelectorAll('.volt-hs__scene');
+    scenes.forEach(function (scene) {
+      var hotspots = scene.querySelectorAll('.volt-hs__hotspot');
+      hotspots.forEach(function (hotspot) {
+        var dot = hotspot.querySelector('.volt-hs__dot');
+        if (!dot) return;
+        dot.addEventListener('click', function (e) {
+          e.stopPropagation();
+          var willOpen = !hotspot.classList.contains('is-open');
+          hotspots.forEach(function (other) {
+            other.classList.remove('is-open');
+            var d = other.querySelector('.volt-hs__dot');
+            if (d) d.setAttribute('aria-expanded', 'false');
+          });
+          if (willOpen) {
+            hotspot.classList.add('is-open');
+            dot.setAttribute('aria-expanded', 'true');
+          }
+        });
+      });
+
+      document.addEventListener('click', function (e) {
+        if (!scene.contains(e.target)) {
+          hotspots.forEach(function (h) {
+            h.classList.remove('is-open');
+            var d = h.querySelector('.volt-hs__dot');
+            if (d) d.setAttribute('aria-expanded', 'false');
+          });
+        }
+      });
+
+      scene.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') {
+          hotspots.forEach(function (h) {
+            h.classList.remove('is-open');
+            var d = h.querySelector('.volt-hs__dot');
+            if (d) { d.setAttribute('aria-expanded', 'false'); d.focus(); }
+          });
+        }
+      });
+    });
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "t:sections.image_hotspot.name",
+  "tag": "section",
+  "settings": [
+    { "type": "text", "id": "eyebrow", "label": "t:sections.image_hotspot.eyebrow", "default": "// Shop The Look" },
+    { "type": "text", "id": "heading", "label": "t:sections.image_hotspot.heading", "default": "Built for the session." },
+    { "type": "image_picker", "id": "image", "label": "t:sections.image_hotspot.image", "info": "t:sections.image_hotspot.image_info" },
+    { "type": "select", "id": "aspect", "label": "t:sections.image_hotspot.aspect", "default": "16/9", "options": [
+      { "value": "16/9", "label": "t:sections.image_hotspot.aspect_16_9" },
+      { "value": "4/3", "label": "t:sections.image_hotspot.aspect_4_3" },
+      { "value": "1/1", "label": "t:sections.image_hotspot.aspect_1_1" }
+    ] }
+  ],
+  "blocks": [
+    {
+      "type": "hotspot",
+      "name": "t:sections.image_hotspot.blocks.hotspot.name",
+      "settings": [
+        { "type": "range", "id": "position_x", "label": "t:sections.image_hotspot.blocks.hotspot.position_x", "min": 0, "max": 100, "step": 1, "unit": "%", "default": 50 },
+        { "type": "range", "id": "position_y", "label": "t:sections.image_hotspot.blocks.hotspot.position_y", "min": 0, "max": 100, "step": 1, "unit": "%", "default": 50 },
+        { "type": "product", "id": "product", "label": "t:sections.image_hotspot.blocks.hotspot.product" },
+        { "type": "text", "id": "custom_label", "label": "t:sections.image_hotspot.blocks.hotspot.custom_label", "info": "t:sections.image_hotspot.blocks.hotspot.custom_label_info" },
+        { "type": "textarea", "id": "custom_description", "label": "t:sections.image_hotspot.blocks.hotspot.custom_description" },
+        { "type": "url", "id": "url", "label": "t:sections.image_hotspot.blocks.hotspot.url" }
+      ]
+    }
+  ],
+  "max_blocks": 8,
+  "presets": [
+    {
+      "name": "t:sections.image_hotspot.name",
+      "blocks": [
+        { "type": "hotspot", "settings": { "position_x": 28, "position_y": 42 } },
+        { "type": "hotspot", "settings": { "position_x": 62, "position_y": 58, "custom_label": "Engineered fabric", "custom_description": "Four-way stretch, sweat-wicking, built to last the protocol." } },
+        { "type": "hotspot", "settings": { "position_x": 78, "position_y": 30 } }
+      ]
+    }
+  ]
+}
+{% endschema %}

@@ -220,7 +220,23 @@
       "columns": "Columns",
       "filter_menu": "Category filter menu",
       "filter_menu_info": "Optional. Renders category pills linking to collections.",
-      "show_view_all": "Show \"View all\" link"
+      "show_view_all": "Show \"View all\" link",
+      "blocks": {
+        "promo_tile": {
+          "name": "Promo tile",
+          "position": "Grid position",
+          "position_info": "Which slot in the grid this tile occupies (1 = first).",
+          "image": "Background image",
+          "color_scheme": "Color scheme",
+          "scheme_ink": "Ink",
+          "scheme_acid": "Acid",
+          "scheme_default": "Surface",
+          "heading": "Heading",
+          "body": "Body",
+          "cta_label": "Button label",
+          "cta_url": "Button link"
+        }
+      }
     },
     "announcement_bar": {
       "name": "Announcement bar",
@@ -365,8 +381,24 @@
           "name": "FAQ item",
           "question": "Question",
           "answer": "Answer"
+        },
+        "shipping_info": {
+          "name": "Shipping info",
+          "heading": "Heading",
+          "estimated_days": "Estimated delivery",
+          "carrier": "Carrier",
+          "free_threshold": "Free shipping line"
+        },
+        "size_chart": {
+          "name": "Size chart",
+          "link_label": "Trigger label",
+          "heading": "Modal heading",
+          "size_data": "Size table",
+          "size_data_info": "Paste an HTML table (use the rich-text editor's table tool)."
         }
-      }
+      },
+      "gallery_header": "Gallery",
+      "enable_zoom": "Enable image zoom"
     },
     "main_product_membership": {
       "name": "Membership product",
@@ -394,6 +426,160 @@
           "icon": "Icon (emoji)",
           "heading": "Heading",
           "description": "Description"
+        }
+      }
+    },
+    "promo_popup": {
+      "name": "Promo popup",
+      "enable_popup": "Enable popup",
+      "popup_trigger": "Trigger",
+      "trigger_delay": "After a delay",
+      "trigger_exit": "On exit intent",
+      "trigger_scroll": "On scroll (50%)",
+      "popup_delay": "Delay",
+      "popup_delay_info": "Only used when the trigger is set to After a delay.",
+      "content_header": "Content",
+      "image": "Image",
+      "heading": "Heading",
+      "body": "Body",
+      "eyebrow": "Members only",
+      "offer_header": "Offer",
+      "discount_code": "Discount code",
+      "discount_code_info": "Shown as a copyable code chip. Leave blank to hide.",
+      "cta_label": "Button label",
+      "cta_url": "Button link",
+      "email_header": "Email capture",
+      "show_email_input": "Show email signup form",
+      "email_label": "Email address",
+      "email_placeholder": "Email address",
+      "email_submit": "Join",
+      "success": "You are in. Watch your inbox.",
+      "behavior_header": "Behavior",
+      "cookie_days": "Don't show again for",
+      "cookie_days_info": "Number of days before the popup reappears after being dismissed.",
+      "copy": "Copy",
+      "copied": "Copied ✓",
+      "close": "Close"
+    },
+    "age_verifier": {
+      "name": "Age verifier",
+      "enable_age_gate": "Enable age gate",
+      "minimum_age": "Minimum age",
+      "heading": "Heading",
+      "body": "Body text",
+      "confirm_label": "Confirm button label",
+      "decline_label": "Decline button label",
+      "decline_url": "Decline link URL",
+      "legal_text": "Legal small print",
+      "legal_text_info": "Optional fine print shown below the buttons."
+    },
+    "press_coverage": {
+      "name": "Press coverage",
+      "eyebrow": "Eyebrow",
+      "heading": "Heading",
+      "layout": "Layout",
+      "layout_grid": "Grid",
+      "layout_marquee": "Marquee",
+      "grayscale": "Grayscale logos",
+      "grayscale_info": "Logos start grayscale and dimmed, then go full color on hover.",
+      "blocks": {
+        "press_item": {
+          "name": "Press item",
+          "logo": "Logo",
+          "publication": "Publication name",
+          "quote": "Quote",
+          "quote_info": "Optional. Shown small under the logo.",
+          "url": "Link"
+        }
+      }
+    },
+    "lookbook": {
+      "name": "Lookbook",
+      "eyebrow": "Eyebrow",
+      "heading": "Heading",
+      "layout": {
+        "label": "Layout",
+        "scroll": "Horizontal scroll",
+        "mosaic": "Editorial mosaic"
+      },
+      "blocks": {
+        "lookbook_item": {
+          "name": "Lookbook item",
+          "image": "Image",
+          "title": "Title",
+          "badge": "Badge",
+          "badge_info": "Optional. Shown as an acid chip over the image.",
+          "collection_url": "Link"
+        }
+      }
+    },
+    "slideshow": {
+      "name": "Slideshow",
+      "autoplay": "Autoplay speed",
+      "autoplay_info": "Seconds between slides. Set to 0 for manual only.",
+      "height": "Section height",
+      "height_medium": "Medium",
+      "height_large": "Large",
+      "height_full": "Full screen",
+      "show_arrows": "Show arrows",
+      "show_dots": "Show dots",
+      "blocks": {
+        "slide": {
+          "name": "Slide",
+          "image": "Image",
+          "eyebrow": "Eyebrow",
+          "heading": "Heading",
+          "body": "Body text",
+          "cta_label": "Button label",
+          "cta_url": "Button link",
+          "text_align": "Text alignment",
+          "align_left": "Left",
+          "align_center": "Center",
+          "overlay_opacity": "Overlay opacity"
+        }
+      }
+    },
+    "image_gallery": {
+      "name": "Image gallery",
+      "eyebrow": "Eyebrow",
+      "heading": "Heading",
+      "layout": "Layout",
+      "layout_masonry": "Masonry",
+      "layout_grid": "Grid",
+      "columns": "Columns",
+      "gap": "Gap",
+      "blocks": {
+        "image": {
+          "name": "Image",
+          "image": "Image",
+          "caption": "Caption",
+          "link": "Link"
+        }
+      }
+    },
+    "image_hotspot": {
+      "name": "Image hotspots",
+      "eyebrow": "Eyebrow",
+      "heading": "Heading",
+      "image": "Background image",
+      "image_info": "The scene customers will shop. Position hotspots over it using each block's X/Y settings.",
+      "aspect": "Aspect ratio",
+      "aspect_16_9": "Landscape (16:9)",
+      "aspect_4_3": "Standard (4:3)",
+      "aspect_1_1": "Square (1:1)",
+      "view_product": "View product",
+      "learn_more": "Learn more",
+      "toggle_label": "Show details",
+      "blocks": {
+        "hotspot": {
+          "name": "Hotspot",
+          "position_x": "Horizontal position",
+          "position_y": "Vertical position",
+          "product": "Product",
+          "custom_label": "Custom label",
+          "custom_label_info": "Used when no product is selected.",
+          "custom_description": "Custom description",
+          "url": "Link"
         }
       }
     }
@@ -468,7 +654,9 @@
       "image_radius": "Image corner radius",
       "stock_threshold": "Low-stock threshold",
       "show_member_price": "Show member price on cards",
-      "show_tasting_specs": "Show spec line on cards"
+      "show_tasting_specs": "Show spec line on cards",
+      "quick_view": "Enable quick view",
+      "quick_view_info": "Adds a quick-view button on product cards that opens a mini product modal."
     },
     "header": {
       "name": "Header",
