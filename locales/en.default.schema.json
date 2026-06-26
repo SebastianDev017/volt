@@ -323,6 +323,34 @@
       "heading": "Heading",
       "blog": "Blog",
       "view_all_label": "View-all label"
+    },
+    "main_product": {
+      "name": "Product page",
+      "rating_header": "Rating",
+      "show_rating": "Show rating row",
+      "rating": "Rating value",
+      "review_count": "Review count",
+      "nutrition_header": "Nutrition",
+      "serving": "Serving size",
+      "calories": "Calories",
+      "ingredients": "Ingredients",
+      "recs_header": "Recommendations",
+      "recs_eyebrow": "Eyebrow",
+      "recs_heading": "Heading",
+      "recs_collection": "Recommendations collection",
+      "blocks": {
+        "macro": {
+          "name": "Macro",
+          "label": "Label",
+          "value": "Value",
+          "fill": "Bar fill"
+        },
+        "faq": {
+          "name": "FAQ item",
+          "question": "Question",
+          "answer": "Answer"
+        }
+      }
     }
   },
   "settings": {

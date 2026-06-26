@@ -1,20 +1,19 @@
-/*
- * ------------------------------------------------------------
- * IMPORTANT: The contents of this file are auto-generated.
- *
- * This file may be updated by the Shopify admin theme editor
- * or related systems. Please exercise caution as any changes
- * made to this file may be overwritten.
- * ------------------------------------------------------------
- */
 {
   "sections": {
     "main": {
-      "type": "product",
+      "type": "main-product",
+      "blocks": {
+        "m1": { "type": "macro", "settings": { "label": "Protein", "value": "24g", "fill": 96 } },
+        "m2": { "type": "macro", "settings": { "label": "Carbohydrate", "value": "3g", "fill": 14 } },
+        "m3": { "type": "macro", "settings": { "label": "Fat", "value": "1g", "fill": 8 } },
+        "m4": { "type": "macro", "settings": { "label": "Sugar", "value": "1g", "fill": 6 } },
+        "f1": { "type": "faq", "settings": { "question": "When should I take it?", "answer": "<p>Within 30 minutes post-workout, or any time you need to hit your daily protein target.</p>" } },
+        "f2": { "type": "faq", "settings": { "question": "Is it third-party tested?", "answer": "<p>Yes — every lot is NSF Certified for Sport and screened for banned substances.</p>" } },
+        "f3": { "type": "faq", "settings": { "question": "What is your return policy?", "answer": "<p>30-day performance guarantee. If it is not for you, we refund it — no questions.</p>" } }
+      },
+      "block_order": ["m1", "m2", "m3", "m4", "f1", "f2", "f3"],
       "settings": {}
     }
   },
-  "order": [
-    "main"
-  ]
+  "order": ["main"]
 }
