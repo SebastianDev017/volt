@@ -142,7 +142,7 @@
         "dashboard_link_label": "Already a member? Access your dashboard →",
         "dashboard_link": "",
         "enable_animations": true,
-        "heading_animation": "split-words",
+        "heading_animation": "split-lines",
         "cards_animation": "stagger-up",
         "section_delay": 0
       }
