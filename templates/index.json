@@ -152,7 +152,7 @@
       "settings": {
         "eyebrow": "// The Upsell",
         "heading": "Gear the protocol.",
-        "collection": "automated-collection",
+        "collection": "hydrogen",
         "columns": 4,
         "filter_menu": "",
         "show_view_all": true,
@@ -245,6 +245,8 @@
       "settings": {
         "eyebrow": "// Real Member Outcomes",
         "heading": "Six months on protocol.",
+        "before_image": "shopify://shop_images/Main_b13ad453-477c-4ed1-9b43-81f3345adfd6.jpg",
+        "after_image": "shopify://shop_images/Main_d624f226-0a89-4fe1-b333-0d1548b43c06.jpg",
         "before_label": "MONTH 0 · 92KG · PRs: 0",
         "after_label": "MONTH 6 · 78KG · PRs: 8",
         "quote": "<p>\"The dashboard changed everything. I stopped guessing and started reading my recovery. Eight PRs in six months — and I trained less than before.\"</p>",
