@@ -132,7 +132,7 @@
   .hero-eyebrow-wrap { position: relative; width: 100%; display: flex; justify-content: center; margin-bottom: 2px; }
   .hero-eyebrow { display: flex; align-items: center; gap: 10px; font-family: var(--font-mono); font-size: 10px; font-weight: 500; letter-spacing: .22em; text-transform: uppercase; white-space: nowrap; }
   .hero-eyebrow--ink { color: var(--color-acid-accessible); clip-path: inset(0 50% 0 0); }
-  .hero-eyebrow--cream { color: var(--color-acid); position: absolute; top: 0; left: 0; width: 100%; display: flex; justify-content: center; clip-path: inset(0 0 0 50%); }
+  .hero-eyebrow--cream { color: var(--color-acid); opacity: 1; position: absolute; top: 0; left: 0; width: 100%; display: flex; justify-content: center; clip-path: inset(0 0 0 50%); }
   .hero-eyebrow__dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; flex-shrink: 0; }
 
   /* Heading — the dual-colour crossover */
@@ -148,8 +148,8 @@
   /* Subheading — duplicated, clipped per half */
   .hero-sub-wrap { position: relative; width: 100%; display: flex; justify-content: center; margin-top: 2px; }
   .hero-sub { font-size: 15px; line-height: 1.65; max-width: 500px; margin: 0; text-align: center; }
-  .hero-sub--ink { color: var(--color-mid); clip-path: inset(0 50% 0 0); }
-  .hero-sub--cream { color: var(--color-mid); position: absolute; top: 0; left: 0; right: 0; margin-inline: auto; clip-path: inset(0 0 0 50%); }
+  .hero-sub--ink { color: color-mix(in srgb, var(--color-ink) 75%, transparent); clip-path: inset(0 50% 0 0); }
+  .hero-sub--cream { color: rgba(255, 255, 255, .90); text-shadow: 0 1px 12px rgba(0, 0, 0, .4); position: absolute; top: 0; left: 0; right: 0; margin-inline: auto; clip-path: inset(0 0 0 50%); }
 
   .hero-ctas { display: flex; gap: 14px; flex-wrap: wrap; justify-content: center; margin-top: 6px; }
   .hero-split__outline { border: 1.5px solid rgba(13, 12, 11, .35); background: rgba(240, 238, 234, .14); backdrop-filter: blur(8px); color: var(--color-ink); }
