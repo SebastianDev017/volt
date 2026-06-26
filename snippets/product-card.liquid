@@ -100,7 +100,7 @@
               {%- assign has_img = false -%}
               {%- if vfc.image != blank and vfc.image.id != p.featured_image.id -%}{%- assign has_img = true -%}{%- endif -%}
               {%- assign ckey = cval | downcase | strip | replace: ' ', '-' | replace: '/', '-' -%}
-              <span class="card-swatch" role="listitem" aria-label="{{ cval | escape }}" title="{{ cval | escape }}" data-swatch-color="{{ ckey }}" data-color-name="{{ cval | escape }}" data-variant-id="{{ vfc.id }}"{% if has_img %} data-swatch-image="{{ vfc.image | image_url: width: 120 }}" style="background-image: url('{{ vfc.image | image_url: width: 120 }}');"{% endif %}></span>
+              <span class="card-swatch" role="listitem" aria-label="{{ cval | escape }}" title="{{ cval | escape }}" data-swatch-color="{{ ckey }}" data-color-name="{{ cval | escape }}" data-variant-id="{{ vfc.id }}"{% if has_img %} data-swatch-image="{{ vfc.image | image_url: width: 600 }}" style="background-image: url('{{ vfc.image | image_url: width: 120 }}');"{% endif %}></span>
             {%- endfor -%}
             {%- if color_opt.values.size > 6 -%}<span class="card-swatches__overflow">+{{ color_opt.values.size | minus: 6 }}</span>{%- endif -%}
           </div>
