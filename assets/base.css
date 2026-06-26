@@ -510,3 +510,27 @@ body.has-custom-cursor, body.has-custom-cursor *{ cursor: none; }
 .volt-cd__tax{ font-size: 12px; color: var(--color-mid); margin: 0 0 4px; }
 .volt-cd__viewcart{ margin-top: 0; }
 body.cart-open{ overflow: hidden; }
+
+/* ---- Header predictive search overlay ---- */
+.volt-ps{ display: inline-flex; }
+.volt-ps__overlay{ position: fixed; inset: 0; z-index: var(--z-modal); background: rgba(13,12,11,.45); -webkit-backdrop-filter: blur(2px); backdrop-filter: blur(2px); }
+.volt-ps__overlay[hidden]{ display: none; }
+.volt-ps__panel{ background: var(--color-bg); border-bottom: 1px solid var(--color-border); max-width: var(--page-width); margin: 0 auto; padding: 22px 28px 26px; }
+.volt-ps__form{ display: flex; align-items: center; gap: 12px; border-bottom: 2px solid var(--color-ink); padding-bottom: 12px; }
+.volt-ps__formicon{ flex: none; color: var(--color-mid); }
+.volt-ps__input{ flex: 1; min-width: 0; border: 0; background: none; font-family: var(--font-display); font-weight: 700; font-size: clamp(20px, 3vw, 30px); color: var(--color-ink); }
+.volt-ps__input::placeholder{ color: var(--color-mid); }
+.volt-ps__input:focus{ outline: none; }
+.volt-ps__close{ flex: none; color: var(--color-ink); font-size: 24px; line-height: 1; padding: 4px; background: none; border: 0; cursor: pointer; transition: color var(--dur-fast) var(--ease); }
+.volt-ps__close:hover{ color: var(--color-mid); transition-delay: .05s; }
+.volt-ps__results{ display: grid; gap: 6px; margin-top: 18px; max-height: 62vh; overflow-y: auto; }
+.volt-ps__group-label{ font-family: var(--font-mono); font-size: 10px; letter-spacing: .14em; text-transform: uppercase; color: var(--color-mid); margin-top: 12px; }
+.volt-ps__item{ display: flex; align-items: center; gap: 12px; padding: 8px 0; color: var(--color-ink); text-decoration: none; transition: color var(--dur-fast) var(--ease); }
+.volt-ps__item:hover{ color: var(--color-mid); transition-delay: .05s; }
+.volt-ps__thumb{ width: 44px; height: 44px; flex: none; object-fit: cover; background: var(--color-surface); border: 1px solid var(--color-border); }
+.volt-ps__itemtitle{ font-family: var(--font-display); font-weight: 700; font-size: 15px; line-height: 1.15; }
+.volt-ps__pills{ display: flex; flex-wrap: wrap; gap: 8px; margin-top: 6px; }
+.volt-ps__pill{ border: 1px solid var(--color-border); padding: 8px 12px; font-family: var(--font-mono); font-size: 11px; letter-spacing: .06em; text-transform: uppercase; color: var(--color-ink); text-decoration: none; transition: background var(--dur-fast) var(--ease), color var(--dur-fast) var(--ease), border-color var(--dur-fast) var(--ease); }
+.volt-ps__pill:hover{ background: var(--color-acid); color: var(--on-acid); border-color: var(--color-acid); transition-delay: .05s; }
+.volt-ps__none{ font-family: var(--font-mono); font-size: 12px; letter-spacing: .06em; text-transform: uppercase; color: var(--color-mid); padding: 14px 0; }
+body.ps-open{ overflow: hidden; }

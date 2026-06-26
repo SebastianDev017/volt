@@ -1,0 +1,78 @@
+{%- comment -%}
+  VOLT — header predictive search. Toggle lives in the header; the overlay is
+  moved to <body> on init so it escapes the header's containing block (the
+  is-stuck backdrop-filter). Live results from /search/suggest.json; the form
+  still submits to /search as a full fallback.
+{%- endcomment -%}
+<predictive-search class="volt-ps" data-predictive-search>
+  <button type="button" class="volt-header__icon volt-ps__toggle" data-ps-open aria-expanded="false" aria-label="{{ 'sections.header_main.search' | t: default: 'Search' }}">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+  </button>
+  <div class="volt-ps__overlay" data-ps-overlay hidden>
+    <div class="volt-ps__panel">
+      <form class="volt-ps__form" action="{{ routes.search_url }}" method="get" role="search">
+        <input type="hidden" name="type" value="product,article,page">
+        <input type="hidden" name="options[prefix]" value="last">
+        <svg class="volt-ps__formicon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+        <input class="volt-ps__input" type="search" name="q" autocomplete="off" data-ps-input placeholder="Search products, articles…" aria-label="{{ 'sections.header_main.search' | t: default: 'Search' }}">
+        <button type="button" class="volt-ps__close" data-ps-close aria-label="{{ 'products.close' | t: default: 'Close' }}">&times;</button>
+      </form>
+      <div class="volt-ps__results" data-ps-results aria-live="polite"></div>
+    </div>
+  </div>
+</predictive-search>
+<script>
+  (function () {
+    if (!window.customElements || customElements.get('predictive-search')) return;
+    customElements.define('predictive-search', class extends HTMLElement {
+      connectedCallback() {
+        var self = this;
+        this.overlay = this.querySelector('[data-ps-overlay]');
+        this.input = this.overlay.querySelector('[data-ps-input]');
+        this.results = this.overlay.querySelector('[data-ps-results]');
+        this.toggle = this.querySelector('[data-ps-open]');
+        document.body.appendChild(this.overlay); // escape the header containing block
+        this.toggle.addEventListener('click', function () { self.open(); });
+        this.overlay.querySelector('[data-ps-close]').addEventListener('click', function () { self.close(); });
+        this.overlay.addEventListener('click', function (e) { if (e.target === self.overlay) self.close(); });
+        document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !self.overlay.hidden) self.close(); });
+        var t;
+        this.input.addEventListener('input', function () { clearTimeout(t); t = setTimeout(function () { self.search(); }, 220); });
+      }
+      esc(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+      open() { this.overlay.hidden = false; this.toggle.setAttribute('aria-expanded', 'true'); document.body.classList.add('ps-open'); var self = this; requestAnimationFrame(function () { self.input.focus(); }); }
+      close() { this.overlay.hidden = true; this.toggle.setAttribute('aria-expanded', 'false'); document.body.classList.remove('ps-open'); }
+      search() {
+        var q = this.input.value.trim(), self = this;
+        if (q.length < 2) { this.results.innerHTML = ''; return; }
+        var url = '/search/suggest.json?q=' + encodeURIComponent(q) + '&resources[type]=product,article,query&resources[limit]=6&resources[options][unavailable_products]=last';
+        fetch(url, { headers: { 'Accept': 'application/json' } })
+          .then(function (r) { return r.json(); })
+          .then(function (data) { self.render(data, q); })
+          .catch(function (err) { console.warn('[VOLT] predictive search failed', err); });
+      }
+      render(data, q) {
+        var r = (data && data.resources && data.resources.results) || {}, self = this, html = '';
+        var products = r.products || [], articles = r.articles || [], queries = r.queries || [];
+        if (products.length) {
+          html += '<div class="volt-ps__group-label">Products</div>';
+          products.forEach(function (p) {
+            var img = (p.featured_image && p.featured_image.url) || p.image || '';
+            html += '<a class="volt-ps__item" href="' + self.esc(p.url) + '">' + (img ? '<img class="volt-ps__thumb" src="' + self.esc(img) + '" alt="" loading="lazy">' : '<span class="volt-ps__thumb"></span>') + '<span class="volt-ps__itemtitle">' + self.esc(p.title) + '</span></a>';
+          });
+        }
+        if (articles.length) {
+          html += '<div class="volt-ps__group-label">Articles</div>';
+          articles.forEach(function (a) { html += '<a class="volt-ps__item" href="' + self.esc(a.url) + '"><span class="volt-ps__itemtitle">' + self.esc(a.title) + '</span></a>'; });
+        }
+        if (queries.length) {
+          html += '<div class="volt-ps__group-label">Suggestions</div><div class="volt-ps__pills">';
+          queries.forEach(function (qq) { html += '<a class="volt-ps__pill" href="' + self.esc(qq.url) + '">' + self.esc(qq.text) + '</a>'; });
+          html += '</div>';
+        }
+        if (!html) html = '<p class="volt-ps__none">No matches for &ldquo;' + self.esc(q) + '&rdquo;</p>';
+        this.results.innerHTML = html;
+      }
+    });
+  })();
+</script>

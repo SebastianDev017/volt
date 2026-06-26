@@ -49,9 +49,7 @@
     </nav>
 
     <div class="volt-header__actions">
-      <a href="{{ routes.search_url }}" class="volt-header__icon" aria-label="{{ 'sections.header_main.search' | t: default: 'Search' }}">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
-      </a>
+      {% render 'predictive-search' %}
       <a href="{{ account_href }}" class="volt-header__account" aria-label="{{ 'sections.header_main.account' | t: default: 'Account' }}">
         {%- if customer -%}<span class="volt-header__initial">{{ customer.first_name | slice: 0 | upcase | default: 'A' }}</span>
         {%- else -%}<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-7 8-7s8 3 8 7"/></svg>{%- endif -%}
