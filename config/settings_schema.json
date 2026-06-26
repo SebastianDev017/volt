@@ -270,6 +270,29 @@
         "step": 1,
         "default": 4,
         "info": "t:settings.animations.scroll_smooth_info"
+      },
+      {
+        "type": "header",
+        "content": "t:settings.animations.loader_header"
+      },
+      {
+        "type": "checkbox",
+        "id": "show_loader",
+        "label": "t:settings.animations.show_loader",
+        "info": "t:settings.animations.show_loader_info",
+        "default": true
+      },
+      {
+        "type": "text",
+        "id": "loader_text",
+        "label": "t:settings.animations.loader_text",
+        "info": "t:settings.animations.loader_text_info"
+      },
+      {
+        "type": "checkbox",
+        "id": "loader_session_once",
+        "label": "t:settings.animations.loader_once",
+        "default": true
       }
     ]
   },

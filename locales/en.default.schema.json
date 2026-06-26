@@ -742,7 +742,13 @@
       "scroll_smoother": "GSAP ScrollSmoother",
       "scroll_smoother_info": "Inertia-based smooth scrolling. Adds a transformed content wrapper and fixes the header. Off by default.",
       "scroll_smooth": "Smoothness",
-      "scroll_smooth_info": "Higher = more inertia and lag."
+      "scroll_smooth_info": "Higher = more inertia and lag.",
+      "loader_header": "Loading screen",
+      "show_loader": "Show loading screen",
+      "show_loader_info": "A full-screen intro with the wordmark filling in. Note: adds a brief delay before content shows (affects LCP).",
+      "loader_text": "Loader wordmark",
+      "loader_text_info": "Defaults to the shop name.",
+      "loader_once": "Only on first visit (per session)"
     },
     "layout": {
       "name": "Layout",

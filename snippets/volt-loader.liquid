@@ -1,0 +1,34 @@
+{%- comment -%} VOLT letter-fill loader. Rendered (gated) in layout/theme.liquid. Driven by assets/volt-loader.js. {%- endcomment -%}
+{%- liquid
+  assign loader_text = settings.loader_text | default: shop.name
+  assign loader_chars = loader_text | split: ''
+-%}
+<div id="volt-loader" class="volt-loader" role="status" aria-label="Loading" data-session-once="{% if settings.loader_session_once %}1{% else %}0{% endif %}">
+  <div class="volt-loader__inner">
+    <div class="volt-loader__letters">
+      {%- for ch in loader_chars -%}
+        {%- if ch == ' ' -%}
+          <span class="volt-loader__space">&nbsp;</span>
+        {%- else -%}
+          <span class="volt-loader__char" aria-hidden="true"><span class="volt-loader__char-empty">{{ ch }}</span><span class="volt-loader__char-fill" data-loader-char>{{ ch }}</span></span>
+        {%- endif -%}
+      {%- endfor -%}
+    </div>
+    <div class="volt-loader__bar"><div class="volt-loader__bar-fill" data-loader-bar></div></div>
+  </div>
+</div>
+
+{% stylesheet %}
+  .volt-loader { position: fixed; inset: 0; z-index: 9999; background: var(--color-ink); display: flex; align-items: center; justify-content: center; transition: opacity 0.5s var(--ease); }
+  .volt-loader.is-done { opacity: 0; pointer-events: none; }
+  html.loader-skip .volt-loader { display: none !important; }
+  .volt-loader__inner { display: flex; flex-direction: column; align-items: center; gap: 32px; }
+  .volt-loader__letters { display: flex; gap: 0.02em; }
+  .volt-loader__space { width: 0.3em; }
+  .volt-loader__char { position: relative; overflow: hidden; font-family: var(--font-display); font-weight: 800; font-size: clamp(48px, 8vw, 96px); line-height: 1; color: transparent; }
+  .volt-loader__char-empty { position: absolute; inset: 0; color: rgba(240,238,234,0.14); -webkit-text-stroke: 1px rgba(240,238,234,0.28); }
+  .volt-loader__char-fill { display: block; color: var(--color-acid); transform: translateY(110%); will-change: transform; }
+  .volt-loader__bar { width: 120px; height: 2px; background: rgba(240,238,234,0.1); overflow: hidden; }
+  .volt-loader__bar-fill { height: 100%; width: 0%; background: var(--color-acid); transition: width 0.1s linear; }
+  @media (prefers-reduced-motion: reduce) { .volt-loader__char-fill { transform: none; } }
+{% endstylesheet %}

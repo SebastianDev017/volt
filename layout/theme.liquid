@@ -7,6 +7,11 @@
     {%- comment -%} VOLT 1.0.0 — build marker (re-sync nudge) {%- endcomment -%}
     <script>document.documentElement.classList.add('js');</script>
 
+    {%- if settings.show_loader -%}
+      <script>try{if({% if settings.loader_session_once %}true{% else %}false{% endif %} && sessionStorage.getItem('volt-loaded')){document.documentElement.classList.add('loader-skip');}}catch(e){}</script>
+      <script src="{{ 'volt-loader.js' | asset_url }}" defer></script>
+    {%- endif -%}
+
     {%- if settings.use_gsap != false -%}
       {%- # theme-check-disable RemoteAsset -%}
       <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
@@ -75,6 +80,8 @@
     data-gauge="{{ settings.gauge_animation }}"
     data-grain="{{ settings.grain_texture }}"
   >
+    {%- if settings.show_loader -%}{% render 'volt-loader' %}{%- endif -%}
+
     <a class="skip-link" href="#main-content">{{ 'general.skip_to_content' | t: default: 'Skip to content' }}</a>
 
     {%- if settings.use_scroll_smoother -%}<div id="smooth-wrapper"><div id="smooth-content">{%- endif -%}
