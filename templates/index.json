@@ -12,7 +12,7 @@
     "hero_diagnostic_1": {
       "type": "hero-diagnostic",
       "settings": {
-        "hero_layout": "full-image",
+        "hero_layout": "split-image-left",
         "hero_image": "shopify://shop_images/theme_cover_image.jpg",
         "hero_image_position": "center",
         "content_align": "left",
