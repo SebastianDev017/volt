@@ -322,7 +322,7 @@
       "settings": {
         "eyebrow": "// Journal",
         "heading": "Read the protocol.",
-        "blog": "",
+        "blog": "news",
         "view_all_label": "All articles",
         "enable_animations": true,
         "heading_animation": "split-words",
