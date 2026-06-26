@@ -6,8 +6,25 @@
   assign str = section.settings.strain_fill | at_least: 0 | at_most: 100
   assign str_fill = str | times: circ | divided_by: 100.0
   assign str_off = circ | minus: str_fill
+  assign layout = section.settings.hero_layout | default: 'split-image-right'
+  assign img = section.settings.hero_image
+  assign is_split = false
+  if layout == 'split-image-right' or layout == 'split-image-left'
+    assign is_split = true
+  endif
+  assign centered = false
+  if section.settings.content_align == 'center' or layout == 'full-image' or layout == 'full-bg'
+    assign centered = true
+  endif
 -%}
-<section class="volt-hero" data-animate>
+<section class="volt-hero volt-hero--{{ layout }}{% if centered %} volt-hero--center{% endif %}" data-animate>
+  {%- if layout == 'full-image' and img != blank -%}
+    <div class="volt-hero__bg" aria-hidden="true">
+      {{ img | image_url: width: 2000 | image_tag: loading: 'eager', fetchpriority: 'high', class: 'volt-hero__bgimg', widths: '800, 1200, 1600, 2000', sizes: '100vw', alt: '' }}
+      <span class="volt-hero__overlay" style="opacity: {{ section.settings.overlay_opacity | default: 40 | divided_by: 100.0 }};"></span>
+    </div>
+  {%- endif -%}
+
   <div class="volt-hero__inner">
     <div class="volt-hero__grid">
 
@@ -29,54 +46,93 @@
         </div>
       </div>
 
-      <div class="volt-hero__panel" aria-hidden="true"{% if section.settings.enable_animations != false %} data-clip="left"{% endif %}>
-        <div class="volt-hero__panelhead">
-          <span class="volt-hero__pretitle">Member dashboard preview</span>
-          <span class="volt-hero__live"><span class="volt-hero__livedot"></span>Live</span>
-        </div>
-        <div class="volt-hero__gauges">
-          <div class="volt-hero__gauge">
-            <div class="volt-hero__dial">
-              <svg viewBox="0 0 120 120"><circle cx="60" cy="60" r="52" fill="none" stroke="rgba(240,238,234,.12)" stroke-width="8"/><circle cx="60" cy="60" r="52" fill="none" stroke="var(--color-success)" stroke-width="8" stroke-linecap="round" stroke-dasharray="{{ circ }}" stroke-dashoffset="{{ rec_off }}" transform="rotate(-90 60 60)"/></svg>
-              <div class="volt-hero__dialval">{{ rec }}<span>%</span></div>
+      {%- if is_split -%}
+        {%- if img != blank -%}
+          <div class="volt-hero__visual"{% if section.settings.enable_animations != false %} data-clip="{% if layout == 'split-image-left' %}right{% else %}left{% endif %}"{% endif %}>
+            {{ img | image_url: width: 1200 | image_tag: loading: 'eager', fetchpriority: 'high', class: 'volt-hero__visualimg', widths: '500, 800, 1200', sizes: '(max-width: 860px) 100vw, 50vw', alt: '', style: 'object-position: center ' | append: section.settings.hero_image_position | default: 'center' }}
+          </div>
+        {%- elsif section.settings.show_dashboard_panel -%}
+          <div class="volt-hero__panel" aria-hidden="true"{% if section.settings.enable_animations != false %} data-clip="{% if layout == 'split-image-left' %}right{% else %}left{% endif %}"{% endif %}>
+            <div class="volt-hero__panelhead">
+              <span class="volt-hero__pretitle">Member dashboard preview</span>
+              <span class="volt-hero__live"><span class="volt-hero__livedot"></span>Live</span>
             </div>
-            <div class="volt-hero__gaugelabel">Recovery score</div>
-          </div>
-          <div class="volt-hero__gauge">
-            <div class="volt-hero__dial">
-              <svg viewBox="0 0 120 120"><circle cx="60" cy="60" r="52" fill="none" stroke="rgba(240,238,234,.12)" stroke-width="8"/><circle cx="60" cy="60" r="52" fill="none" stroke="var(--color-amber)" stroke-width="8" stroke-linecap="round" stroke-dasharray="{{ circ }}" stroke-dashoffset="{{ str_off }}" transform="rotate(-90 60 60)"/></svg>
-              <div class="volt-hero__dialval">{{ section.settings.strain_label }}</div>
+            <div class="volt-hero__gauges">
+              <div class="volt-hero__gauge">
+                <div class="volt-hero__dial">
+                  <svg viewBox="0 0 120 120"><circle cx="60" cy="60" r="52" fill="none" stroke="rgba(240,238,234,.12)" stroke-width="8"/><circle cx="60" cy="60" r="52" fill="none" stroke="var(--color-success)" stroke-width="8" stroke-linecap="round" stroke-dasharray="{{ circ }}" stroke-dashoffset="{{ rec_off }}" transform="rotate(-90 60 60)"/></svg>
+                  <div class="volt-hero__dialval">{{ rec }}<span>%</span></div>
+                </div>
+                <div class="volt-hero__gaugelabel">Recovery score</div>
+              </div>
+              <div class="volt-hero__gauge">
+                <div class="volt-hero__dial">
+                  <svg viewBox="0 0 120 120"><circle cx="60" cy="60" r="52" fill="none" stroke="rgba(240,238,234,.12)" stroke-width="8"/><circle cx="60" cy="60" r="52" fill="none" stroke="var(--color-amber)" stroke-width="8" stroke-linecap="round" stroke-dasharray="{{ circ }}" stroke-dashoffset="{{ str_off }}" transform="rotate(-90 60 60)"/></svg>
+                  <div class="volt-hero__dialval">{{ section.settings.strain_label }}</div>
+                </div>
+                <div class="volt-hero__gaugelabel">Day strain</div>
+              </div>
             </div>
-            <div class="volt-hero__gaugelabel">Day strain</div>
+            <div class="volt-hero__streak">
+              <div class="volt-hero__streakhead"><span>Week streak</span><span class="volt-hero__streakval">{{ section.settings.week_label }}</span></div>
+              <div class="volt-hero__bars">
+                <i style="height:46%;opacity:.5"></i><i style="height:62%;opacity:.6"></i><i style="height:38%;opacity:.5"></i><i style="height:70%;opacity:.7"></i><i style="height:54%;opacity:.6"></i><i style="height:80%;opacity:.8"></i><i style="height:60%;opacity:.6"></i><i style="height:74%;opacity:.7"></i><i style="height:48%;opacity:.5"></i><i style="height:88%;opacity:.85"></i><i style="height:66%;opacity:.6"></i><i style="height:92%;opacity:.9"></i><i style="height:78%;opacity:.7"></i><i style="height:100%;opacity:1"></i>
+              </div>
+            </div>
+            <div class="volt-hero__metrics">
+              <div class="volt-hero__metric"><span class="k">HRV</span><span class="v">{{ section.settings.hrv }}<small>ms</small></span></div>
+              <div class="volt-hero__metric"><span class="k">RHR</span><span class="v">{{ section.settings.rhr }}<small>bpm</small></span></div>
+              <div class="volt-hero__metric"><span class="k">Sleep</span><span class="v">{{ section.settings.sleep }}<small>h</small></span></div>
+            </div>
           </div>
-        </div>
-        <div class="volt-hero__streak">
-          <div class="volt-hero__streakhead"><span>Week streak</span><span class="volt-hero__streakval">{{ section.settings.week_label }}</span></div>
-          <div class="volt-hero__bars">
-            <i style="height:46%;opacity:.5"></i><i style="height:62%;opacity:.6"></i><i style="height:38%;opacity:.5"></i><i style="height:70%;opacity:.7"></i><i style="height:54%;opacity:.6"></i><i style="height:80%;opacity:.8"></i><i style="height:60%;opacity:.6"></i><i style="height:74%;opacity:.7"></i><i style="height:48%;opacity:.5"></i><i style="height:88%;opacity:.85"></i><i style="height:66%;opacity:.6"></i><i style="height:92%;opacity:.9"></i><i style="height:78%;opacity:.7"></i><i style="height:100%;opacity:1"></i>
-          </div>
-        </div>
-        <div class="volt-hero__metrics">
-          <div class="volt-hero__metric"><span class="k">HRV</span><span class="v">{{ section.settings.hrv }}<small>ms</small></span></div>
-          <div class="volt-hero__metric"><span class="k">RHR</span><span class="v">{{ section.settings.rhr }}<small>bpm</small></span></div>
-          <div class="volt-hero__metric"><span class="k">Sleep</span><span class="v">{{ section.settings.sleep }}<small>h</small></span></div>
-        </div>
-      </div>
+        {%- endif -%}
+      {%- endif -%}
 
     </div>
   </div>
+
+  {%- if section.settings.show_scroll_indicator -%}
+    <div class="volt-hero__scroll" aria-hidden="true"><span class="volt-hero__scrollline"></span><span class="volt-hero__scrolltext">Scroll</span></div>
+  {%- endif -%}
+
+  {%- comment -%} sentinel for the header transparent→solid scroll state {%- endcomment -%}
+  <div class="header-sentinel" aria-hidden="true"></div>
 </section>
 
 {% stylesheet %}
-  .volt-hero__inner { max-width: var(--page-width); margin-inline: auto; padding-inline: 28px; }
-  .volt-hero__grid { display: grid; grid-template-columns: 55fr 45fr; min-height: 600px; border-left: 1px solid var(--color-border); border-right: 1px solid var(--color-border); }
-  .volt-hero__copy { padding: 72px 56px; display: flex; flex-direction: column; justify-content: center; border-right: 1px solid var(--color-border); }
+  .volt-hero { position: relative; }
+  .volt-hero__bg { position: absolute; inset: 0; z-index: 0; overflow: hidden; }
+  .volt-hero__bgimg { width: 100%; height: 100%; object-fit: cover; }
+  .volt-hero__overlay { position: absolute; inset: 0; background: var(--color-ink); }
+  .volt-hero__inner { position: relative; z-index: 1; max-width: var(--page-width); margin-inline: auto; padding-inline: 28px; }
+  .volt-hero__grid { display: grid; grid-template-columns: 1fr; }
+  .volt-hero--split-image-right .volt-hero__grid { grid-template-columns: 55fr 45fr; min-height: 600px; border-left: 1px solid var(--color-border); border-right: 1px solid var(--color-border); }
+  .volt-hero--split-image-left .volt-hero__grid { grid-template-columns: 45fr 55fr; min-height: 600px; border-left: 1px solid var(--color-border); border-right: 1px solid var(--color-border); }
+  .volt-hero--split-image-left .volt-hero__copy { order: 2; border-right: none; border-left: 1px solid var(--color-border); }
+  .volt-hero--split-image-left .volt-hero__visual, .volt-hero--split-image-left .volt-hero__panel { order: 1; }
+  .volt-hero__copy { padding: 72px 56px; display: flex; flex-direction: column; justify-content: center; }
+  .volt-hero--split-image-right .volt-hero__copy { border-right: 1px solid var(--color-border); }
+  .volt-hero--full-image, .volt-hero--full-bg { min-height: 88svh; display: flex; align-items: center; }
+  .volt-hero--full-bg { background: var(--color-bg); }
+  .volt-hero--full-image .volt-hero__inner, .volt-hero--full-bg .volt-hero__inner { width: 100%; }
+  .volt-hero--full-image .volt-hero__copy, .volt-hero--full-bg .volt-hero__copy { padding-block: clamp(120px, 12vh, 180px); }
+  .volt-hero--center .volt-hero__copy { align-items: center; text-align: center; }
+  .volt-hero--center .volt-hero__sub { max-width: 46ch; }
+  .volt-hero--full-image .volt-hero__title { color: var(--color-bg); }
+  .volt-hero--full-image .volt-hero__sub { color: rgba(240,238,234,.85); }
+  .volt-hero--full-image .volt-hero__eyebrow { color: rgba(240,238,234,.7); }
+
   .volt-hero__eyebrow { display: flex; align-items: center; font-family: var(--font-mono); font-size: 11px; letter-spacing: .18em; text-transform: uppercase; color: var(--color-mid); }
+  .volt-hero--center .volt-hero__eyebrow { justify-content: center; }
   .volt-hero__dot { display: inline-block; width: 7px; height: 7px; background: var(--color-acid); margin-right: 10px; }
   .volt-hero__title { font-family: var(--font-display); font-weight: 800; font-size: clamp(44px, 5vw, 72px); line-height: .94; letter-spacing: -.02em; text-transform: uppercase; margin: 22px 0 0; }
   .volt-hl { background: var(--color-acid); color: var(--color-ink); padding: 0 .08em; -webkit-box-decoration-break: clone; box-decoration-break: clone; }
   .volt-hero__sub { font-size: 16px; line-height: 1.65; color: var(--color-mid); max-width: 34ch; margin: 24px 0 0; }
+  .volt-hero--center .volt-hero__cta { justify-content: center; }
   .volt-hero__cta { display: flex; gap: 14px; margin-top: 34px; flex-wrap: wrap; }
+
+  .volt-hero__visual { position: relative; overflow: hidden; min-height: 600px; background: var(--color-surface); }
+  .volt-hero__visualimg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
 
   .volt-hero__panel { background: var(--color-ink); color: var(--color-bg); padding: 34px 36px; display: flex; flex-direction: column; justify-content: center; }
   .volt-hero__panelhead { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; }
@@ -101,10 +157,22 @@
   .volt-hero__metric .v { display: block; font-family: var(--font-mono); font-size: 16px; color: var(--color-bg); margin-top: 3px; }
   .volt-hero__metric .v small { font-size: 10px; color: var(--color-mid); }
 
+  .volt-hero__scroll { position: absolute; bottom: 28px; left: 50%; transform: translateX(-50%); z-index: 2; display: flex; flex-direction: column; align-items: center; gap: 8px; }
+  .volt-hero__scrollline { width: 1px; height: 40px; background: var(--color-border); position: relative; overflow: hidden; }
+  .volt-hero__scrollline::after { content: ""; position: absolute; top: -100%; left: 0; width: 100%; height: 100%; background: var(--color-acid-accessible); animation: volt-scrollline 1.6s ease-in-out infinite; }
+  .volt-hero--full-image .volt-hero__scrollline::after { background: var(--color-acid); }
+  .volt-hero__scrolltext { font-family: var(--font-mono); font-size: 8px; letter-spacing: .3em; color: var(--color-mid); text-transform: uppercase; }
+  @keyframes volt-scrollline { 0% { top: -100%; } 100% { top: 100%; } }
+  @media (prefers-reduced-motion: reduce) { .volt-hero__scrollline::after { animation: none; } }
+
   @media (max-width: 860px) {
-    .volt-hero__grid { grid-template-columns: 1fr; min-height: 0; }
-    .volt-hero__copy { padding: 48px 24px; border-right: none; border-bottom: 1px solid var(--color-border); }
+    .volt-hero--split-image-right .volt-hero__grid, .volt-hero--split-image-left .volt-hero__grid { grid-template-columns: 1fr; min-height: 0; }
+    .volt-hero--split-image-left .volt-hero__copy { order: 0; border-left: none; }
+    .volt-hero--split-image-left .volt-hero__visual, .volt-hero--split-image-left .volt-hero__panel { order: 0; }
+    .volt-hero__copy { padding: 48px 24px; border-right: none !important; border-bottom: 1px solid var(--color-border); }
     .volt-hero__panel { padding: 28px 24px; }
+    .volt-hero__visual { min-height: 320px; }
+    .volt-hero__scroll { display: none; }
   }
 {% endstylesheet %}
 
@@ -113,6 +181,27 @@
   "name": "t:sections.hero_diagnostic.name",
   "tag": "section",
   "settings": [
+    { "type": "header", "content": "t:sections.hero_diagnostic.layout_header" },
+    { "type": "select", "id": "hero_layout", "label": "t:sections.hero_diagnostic.hero_layout", "default": "split-image-right", "options": [
+      { "value": "split-image-right", "label": "t:sections.hero_diagnostic.layout_split_right" },
+      { "value": "split-image-left", "label": "t:sections.hero_diagnostic.layout_split_left" },
+      { "value": "full-image", "label": "t:sections.hero_diagnostic.layout_full_image" },
+      { "value": "full-bg", "label": "t:sections.hero_diagnostic.layout_full_bg" }
+    ] },
+    { "type": "image_picker", "id": "hero_image", "label": "t:sections.hero_diagnostic.hero_image" },
+    { "type": "select", "id": "hero_image_position", "label": "t:sections.hero_diagnostic.hero_image_position", "default": "center", "options": [
+      { "value": "center", "label": "t:sections.hero_diagnostic.pos_center" },
+      { "value": "top", "label": "t:sections.hero_diagnostic.pos_top" },
+      { "value": "bottom", "label": "t:sections.hero_diagnostic.pos_bottom" }
+    ] },
+    { "type": "select", "id": "content_align", "label": "t:sections.hero_diagnostic.content_align", "default": "left", "options": [
+      { "value": "left", "label": "t:sections.hero_diagnostic.align_left" },
+      { "value": "center", "label": "t:sections.hero_diagnostic.align_center" }
+    ] },
+    { "type": "range", "id": "overlay_opacity", "min": 0, "max": 70, "step": 5, "unit": "%", "label": "t:sections.hero_diagnostic.overlay_opacity", "default": 40 },
+    { "type": "checkbox", "id": "show_dashboard_panel", "label": "t:sections.hero_diagnostic.show_dashboard_panel", "default": true },
+    { "type": "checkbox", "id": "show_scroll_indicator", "label": "t:sections.hero_diagnostic.show_scroll_indicator", "default": true },
+    { "type": "header", "content": "t:sections.hero_diagnostic.content_header" },
     { "type": "text", "id": "eyebrow", "label": "t:sections.hero_diagnostic.eyebrow", "default": "Member Protocol 2025" },
     { "type": "text", "id": "heading_pre", "label": "t:sections.hero_diagnostic.heading_pre", "default": "Train with " },
     { "type": "text", "id": "heading_highlight", "label": "t:sections.hero_diagnostic.heading_highlight", "default": "data" },
