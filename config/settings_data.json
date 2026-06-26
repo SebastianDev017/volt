@@ -8,7 +8,10 @@
  * ------------------------------------------------------------
  */
 {
-  "current": {},
+  "current": {
+    "header_scroll_indicator": false,
+    "content_for_index": []
+  },
   "presets": {
     "Volt": {
       "use_syne_heading": true,
