@@ -1,160 +1,110 @@
 {%- liquid
-  assign streak_current = section.settings.streak_current
-  assign streak_total = section.settings.streak_total
-  assign streak_pct = 0
-  if streak_total > 0
-    assign streak_pct = streak_current | times: 100.0 | divided_by: streak_total
-  endif
-  if streak_pct > 100
-    assign streak_pct = 100
-  endif
+  assign circ = 326.726
+  assign rec = section.settings.recovery_score | at_least: 0 | at_most: 100
+  assign rec_fill = rec | times: circ | divided_by: 100.0
+  assign rec_off = circ | minus: rec_fill
+  assign str = section.settings.strain_fill | at_least: 0 | at_most: 100
+  assign str_fill = str | times: circ | divided_by: 100.0
+  assign str_off = circ | minus: str_fill
 -%}
+<section class="volt-hero" data-animate>
+  <div class="volt-hero__inner">
+    <div class="volt-hero__grid">
 
-<style>
-  #shopify-section-{{ section.id }} .hd-streak__fill { width: {{ streak_pct }}%; }
-</style>
-
-<section class="hd" data-animate>
-  <div class="section-inner hd__grid">
-    <div class="hd__left">
-      {%- if section.settings.eyebrow != blank -%}
-        <p class="eyebrow hd__eyebrow">{{ section.settings.eyebrow }}</p>
-      {%- endif -%}
-
-      {%- if section.settings.heading != blank -%}
-        <h1 class="h0 hd__heading">{{ section.settings.heading }}</h1>
-      {%- endif -%}
-
-      {%- if section.settings.subheading != blank -%}
-        <p class="body-lg muted hd__sub">{{ section.settings.subheading }}</p>
-      {%- endif -%}
-
-      <div class="hd__ctas">
-        {%- if section.settings.primary_label != blank -%}
-          <a class="btn btn--acid" href="{{ section.settings.primary_link | default: '/pages/membership' }}">
-            {{ section.settings.primary_label }}
-          </a>
+      <div class="volt-hero__copy">
+        {%- if section.settings.eyebrow != blank -%}
+          <div class="volt-hero__eyebrow"><span class="volt-hero__dot"></span>{{ section.settings.eyebrow }}</div>
         {%- endif -%}
-        {%- if section.settings.secondary_label != blank -%}
-          <a class="btn btn--outline" href="{{ section.settings.secondary_link | default: '#diagnostic' }}">
-            {{ section.settings.secondary_label }}
-          </a>
+        <h1 class="volt-hero__title">{{ section.settings.heading_pre }}<span class="volt-hl">{{ section.settings.heading_highlight }}</span>{{ section.settings.heading_post }}</h1>
+        {%- if section.settings.subheading != blank -%}
+          <p class="volt-hero__sub">{{ section.settings.subheading }}</p>
         {%- endif -%}
+        <div class="volt-hero__cta">
+          {%- if section.settings.primary_label != blank -%}
+            <a href="{{ section.settings.primary_link | default: '#' }}" class="btn btn--acid">{{ section.settings.primary_label }}</a>
+          {%- endif -%}
+          {%- if section.settings.secondary_label != blank -%}
+            <a href="{{ section.settings.secondary_link | default: '#' }}" class="btn btn--outline">{{ section.settings.secondary_label }}</a>
+          {%- endif -%}
+        </div>
       </div>
 
-      {%- if section.settings.social_proof != blank -%}
-        <p class="data muted hd__proof">{{ section.settings.social_proof }}</p>
-      {%- endif -%}
-    </div>
-
-    <div class="hd__right" data-animate data-animate-delay="200">
-      <div class="card hd__dash">
-        <p class="hd__dash-caption">Member dashboard preview</p>
-
-        <div class="hd__gauges">
-          <div class="hd__gauge">
-            <volt-gauge
-              data-value="{{ section.settings.recovery_value }}"
-              data-label="{{ section.settings.recovery_value }}"
-              data-sub="RECOVERY"
-              data-color="success"></volt-gauge>
+      <div class="volt-hero__panel" aria-hidden="true">
+        <div class="volt-hero__panelhead">
+          <span class="volt-hero__pretitle">Member dashboard preview</span>
+          <span class="volt-hero__live"><span class="volt-hero__livedot"></span>Live</span>
+        </div>
+        <div class="volt-hero__gauges">
+          <div class="volt-hero__gauge">
+            <div class="volt-hero__dial">
+              <svg viewBox="0 0 120 120"><circle cx="60" cy="60" r="52" fill="none" stroke="rgba(240,238,234,.12)" stroke-width="8"/><circle cx="60" cy="60" r="52" fill="none" stroke="var(--color-success)" stroke-width="8" stroke-linecap="round" stroke-dasharray="{{ circ }}" stroke-dashoffset="{{ rec_off }}" transform="rotate(-90 60 60)"/></svg>
+              <div class="volt-hero__dialval">{{ rec }}<span>%</span></div>
+            </div>
+            <div class="volt-hero__gaugelabel">Recovery score</div>
           </div>
-          <div class="hd__gauge">
-            <volt-gauge
-              data-value="71"
-              data-label="{{ section.settings.strain_label }}"
-              data-sub="STRAIN"
-              data-color="acid"></volt-gauge>
+          <div class="volt-hero__gauge">
+            <div class="volt-hero__dial">
+              <svg viewBox="0 0 120 120"><circle cx="60" cy="60" r="52" fill="none" stroke="rgba(240,238,234,.12)" stroke-width="8"/><circle cx="60" cy="60" r="52" fill="none" stroke="var(--color-amber)" stroke-width="8" stroke-linecap="round" stroke-dasharray="{{ circ }}" stroke-dashoffset="{{ str_off }}" transform="rotate(-90 60 60)"/></svg>
+              <div class="volt-hero__dialval">{{ section.settings.strain_label }}</div>
+            </div>
+            <div class="volt-hero__gaugelabel">Day strain</div>
           </div>
         </div>
-
-        <div class="hd__streak">
-          <div class="hd__streak-head">
-            <span class="label">Week streak</span>
-            <span class="data">{{ streak_current }} / {{ streak_total }} DAYS</span>
-          </div>
-          <div class="hd__streak-track">
-            <div class="hd__streak__fill"></div>
+        <div class="volt-hero__streak">
+          <div class="volt-hero__streakhead"><span>Week streak</span><span class="volt-hero__streakval">{{ section.settings.week_label }}</span></div>
+          <div class="volt-hero__bars">
+            <i style="height:46%;opacity:.5"></i><i style="height:62%;opacity:.6"></i><i style="height:38%;opacity:.5"></i><i style="height:70%;opacity:.7"></i><i style="height:54%;opacity:.6"></i><i style="height:80%;opacity:.8"></i><i style="height:60%;opacity:.6"></i><i style="height:74%;opacity:.7"></i><i style="height:48%;opacity:.5"></i><i style="height:88%;opacity:.85"></i><i style="height:66%;opacity:.6"></i><i style="height:92%;opacity:.9"></i><i style="height:78%;opacity:.7"></i><i style="height:100%;opacity:1"></i>
           </div>
         </div>
-
-        <p class="data muted hd__metrics">HRV 68ms &middot; RHR 52bpm &middot; 7.4h SLEEP</p>
+        <div class="volt-hero__metrics">
+          <div class="volt-hero__metric"><span class="k">HRV</span><span class="v">{{ section.settings.hrv }}<small>ms</small></span></div>
+          <div class="volt-hero__metric"><span class="k">RHR</span><span class="v">{{ section.settings.rhr }}<small>bpm</small></span></div>
+          <div class="volt-hero__metric"><span class="k">Sleep</span><span class="v">{{ section.settings.sleep }}<small>h</small></span></div>
+        </div>
       </div>
+
     </div>
   </div>
 </section>
 
 {% stylesheet %}
-  .hd {
-    min-height: 100svh;
-    display: flex;
-    align-items: center;
-    margin-top: calc(var(--header-height) * -1);
-    padding-top: var(--header-height);
-    padding-block: clamp(48px, 8vw, 96px);
-  }
-  .hd__grid {
-    width: 100%;
-    display: grid;
-    grid-template-columns: 55fr 45fr;
-    gap: clamp(32px, 5vw, 72px);
-    align-items: center;
-  }
-  .hd__eyebrow { margin-bottom: 22px; }
-  .hd__heading { max-width: 14ch; }
-  .hd__heading em { color: var(--color-acid); font-style: normal; }
-  .hd__sub { max-width: 420px; margin-top: 26px; }
-  .hd__ctas {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 14px;
-    margin-top: 36px;
-  }
-  .hd__proof { margin-top: 28px; }
+  .volt-hero__inner { max-width: var(--page-width); margin-inline: auto; padding-inline: 28px; }
+  .volt-hero__grid { display: grid; grid-template-columns: 55fr 45fr; min-height: 600px; border-left: 1px solid var(--color-border); border-right: 1px solid var(--color-border); }
+  .volt-hero__copy { padding: 72px 56px; display: flex; flex-direction: column; justify-content: center; border-right: 1px solid var(--color-border); }
+  .volt-hero__eyebrow { display: flex; align-items: center; font-family: var(--font-mono); font-size: 11px; letter-spacing: .18em; text-transform: uppercase; color: var(--color-mid); }
+  .volt-hero__dot { display: inline-block; width: 7px; height: 7px; background: var(--color-acid); margin-right: 10px; }
+  .volt-hero__title { font-family: var(--font-display); font-weight: 800; font-size: clamp(44px, 5vw, 72px); line-height: .94; letter-spacing: -.02em; text-transform: uppercase; margin: 22px 0 0; }
+  .volt-hl { background: var(--color-acid); color: var(--color-ink); padding: 0 .08em; -webkit-box-decoration-break: clone; box-decoration-break: clone; }
+  .volt-hero__sub { font-size: 16px; line-height: 1.65; color: var(--color-mid); max-width: 34ch; margin: 24px 0 0; }
+  .volt-hero__cta { display: flex; gap: 14px; margin-top: 34px; flex-wrap: wrap; }
 
-  /* dashboard preview */
-  .hd__dash {
-    padding: clamp(22px, 2.4vw, 34px);
-    display: flex;
-    flex-direction: column;
-    gap: 26px;
-  }
-  .hd__dash-caption {
-    font-family: var(--font-body);
-    font-style: italic;
-    font-size: 11px;
-    letter-spacing: 0.04em;
-    color: var(--color-mid);
-  }
-  .hd__gauges {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: clamp(16px, 2vw, 28px);
-  }
-  .hd__gauge { min-width: 0; }
+  .volt-hero__panel { background: var(--color-ink); color: var(--color-bg); padding: 34px 36px; display: flex; flex-direction: column; justify-content: center; }
+  .volt-hero__panelhead { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; }
+  .volt-hero__pretitle { font-family: var(--font-mono); font-size: 9px; letter-spacing: .2em; text-transform: uppercase; color: rgba(240,238,234,.5); }
+  .volt-hero__live { display: flex; align-items: center; gap: 7px; font-family: var(--font-mono); font-size: 9px; letter-spacing: .16em; text-transform: uppercase; color: var(--color-success); }
+  .volt-hero__livedot { width: 6px; height: 6px; border-radius: 50%; background: var(--color-success); }
+  .volt-hero__gauges { display: flex; gap: 16px; }
+  .volt-hero__gauge { flex: 1; background: rgba(240,238,234,.04); border: 1px solid rgba(240,238,234,.1); padding: 18px 12px; text-align: center; }
+  .volt-hero__dial { position: relative; width: 104px; height: 104px; margin: 0 auto; }
+  .volt-hero__dial svg { width: 104px; height: 104px; }
+  .volt-hero__dialval { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-weight: 700; font-size: 28px; color: var(--color-bg); }
+  .volt-hero__dialval span, .volt-hero__dialval small { font-size: 13px; color: var(--color-mid); font-weight: 700; }
+  .volt-hero__gaugelabel { font-family: var(--font-mono); font-size: 9px; letter-spacing: .16em; text-transform: uppercase; color: rgba(240,238,234,.55); margin-top: 10px; }
+  .volt-hero__streak { background: rgba(240,238,234,.04); border: 1px solid rgba(240,238,234,.1); padding: 16px 18px; margin-top: 16px; }
+  .volt-hero__streakhead { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; font-family: var(--font-mono); font-size: 9px; letter-spacing: .16em; text-transform: uppercase; color: rgba(240,238,234,.55); }
+  .volt-hero__streakval { color: var(--color-acid); font-size: 11px; }
+  .volt-hero__bars { display: flex; align-items: flex-end; gap: 4px; height: 38px; }
+  .volt-hero__bars i { flex: 1; background: var(--color-acid); }
+  .volt-hero__metrics { display: flex; gap: 10px; margin-top: 16px; }
+  .volt-hero__metric { flex: 1; border: 1px solid rgba(240,238,234,.1); padding: 12px; }
+  .volt-hero__metric .k { display: block; font-family: var(--font-mono); font-size: 9px; letter-spacing: .14em; text-transform: uppercase; color: rgba(240,238,234,.45); }
+  .volt-hero__metric .v { display: block; font-family: var(--font-mono); font-size: 16px; color: var(--color-bg); margin-top: 3px; }
+  .volt-hero__metric .v small { font-size: 10px; color: var(--color-mid); }
 
-  .hd__streak { display: flex; flex-direction: column; gap: 10px; }
-  .hd__streak-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
-  .hd__streak-track {
-    height: 8px;
-    background: var(--color-ink-06);
-    border: 1px solid var(--color-border);
-    overflow: hidden;
-  }
-  .hd__streak__fill {
-    height: 100%;
-    background: var(--color-acid);
-    transition: width var(--dur-slow) var(--ease);
-  }
-
-  .hd__metrics {
-    padding-top: 18px;
-    border-top: 1px solid var(--color-border);
-  }
-
-  @media (max-width: 990px) {
-    .hd__grid { grid-template-columns: 1fr; gap: 44px; }
-    .hd__heading { max-width: 18ch; }
+  @media (max-width: 860px) {
+    .volt-hero__grid { grid-template-columns: 1fr; min-height: 0; }
+    .volt-hero__copy { padding: 48px 24px; border-right: none; border-bottom: 1px solid var(--color-border); }
+    .volt-hero__panel { padding: 28px 24px; }
   }
 {% endstylesheet %}
 
@@ -163,88 +113,24 @@
   "name": "t:sections.hero_diagnostic.name",
   "tag": "section",
   "settings": [
-    {
-      "type": "text",
-      "id": "eyebrow",
-      "label": "t:sections.hero_diagnostic.eyebrow",
-      "default": "Performance protocol 2025"
-    },
-    {
-      "type": "inline_richtext",
-      "id": "heading",
-      "label": "t:sections.hero_diagnostic.heading",
-      "info": "t:sections.hero_diagnostic.heading_info",
-      "default": "Train with <em>Precision</em>. Measure everything."
-    },
-    {
-      "type": "text",
-      "id": "subheading",
-      "label": "t:sections.hero_diagnostic.subheading",
-      "default": "Membership-first training built on recovery, strain and sleep data. Read your body like an athlete and program the next 21 days around it."
-    },
-    {
-      "type": "text",
-      "id": "primary_label",
-      "label": "t:sections.hero_diagnostic.primary_label",
-      "default": "Start your protocol"
-    },
-    {
-      "type": "url",
-      "id": "primary_link",
-      "label": "t:sections.hero_diagnostic.primary_link",
-      "default": "/pages/membership"
-    },
-    {
-      "type": "text",
-      "id": "secondary_label",
-      "label": "t:sections.hero_diagnostic.secondary_label",
-      "default": "Diagnose your level"
-    },
-    {
-      "type": "url",
-      "id": "secondary_link",
-      "label": "t:sections.hero_diagnostic.secondary_link"
-    },
-    {
-      "type": "text",
-      "id": "social_proof",
-      "label": "t:sections.hero_diagnostic.social_proof",
-      "default": "4.9 stars / 2,400+ active members / Free shipping over $75"
-    },
-    {
-      "type": "range",
-      "id": "recovery_value",
-      "label": "t:sections.hero_diagnostic.recovery_value",
-      "min": 0,
-      "max": 100,
-      "step": 1,
-      "unit": "%",
-      "default": 87
-    },
-    {
-      "type": "text",
-      "id": "strain_label",
-      "label": "t:sections.hero_diagnostic.strain_label",
-      "default": "14.2"
-    },
-    {
-      "type": "range",
-      "id": "streak_current",
-      "label": "t:sections.hero_diagnostic.streak_current",
-      "min": 0,
-      "max": 60,
-      "step": 1,
-      "default": 14
-    },
-    {
-      "type": "range",
-      "id": "streak_total",
-      "label": "t:sections.hero_diagnostic.streak_total",
-      "min": 1,
-      "max": 60,
-      "step": 1,
-      "default": 21
-    }
+    { "type": "text", "id": "eyebrow", "label": "t:sections.hero_diagnostic.eyebrow", "default": "Member Protocol 2025" },
+    { "type": "text", "id": "heading_pre", "label": "t:sections.hero_diagnostic.heading_pre", "default": "Train with " },
+    { "type": "text", "id": "heading_highlight", "label": "t:sections.hero_diagnostic.heading_highlight", "default": "data" },
+    { "type": "text", "id": "heading_post", "label": "t:sections.hero_diagnostic.heading_post", "default": ", not guesswork." },
+    { "type": "textarea", "id": "subheading", "label": "t:sections.hero_diagnostic.subheading", "default": "Track your strain, protect your recovery, and train with purpose. Your membership is a performance system — not a punch card." },
+    { "type": "header", "content": "t:sections.hero_diagnostic.cta_header" },
+    { "type": "text", "id": "primary_label", "label": "t:sections.hero_diagnostic.primary_label", "default": "Start your protocol" },
+    { "type": "url", "id": "primary_link", "label": "t:sections.hero_diagnostic.primary_link" },
+    { "type": "text", "id": "secondary_label", "label": "t:sections.hero_diagnostic.secondary_label", "default": "Diagnose your level" },
+    { "type": "url", "id": "secondary_link", "label": "t:sections.hero_diagnostic.secondary_link" },
+    { "type": "header", "content": "t:sections.hero_diagnostic.dash_header" },
+    { "type": "range", "id": "recovery_score", "min": 0, "max": 100, "step": 1, "unit": "%", "label": "t:sections.hero_diagnostic.recovery_score", "default": 87 },
+    { "type": "text", "id": "strain_label", "label": "t:sections.hero_diagnostic.strain_label", "default": "14.2" },
+    { "type": "range", "id": "strain_fill", "min": 0, "max": 100, "step": 1, "unit": "%", "label": "t:sections.hero_diagnostic.strain_fill", "default": 68 },
+    { "type": "text", "id": "week_label", "label": "t:sections.hero_diagnostic.week_label", "default": "14 DAYS" },
+    { "type": "text", "id": "hrv", "label": "t:sections.hero_diagnostic.hrv", "default": "68" },
+    { "type": "text", "id": "rhr", "label": "t:sections.hero_diagnostic.rhr", "default": "52" },
+    { "type": "text", "id": "sleep", "label": "t:sections.hero_diagnostic.sleep", "default": "7.4" }
   ],
   "presets": [
     { "name": "t:sections.hero_diagnostic.name" }

@@ -151,47 +151,30 @@
         "block_4"
       ]
     },
-    "editorial_statement_6": {
-      "type": "editorial-statement",
-      "settings": {}
-    },
-    "marquee_7": {
-      "type": "marquee",
+    "before_after_6": {
+      "type": "before-after",
       "settings": {},
       "blocks": {
         "block_1": {
-          "type": "item",
-          "settings": {
-            "text": "TRAIN WITH INTENTION"
-          }
+          "type": "testimonial",
+          "settings": {}
         },
         "block_2": {
-          "type": "item",
-          "settings": {
-            "text": "MEASURE EVERYTHING"
-          }
+          "type": "testimonial",
+          "settings": {}
         },
         "block_3": {
-          "type": "item",
-          "settings": {
-            "text": "NO JUNK VOLUME"
-          }
-        },
-        "block_4": {
-          "type": "item",
-          "settings": {
-            "text": "RECOVER LIKE IT MATTERS"
-          }
+          "type": "testimonial",
+          "settings": {}
         }
       },
       "block_order": [
         "block_1",
         "block_2",
-        "block_3",
-        "block_4"
+        "block_3"
       ]
     },
-    "how_it_works_8": {
+    "how_it_works_7": {
       "type": "how-it-works",
       "settings": {},
       "blocks": {
@@ -226,30 +209,7 @@
         "block_3"
       ]
     },
-    "before_after_9": {
-      "type": "before-after",
-      "settings": {},
-      "blocks": {
-        "block_1": {
-          "type": "testimonial",
-          "settings": {}
-        },
-        "block_2": {
-          "type": "testimonial",
-          "settings": {}
-        },
-        "block_3": {
-          "type": "testimonial",
-          "settings": {}
-        }
-      },
-      "block_order": [
-        "block_1",
-        "block_2",
-        "block_3"
-      ]
-    },
-    "newsletter_diagnostic_10": {
+    "newsletter_diagnostic_8": {
       "type": "newsletter-diagnostic",
       "settings": {}
     }
@@ -260,10 +220,8 @@
     "membership_tiers_3",
     "product_grid_4",
     "performance_stats_5",
-    "editorial_statement_6",
-    "marquee_7",
-    "how_it_works_8",
-    "before_after_9",
-    "newsletter_diagnostic_10"
+    "before_after_6",
+    "how_it_works_7",
+    "newsletter_diagnostic_8"
   ]
 }

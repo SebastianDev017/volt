@@ -272,20 +272,25 @@
       "text_color": "Text color"
     },
     "hero_diagnostic": {
-      "name": "Hero / Diagnostic",
+      "name": "Hero — diagnostic",
       "eyebrow": "Eyebrow",
-      "heading": "Heading",
-      "heading_info": "Wrap one word in italics to render it in volt lime.",
+      "heading_pre": "Heading (before highlight)",
+      "heading_highlight": "Highlighted word",
+      "heading_post": "Heading (after highlight)",
       "subheading": "Subheading",
+      "cta_header": "Call to action",
       "primary_label": "Primary button label",
       "primary_link": "Primary button link",
       "secondary_label": "Secondary button label",
       "secondary_link": "Secondary button link",
-      "social_proof": "Social proof line",
-      "recovery_value": "Recovery gauge value",
-      "strain_label": "Strain value label",
-      "streak_current": "Streak — days completed",
-      "streak_total": "Streak — total days"
+      "dash_header": "Dashboard preview",
+      "recovery_score": "Recovery score",
+      "strain_label": "Strain value",
+      "strain_fill": "Strain gauge fill",
+      "week_label": "Week streak label",
+      "hrv": "HRV",
+      "rhr": "RHR",
+      "sleep": "Sleep"
     },
     "vitals_strip": {
       "name": "Vitals strip",
