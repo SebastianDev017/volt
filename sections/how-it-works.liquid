@@ -1,151 +1,74 @@
 {%- liquid
-  assign block_count = section.blocks.size
+  assign last = section.blocks.size | minus: 1
 -%}
-<div class="volt-hiw" data-animate>
-  <div class="section-inner">
-    {%- if section.settings.eyebrow != blank or section.settings.heading != blank -%}
-      <div class="section-head volt-hiw__head">
-        <div>
-          {%- if section.settings.eyebrow != blank -%}
-            <p class="eyebrow volt-hiw__eyebrow">{{ section.settings.eyebrow }}</p>
-          {%- endif -%}
-          {%- if section.settings.heading != blank -%}
-            <h2 class="h2 volt-hiw__heading">{{ section.settings.heading }}</h2>
-          {%- endif -%}
-        </div>
-      </div>
-    {%- endif -%}
-
-    {%- if block_count > 0 -%}
-      <div class="volt-hiw__flow" data-steps="{{ block_count }}">
-        {%- for block in section.blocks -%}
-          {%- liquid
-            assign idx = forloop.index
-            assign num = idx | prepend: '0' | slice: -2, 2
-          -%}
-          <div
-            class="volt-hiw__step"
-            data-animate
-            {% if forloop.index0 > 0 %}data-animate-delay="{{ forloop.index0 | times: 100 | at_most: 300 }}"{% endif %}
-            {{ block.shopify_attributes }}
-          >
-            <span class="volt-hiw__num" aria-hidden="true">{{ num }}</span>
-
-            <div class="volt-hiw__media">
-              {%- if block.settings.image != blank -%}
-                {{
-                  block.settings.image
-                  | image_url: width: 800
-                  | image_tag: loading: 'lazy', widths: '400,600,800', class: 'volt-hiw__img', alt: block.settings.title
-                }}
-              {%- else -%}
-                <span class="volt-hiw__placeholder" aria-hidden="true"></span>
-              {%- endif -%}
-            </div>
-
-            {%- if block.settings.label != blank -%}
-              <p class="label acid volt-hiw__phase">{{ block.settings.label }}</p>
-            {%- endif -%}
-            {%- if block.settings.title != blank -%}
-              <h3 class="h3 volt-hiw__title">{{ block.settings.title }}</h3>
-            {%- endif -%}
-            {%- if block.settings.body != blank -%}
-              <div class="body muted volt-hiw__body">{{ block.settings.body }}</div>
-            {%- endif -%}
-            {%- if block.settings.link_text != blank and block.settings.link_url != blank -%}
-              <a class="link-arrow volt-hiw__link" href="{{ block.settings.link_url }}">
-                {{ block.settings.link_text }}
-                <span aria-hidden="true">&rarr;</span>
-              </a>
-            {%- endif -%}
-
-            {%- unless forloop.last -%}
-              <span class="volt-hiw__connector" aria-hidden="true">&rarr;</span>
-            {%- endunless -%}
+<section class="volt-rp" data-animate>
+  <div class="volt-rp__inner">
+    <div class="volt-rp__head">
+      {%- if section.settings.eyebrow != blank -%}<div class="volt-rp__eyebrow">{{ section.settings.eyebrow }}</div>{%- endif -%}
+      {%- if section.settings.heading != blank -%}<h2 class="volt-rp__title">{{ section.settings.heading }}</h2>{%- endif -%}
+    </div>
+    <div class="volt-rp__row">
+      {%- for block in section.blocks -%}
+        <div class="volt-rp__col" {{ block.shopify_attributes }}>
+          <div class="volt-rp__colhead">
+            <span class="volt-rp__icon">
+              {%- case block.settings.icon -%}
+                {%- when 'dumbbell' -%}<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M4 9v6M20 9v6M7 7v10M17 7v10M7 12h10"/></svg>
+                {%- when 'moon' -%}<svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+                {%- when 'leaf' -%}<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 20c8 0 16-4 16-16-8 0-16 4-16 16zM4 20c2-6 6-9 11-11"/></svg>
+                {%- else -%}<svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor"><path d="M13 2 4 14h6l-1 8 9-12h-6z"/></svg>
+              {%- endcase -%}
+            </span>
+            <h3 class="volt-rp__colname">{{ block.settings.title }}</h3>
           </div>
-        {%- endfor -%}
-      </div>
-    {%- endif -%}
+          <div class="volt-rp__items">
+            {%- assign ap = block.settings.a_product -%}
+            {%- assign aname = ap.title | default: block.settings.a_name -%}
+            {%- if aname != blank -%}
+              <div class="volt-rp__item">
+                <div><div class="volt-rp__iname">{{ aname }}</div>{%- if block.settings.a_specs != blank -%}<div class="volt-rp__ispecs">{{ block.settings.a_specs }}</div>{%- endif -%}</div>
+                {%- if ap != blank and ap.available -%}
+                  {%- form 'product', ap, class: 'volt-rp__form' -%}<input type="hidden" name="id" value="{{ ap.selected_or_first_available_variant.id }}"><button type="submit" name="add" class="volt-rp__add">+ Add</button>{%- endform -%}
+                {%- endif -%}
+              </div>
+            {%- endif -%}
+            {%- assign bp = block.settings.b_product -%}
+            {%- assign bname = bp.title | default: block.settings.b_name -%}
+            {%- if bname != blank -%}
+              <div class="volt-rp__item">
+                <div><div class="volt-rp__iname">{{ bname }}</div>{%- if block.settings.b_specs != blank -%}<div class="volt-rp__ispecs">{{ block.settings.b_specs }}</div>{%- endif -%}</div>
+                {%- if bp != blank and bp.available -%}
+                  {%- form 'product', bp, class: 'volt-rp__form' -%}<input type="hidden" name="id" value="{{ bp.selected_or_first_available_variant.id }}"><button type="submit" name="add" class="volt-rp__add">+ Add</button>{%- endform -%}
+                {%- endif -%}
+              </div>
+            {%- endif -%}
+          </div>
+        </div>
+        {%- unless forloop.index0 == last -%}<div class="volt-rp__arrow" aria-hidden="true">&rarr;</div>{%- endunless -%}
+      {%- endfor -%}
+    </div>
   </div>
-</div>
+</section>
 
 {% stylesheet %}
-  .volt-hiw { padding-block: var(--section-space); background: var(--color-surface); }
-  .volt-hiw__head { margin-bottom: clamp(36px, 5vw, 64px); }
-  .volt-hiw__eyebrow { margin-bottom: 16px; }
-  .volt-hiw__heading { max-width: 22ch; }
-
-  .volt-hiw__flow {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    align-items: start;
-  }
-
-  .volt-hiw__step {
-    position: relative;
-    padding: clamp(24px, 3vw, 40px);
-    border-left: 1px solid var(--color-border);
-  }
-  .volt-hiw__step:first-child { border-left: 0; padding-left: 0; }
-  .volt-hiw__step:last-child { padding-right: 0; }
-
-  .volt-hiw__num {
-    display: block;
-    font-family: var(--font-display);
-    font-weight: 800;
-    font-size: 64px;
-    line-height: 1;
-    color: var(--color-border);
-    margin-bottom: 20px;
-  }
-
-  .volt-hiw__media { margin-bottom: 22px; }
-  .volt-hiw__img,
-  .volt-hiw__placeholder {
-    display: block;
-    width: 100%;
-    aspect-ratio: 4 / 3;
-    object-fit: cover;
-    border-radius: var(--radius-image);
-  }
-  .volt-hiw__placeholder {
-    background:
-      linear-gradient(135deg, var(--color-ink-06), transparent 60%),
-      linear-gradient(315deg, var(--color-acid-10), var(--color-surface));
-    border: 1px solid var(--color-border);
-  }
-
-  .volt-hiw__phase { margin-bottom: 12px; }
-  .volt-hiw__title { margin-bottom: 12px; }
-  .volt-hiw__body { max-width: 40ch; }
-  .volt-hiw__body > :first-child { margin-top: 0; }
-  .volt-hiw__body > :last-child { margin-bottom: 0; }
-  .volt-hiw__link { margin-top: 18px; }
-
-  .volt-hiw__connector {
-    position: absolute;
-    top: 56px;
-    right: -14px;
-    z-index: 1;
-    font-family: var(--font-mono);
-    font-size: 20px;
-    line-height: 1;
-    color: var(--color-acid);
-    transform: translateX(50%);
-  }
-
-  @media (max-width: 768px) {
-    .volt-hiw__flow { grid-template-columns: 1fr; }
-    .volt-hiw__step {
-      border-left: 0;
-      padding-left: 0;
-      padding-right: 0;
-      padding-block: clamp(24px, 6vw, 36px);
-    }
-    .volt-hiw__step:not(:first-child) { border-top: 1px solid var(--color-border); }
-    .volt-hiw__num { font-size: 52px; }
-    .volt-hiw__connector { display: none; }
-  }
+  .volt-rp__inner { max-width: var(--page-width); margin-inline: auto; padding: 84px 28px; }
+  .volt-rp__head { margin-bottom: 44px; }
+  .volt-rp__eyebrow { font-family: var(--font-mono); font-size: 11px; letter-spacing: .18em; text-transform: uppercase; color: var(--color-mid); }
+  .volt-rp__title { font-family: var(--font-display); font-weight: 700; font-size: clamp(30px, 3vw, 46px); line-height: 1.02; letter-spacing: -.01em; margin: 14px 0 0; }
+  .volt-rp__row { display: flex; align-items: stretch; flex-wrap: wrap; }
+  .volt-rp__col { flex: 1; min-width: 230px; border: 1px solid var(--color-border); padding: 30px 26px; display: flex; flex-direction: column; }
+  .volt-rp__colhead { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
+  .volt-rp__icon { color: var(--color-acid); display: flex; }
+  .volt-rp__colname { font-family: var(--font-display); font-weight: 700; font-size: 19px; margin: 0; }
+  .volt-rp__items { display: flex; flex-direction: column; gap: 10px; flex: 1; }
+  .volt-rp__item { border: 1px solid var(--color-border); padding: 14px 15px; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+  .volt-rp__iname { font-family: var(--font-display); font-weight: 700; font-size: 14px; }
+  .volt-rp__ispecs { font-family: var(--font-mono); font-size: 10px; color: var(--color-mid); margin-top: 3px; }
+  .volt-rp__form { flex-shrink: 0; margin: 0; }
+  .volt-rp__add { font-family: var(--font-mono); font-size: 10px; letter-spacing: .08em; text-transform: uppercase; background: var(--color-acid); border: none; color: var(--color-ink); padding: 9px 11px; cursor: pointer; }
+  .volt-rp__add:hover { background: var(--color-ink); color: var(--color-bg); }
+  .volt-rp__arrow { display: flex; align-items: center; justify-content: center; padding: 0 8px; color: var(--color-acid); font-size: 22px; font-family: var(--font-mono); }
+  @media (max-width: 860px) { .volt-rp__row { flex-direction: column; } .volt-rp__arrow { transform: rotate(90deg); padding: 8px 0; } }
 {% endstylesheet %}
 
 {% schema %}
@@ -153,89 +76,42 @@
   "name": "t:sections.how_it_works.name",
   "tag": "section",
   "settings": [
-    {
-      "type": "text",
-      "id": "eyebrow",
-      "label": "t:sections.how_it_works.eyebrow",
-      "default": "The protocol"
-    },
-    {
-      "type": "text",
-      "id": "heading",
-      "label": "t:sections.how_it_works.heading",
-      "default": "How the system works, end to end"
-    }
+    { "type": "text", "id": "eyebrow", "label": "t:sections.how_it_works.eyebrow", "default": "// Build Your Stack" },
+    { "type": "text", "id": "heading", "label": "t:sections.how_it_works.heading", "default": "The recovery protocol." }
   ],
   "blocks": [
     {
-      "type": "step",
-      "name": "t:sections.how_it_works.blocks.step.name",
+      "type": "phase",
+      "name": "t:sections.how_it_works.blocks.phase.name",
       "settings": [
         {
-          "type": "text",
-          "id": "label",
-          "label": "t:sections.how_it_works.blocks.step.label",
-          "default": "Phase 01"
+          "type": "select", "id": "icon", "label": "t:sections.how_it_works.blocks.phase.icon",
+          "options": [
+            { "value": "bolt", "label": "t:sections.how_it_works.blocks.phase.icon_bolt" },
+            { "value": "dumbbell", "label": "t:sections.how_it_works.blocks.phase.icon_dumbbell" },
+            { "value": "moon", "label": "t:sections.how_it_works.blocks.phase.icon_moon" },
+            { "value": "leaf", "label": "t:sections.how_it_works.blocks.phase.icon_leaf" }
+          ],
+          "default": "bolt"
         },
-        {
-          "type": "text",
-          "id": "title",
-          "label": "t:sections.how_it_works.blocks.step.title",
-          "default": "Pre-workout"
-        },
-        {
-          "type": "richtext",
-          "id": "body",
-          "label": "t:sections.how_it_works.blocks.step.body",
-          "default": "<p>Prime the nervous system. Five-minute mobility ramp plus a measured caffeine and electrolyte load, timed to your training window for clean, jitter-free output.</p>"
-        },
-        {
-          "type": "image_picker",
-          "id": "image",
-          "label": "t:sections.how_it_works.blocks.step.image"
-        },
-        {
-          "type": "text",
-          "id": "link_text",
-          "label": "t:sections.how_it_works.blocks.step.link_text"
-        },
-        {
-          "type": "url",
-          "id": "link_url",
-          "label": "t:sections.how_it_works.blocks.step.link_url"
-        }
+        { "type": "text", "id": "title", "label": "t:sections.how_it_works.blocks.phase.title", "default": "Pre-Workout" },
+        { "type": "product", "id": "a_product", "label": "t:sections.how_it_works.blocks.phase.a_product" },
+        { "type": "text", "id": "a_name", "label": "t:sections.how_it_works.blocks.phase.a_name", "default": "Pre-Workout V2" },
+        { "type": "text", "id": "a_specs", "label": "t:sections.how_it_works.blocks.phase.a_specs", "default": "CAF 200mg · BETA-AL" },
+        { "type": "product", "id": "b_product", "label": "t:sections.how_it_works.blocks.phase.b_product" },
+        { "type": "text", "id": "b_name", "label": "t:sections.how_it_works.blocks.phase.b_name", "default": "Creatine Mono" },
+        { "type": "text", "id": "b_specs", "label": "t:sections.how_it_works.blocks.phase.b_specs", "default": "5g · CREAPURE®" }
       ]
     }
   ],
-  "max_blocks": 3,
+  "max_blocks": 4,
   "presets": [
     {
       "name": "t:sections.how_it_works.name",
       "blocks": [
-        {
-          "type": "step",
-          "settings": {
-            "label": "Phase 01",
-            "title": "Pre-workout",
-            "body": "<p>Prime the nervous system. Five-minute mobility ramp plus a measured caffeine and electrolyte load, timed to your training window for clean, jitter-free output.</p>"
-          }
-        },
-        {
-          "type": "step",
-          "settings": {
-            "label": "Phase 02",
-            "title": "Training",
-            "body": "<p>Execute the day's block. Strain and heart-rate zones stream live to your dashboard so every set lands inside the target stimulus, not above it.</p>"
-          }
-        },
-        {
-          "type": "step",
-          "settings": {
-            "label": "Phase 03",
-            "title": "Recovery",
-            "body": "<p>Close the loop. Protein timing, sleep targets, and an HRV check the next morning confirm the session was absorbed before the next one is programmed.</p>"
-          }
-        }
+        { "type": "phase", "settings": { "icon": "bolt", "title": "Pre-Workout", "a_name": "Pre-Workout V2", "a_specs": "CAF 200mg · BETA-AL", "b_name": "Creatine Mono", "b_specs": "5g · CREAPURE®" } },
+        { "type": "phase", "settings": { "icon": "dumbbell", "title": "Training", "a_name": "EAA Intra-Fuel", "a_specs": "EAA 8g · ELECTROLYTE", "b_name": "Whey Isolate", "b_specs": "PRO 24g · NSF ✓" } },
+        { "type": "phase", "settings": { "icon": "moon", "title": "Recovery", "a_name": "Magnesium Recovery", "a_specs": "MG 300mg · ZINC · B6", "b_name": "Slow Casein · Choc", "b_specs": "PRO 26g · NIGHT" } }
       ]
     }
   ]

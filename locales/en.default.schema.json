@@ -241,39 +241,48 @@
       }
     },
     "before_after": {
-      "name": "Before / After",
+      "name": "Before / after",
       "eyebrow": "Eyebrow",
       "heading": "Heading",
       "images_header": "Comparison images",
       "before_image": "Before image",
       "after_image": "After image",
-      "before_label": "Before pill label",
-      "after_label": "After pill label",
-      "label_info": "Numbers render in DM Mono. Use the · separator for stats, e.g. MONTH 6 · 78KG · 8 PRs.",
-      "range_label": "Drag to compare before and after",
+      "before_label": "Before label",
+      "after_label": "After label",
+      "story_header": "Testimonial",
+      "quote": "Quote",
+      "author_name": "Author name",
+      "author_avatar": "Author avatar",
+      "author_tier": "Author tier",
+      "author_since": "Member since",
       "blocks": {
-        "testimonial": {
-          "name": "Testimonial",
-          "quote": "Quote",
-          "name_label": "Member name",
-          "tier": "Membership tier",
-          "join_date": "Join date"
+        "stat": {
+          "name": "Stat",
+          "value": "Value",
+          "unit": "Unit",
+          "label": "Label"
         }
       }
     },
     "how_it_works": {
-      "name": "How it works",
+      "name": "Recovery protocol",
       "eyebrow": "Eyebrow",
       "heading": "Heading",
       "blocks": {
-        "step": {
-          "name": "Step",
-          "label": "Phase label",
-          "title": "Title",
-          "body": "Body",
-          "image": "Image",
-          "link_text": "Link text",
-          "link_url": "Link URL"
+        "phase": {
+          "name": "Phase",
+          "icon": "Icon",
+          "icon_bolt": "Bolt",
+          "icon_dumbbell": "Dumbbell",
+          "icon_moon": "Moon",
+          "icon_leaf": "Leaf",
+          "title": "Phase title",
+          "a_product": "Item 1 product",
+          "a_name": "Item 1 name (fallback)",
+          "a_specs": "Item 1 specs",
+          "b_product": "Item 2 product",
+          "b_name": "Item 2 name (fallback)",
+          "b_specs": "Item 2 specs"
         }
       }
     },
