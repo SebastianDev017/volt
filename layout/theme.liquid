@@ -74,6 +74,7 @@
   </head>
 
   <body
+    class="template-{{ request.page_type | default: template.name | handle }}"
     data-smooth-scroll="{{ settings.smooth_scroll }}"
     data-animations="{{ settings.scroll_animations }}"
     data-transitions="{{ settings.page_transitions }}"

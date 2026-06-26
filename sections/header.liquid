@@ -90,11 +90,14 @@
 </site-header>
 
 {% stylesheet %}
-  .volt-header { display: block; position: sticky; top: 0; z-index: var(--z-header); background: var(--color-bg); border-bottom: 1px solid var(--color-border); transition: background .35s var(--ease), border-color .35s var(--ease), box-shadow .35s var(--ease); }
-  .volt-header[data-sticky="false"] { position: static; }
-  /* Transparent over the hero at the top; solid + blur once scrolled. */
-  .volt-header[data-transparent="true"]:not(.is-stuck) { background: transparent; border-bottom-color: transparent; }
-  .volt-header.is-stuck { background: var(--color-bg); -webkit-backdrop-filter: blur(24px) saturate(160%); backdrop-filter: blur(24px) saturate(160%); border-bottom-color: var(--color-border); box-shadow: 0 2px 40px rgba(13,12,11,.06); }
+  .volt-header { display: block; z-index: var(--z-header); transition: background .35s var(--ease), border-color .35s var(--ease), box-shadow .35s var(--ease), top .35s var(--ease); }
+  /* Template-driven base state (CSS only). Non-homepage: solid sticky, always visible. */
+  body:not(.template-index) .volt-header[data-sticky="true"] { position: sticky; top: 0; background: var(--color-bg); border-bottom: 1px solid var(--color-border); }
+  /* Homepage: transparent header fixed over the hero (top:auto keeps it below the announcement bar); solid + blur once scrolled past 80px. */
+  body.template-index .volt-header[data-sticky="true"] { position: fixed; left: 0; right: 0; background: transparent; border-bottom: 1px solid transparent; }
+  body.template-index .volt-header[data-sticky="true"].is-stuck { top: 0; background: var(--color-bg); -webkit-backdrop-filter: blur(24px) saturate(160%); backdrop-filter: blur(24px) saturate(160%); border-bottom-color: var(--color-border); box-shadow: 0 2px 40px rgba(13,12,11,.06); }
+  /* Merchant opt-out: non-sticky static header. */
+  .volt-header[data-sticky="false"] { position: static; background: var(--color-bg); border-bottom: 1px solid var(--color-border); }
   .volt-header[data-nav-upper="false"] .volt-nav__link { text-transform: none; }
   .volt-header__cta { display: inline-flex; align-items: center; font-family: var(--font-body); font-weight: 500; font-size: 10px; letter-spacing: .1em; text-transform: uppercase; background: var(--color-acid); color: var(--on-acid); padding: 9px 16px; text-decoration: none; transition: filter .2s var(--ease); }
   .volt-header__cta:hover { filter: brightness(1.05); }
@@ -162,7 +165,7 @@
         var progress = this.querySelector('[data-header-progress]');
         if (this.getAttribute('data-sticky') !== 'false' || progress) {
           var onScroll = () => {
-            this.classList.toggle('is-stuck', window.scrollY > 8);
+            this.classList.toggle('is-stuck', window.scrollY > 80);
             if (progress) {
               var h = document.documentElement.scrollHeight - window.innerHeight;
               progress.style.width = (h > 0 ? (window.scrollY / h) * 100 : 0) + '%';
