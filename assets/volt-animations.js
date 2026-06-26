@@ -34,7 +34,7 @@
     var plugins = [
       window.ScrollTrigger, window.SplitText, window.DrawSVGPlugin,
       window.MorphSVGPlugin, window.Flip, window.ScrollSmoother,
-      window.Draggable, window.InertiaPlugin
+      window.Draggable, window.InertiaPlugin, window.ScrambleTextPlugin
     ].filter(Boolean);
     if (plugins.length) gsap.registerPlugin.apply(gsap, plugins);
 
@@ -64,6 +64,7 @@
     VoltAnim.heroSlider();
     VoltAnim.liquidCursor();
     VoltAnim.ctaPulse();
+    VoltAnim.navScramble();
 
     reveal();
     // Lenis is initialised in volt-scroll.js, which loads before this file, so
@@ -610,6 +611,26 @@
       function reset() { stop(); clearTimeout(idle); idle = setTimeout(start, 4000); }
       ['mousemove', 'scroll', 'keydown', 'pointerdown', 'touchstart'].forEach(function (ev) { window.addEventListener(ev, reset, { passive: true }); });
       reset();
+    },
+
+    // ── Header nav scramble-text hover (replaces the underline) ──
+    navScramble: function () {
+      if (!window.ScrambleTextPlugin || window.matchMedia('(hover: none)').matches) return;
+      document.querySelectorAll('.volt-nav__link').forEach(function (link) {
+        link.dataset.originalText = link.textContent.trim();
+        var run = function () {
+          gsap.killTweensOf(link);
+          gsap.to(link, { duration: 0.5, ease: 'none', scrambleText: { text: link.dataset.originalText, chars: '01ABCDEFX', revealDelay: 0.1, speed: 0.4 } });
+        };
+        // colour transitions via CSS on .volt-nav__link; inline acid on hover, cleared on leave
+        // (so the homepage transparent-header white state resumes correctly).
+        var on = function () { link.style.color = 'var(--color-acid-accessible)'; run(); };
+        var off = function () { link.style.color = ''; run(); };
+        link.addEventListener('mouseenter', on);
+        link.addEventListener('mouseleave', off);
+        link.addEventListener('focus', on);
+        link.addEventListener('blur', off);
+      });
     },
 
     // ── 10 · FLIP layout transitions (grid/list, filters, reorder) ────
