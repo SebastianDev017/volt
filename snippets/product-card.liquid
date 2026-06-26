@@ -1,152 +1,102 @@
 {% doc %}
-  Renders a VOLT product card for product grids (featured grid, collections, related).
-
-  @param {product} card_product - The product to render
-  @param {number} [image_radius] - Border-radius in px for the media (default 0)
-  @param {boolean} [hover_swap] - Fade to the 2nd image on hover when available
-  @param {boolean} [quick_buy] - Show the "ADD TO BAG" quick-add overlay
-  @param {number} [stock_threshold] - Show "ONLY X LEFT" when 0 < inventory < this
-  @param {boolean} [show_tasting_specs] - Show the spec line from volt.specs metafield
-  @param {boolean} [show_member_price] - Show member price when the customer is a member
-
+  Renders a VOLT product card (design-exact) for product grids.
+  @param {product} card_product - The product to render. If blank, an onboarding placeholder is shown.
   @example
-  {% render 'product-card', card_product: product, image_radius: 0, quick_buy: true %}
+  {% render 'product-card', card_product: product %}
 {% enddoc %}
-
 {%- liquid
   assign p = card_product
-  assign radius = image_radius | default: 0
-
-  assign is_member = false
-  if customer and customer.tags contains 'volt-member'
-    assign is_member = true
-  endif
-
-  assign images_count = p.images.size
-  assign second_image = p.images[1]
-
-  assign threshold = stock_threshold | default: 8
-  assign show_specs = show_tasting_specs | default: false
-  assign show_member = show_member_price | default: false
-
-  assign meta_badge = p.metafields.volt.badge.value
-  assign meta_category = p.metafields.volt.category.value
-  assign meta_specs = p.metafields.volt.specs.value
-
-  assign on_sale = false
-  if p.compare_at_price > p.price
-    assign on_sale = true
-  endif
-
-  assign variant = p.selected_or_first_available_variant
-  assign inventory = variant.inventory_quantity
-  assign low_stock = false
-  if variant.inventory_management != blank and inventory > 0 and inventory < threshold
-    assign low_stock = true
-  endif
-
-  assign has_subscription = false
-  if p.selling_plan_groups.size > 0
-    assign has_subscription = true
-  endif
+  assign show_member = settings.show_member_price
 -%}
-
-<article class="pcard" data-product-id="{{ p.id }}">
-  <a class="pcard__media" href="{{ p.url }}" aria-label="{{ p.title | escape }}" style="--pcard-radius: {{ radius }}px;">
-    <div class="pcard__badges pcard__badges--tl">
-      {%- if meta_badge != blank -%}
-        {%- assign badge_down = meta_badge | downcase -%}
-        {%- if badge_down == 'new' or badge_down == 'limited' -%}
-          <span class="badge badge--acid">{{ meta_badge }}</span>
-        {%- else -%}
-          <span class="badge badge--ink">{{ meta_badge }}</span>
-        {%- endif -%}
-      {%- elsif p.available == false -%}
-        <span class="badge badge--ink">SOLD OUT</span>
-      {%- elsif on_sale -%}
-        <span class="badge badge--danger">SALE</span>
-      {%- endif -%}
-      {%- if low_stock -%}
-        <span class="badge badge--danger pcard__stock">ONLY {{ inventory }} LEFT</span>
-      {%- endif -%}
+{%- if p == blank -%}
+  <div class="volt-card volt-card--placeholder">
+    <div class="volt-card__media"><div class="volt-card__imglink">{{ 'product-1' | placeholder_svg_tag: 'volt-card__ph' }}</div></div>
+    <div class="volt-card__body">
+      <span class="volt-card__cat">Category</span>
+      <span class="volt-card__title">Product title</span>
+      <div class="volt-card__price"><span class="volt-card__amount">$00</span></div>
     </div>
-
-    {%- if is_member -%}
-      <div class="pcard__badges pcard__badges--tr">
-        <span class="badge badge--success">MEMBER &minus;20%</span>
-      </div>
-    {%- endif -%}
-
-    {%- if p.featured_image -%}
-      {{ p.featured_image | image_url: width: 800 | image_tag: loading: 'lazy', widths: '400,600,800', sizes: '(max-width: 749px) 100vw, 25vw', class: 'pcard__img pcard__img--primary', alt: p.title | escape }}
-    {%- else -%}
-      <div class="pcard__img pcard__img--ph" aria-hidden="true"></div>
-    {%- endif -%}
-
-    {%- if hover_swap and images_count > 1 and second_image -%}
-      {{ second_image | image_url: width: 800 | image_tag: loading: 'lazy', widths: '400,600,800', sizes: '(max-width: 749px) 100vw, 25vw', class: 'pcard__img pcard__img--secondary', alt: p.title | escape }}
-    {%- endif -%}
-
-    {%- if quick_buy and p.available -%}
-      <div class="pcard__quickadd">
-        {%- if p.variants.size == 1 -%}
-          <product-form class="pcard__form">
-            {%- form 'product', p, class: 'pcard__form-el' -%}
-              <input type="hidden" name="id" value="{{ variant.id }}">
-              <button type="submit" class="btn btn--acid btn--full pcard__quickadd-btn">
-                ADD TO BAG
-              </button>
-            {%- endform -%}
-          </product-form>
-        {%- else -%}
-          <span class="btn btn--acid btn--full pcard__quickadd-btn pcard__quickadd-btn--options">
-            CHOOSE OPTIONS
-          </span>
-        {%- endif -%}
-      </div>
-    {%- endif -%}
-  </a>
-
-  <div class="pcard__body">
-    <div class="pcard__meta">
-      {%- if meta_category != blank -%}
-        <span class="pcard__pill label">{{ meta_category }}</span>
-      {%- endif -%}
-      {%- if p.vendor != blank -%}
-        <span class="label muted pcard__vendor">{{ p.vendor }}</span>
-      {%- endif -%}
-    </div>
-
-    <h3 class="h3 pcard__title">
-      <a href="{{ p.url }}">{{ p.title }}</a>
-    </h3>
-
-    {%- if show_specs and meta_specs != blank -%}
-      <p class="data muted pcard__specs">{{ meta_specs }}</p>
-    {%- endif -%}
-
-    <div class="pcard__pricing">
-      {%- if on_sale -%}
-        <span class="pcard__price pcard__price--sale">{{ p.price | money }}</span>
-        <s class="pcard__price pcard__price--was muted">{{ p.compare_at_price | money }}</s>
-      {%- else -%}
-        <span class="pcard__price">{{ p.price | money }}</span>
-      {%- endif -%}
-    </div>
-
-    {%- if show_member and is_member -%}
-      {%- assign member_price = p.price | times: 0.8 -%}
-      <p class="data pcard__member">
-        <span class="pcard__member-label">MEMBER</span>
-        <span class="pcard__member-value">{{ member_price | money }}</span>
-      </p>
-    {%- endif -%}
-
-    {%- if has_subscription -%}
-      <a class="link-arrow pcard__sub" href="{{ p.url }}">
-        SUBSCRIBE &amp; SAVE
-        <span aria-hidden="true">&rarr;</span>
-      </a>
-    {%- endif -%}
   </div>
-</article>
+{%- else -%}
+  {%- liquid
+    assign v = p.selected_or_first_available_variant
+    assign mprice = p.price | times: 0.8
+    assign badge = p.metafields.volt.badge
+    assign cat = p.metafields.volt.category
+    assign sp = p.metafields.volt.specs.value
+  -%}
+  <div class="volt-card">
+    <div class="volt-card__media">
+      <a href="{{ p.url }}" class="volt-card__imglink">
+        {%- if p.featured_image -%}
+          {{ p.featured_image | image_url: width: 600 | image_tag: loading: 'lazy', widths: '300, 400, 600', sizes: '(max-width: 860px) 50vw, 25vw', class: 'volt-card__img', alt: p.featured_image.alt | default: p.title | escape }}
+          {%- if settings.hover_swap and p.images[1] -%}
+            {{ p.images[1] | image_url: width: 600 | image_tag: loading: 'lazy', widths: '300, 400, 600', class: 'volt-card__img volt-card__img--2', alt: '' }}
+          {%- endif -%}
+        {%- else -%}
+          {{ 'product-1' | placeholder_svg_tag: 'volt-card__ph' }}
+        {%- endif -%}
+      </a>
+      <div class="volt-card__badges">
+        {%- if p.available == false -%}
+          <span class="volt-card__badge volt-card__badge--ink">Sold out</span>
+        {%- elsif badge != blank -%}
+          <span class="volt-card__badge volt-card__badge--ink">{{ badge }}</span>
+        {%- endif -%}
+        {%- if p.available and v.inventory_management != blank and v.inventory_quantity > 0 and v.inventory_quantity < settings.stock_threshold -%}
+          <span class="volt-card__badge volt-card__badge--danger">Only {{ v.inventory_quantity }} left</span>
+        {%- endif -%}
+      </div>
+      {%- if show_member -%}<span class="volt-card__member">Member &minus;20%</span>{%- endif -%}
+      {%- if settings.quick_buy and p.available -%}
+        {%- form 'product', p, class: 'volt-card__qa' -%}
+          <input type="hidden" name="id" value="{{ v.id }}">
+          <button type="submit" name="add" class="volt-card__qabtn">+ Quick Add</button>
+        {%- endform -%}
+      {%- endif -%}
+    </div>
+    <div class="volt-card__body">
+      {%- if cat != blank -%}<span class="volt-card__cat">{{ cat }}</span>{%- endif -%}
+      <a href="{{ p.url }}" class="volt-card__title">{{ p.title }}</a>
+      {%- if settings.show_tasting_specs and sp != blank -%}
+        {%- capture specline -%}{%- if sp.protein != blank %}PRO {{ sp.protein }}{% endif %}{%- if sp.carbs != blank %} · CARBS {{ sp.carbs }}{% endif %}{%- if sp.serving != blank %} · {{ sp.serving }}{% endif %}{%- endcapture -%}
+        {%- assign specline = specline | strip -%}
+        {%- if specline != blank -%}<div class="volt-card__specs">{{ specline }}</div>{%- endif -%}
+      {%- endif -%}
+      <div class="volt-card__price">
+        <span class="volt-card__amount">{{ p.price | money }}</span>
+        {%- if p.compare_at_price > p.price -%}<span class="volt-card__compare">{{ p.compare_at_price | money }}</span>{%- endif -%}
+        {%- if show_member -%}<span class="volt-card__mp">{{ mprice | money }} member</span>{%- endif -%}
+      </div>
+    </div>
+  </div>
+{%- endif -%}
+
+{% stylesheet %}
+  .volt-card { background: var(--color-bg); display: flex; flex-direction: column; }
+  .volt-card__media { position: relative; aspect-ratio: 1 / 1; overflow: hidden; background: var(--color-surface); }
+  .volt-card__imglink { position: absolute; inset: 0; display: block; }
+  .volt-card__img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transition: transform .5s var(--ease); }
+  .volt-card__img--2 { opacity: 0; transition: opacity .35s var(--ease); }
+  .volt-card:hover .volt-card__img { transform: scale(1.04); }
+  .volt-card:hover .volt-card__img--2 { opacity: 1; }
+  .volt-card__ph { position: absolute; inset: 0; width: 100%; height: 100%; }
+  .volt-card__badges { position: absolute; top: 0; left: 0; display: flex; flex-direction: column; z-index: 2; }
+  .volt-card__badge { font-family: var(--font-mono); font-size: 9px; letter-spacing: .12em; text-transform: uppercase; padding: 5px 9px; }
+  .volt-card__badge--ink { background: var(--color-ink); color: var(--color-bg); }
+  .volt-card__badge--danger { background: var(--color-danger); color: #fff; }
+  .volt-card__member { position: absolute; top: 0; right: 0; z-index: 2; font-family: var(--font-mono); font-size: 9px; letter-spacing: .1em; text-transform: uppercase; background: var(--color-acid); color: var(--color-ink); padding: 5px 9px; }
+  .volt-card__qa { position: absolute; left: 0; right: 0; bottom: 0; z-index: 2; transform: translateY(101%); transition: transform .35s var(--ease); }
+  .volt-card:hover .volt-card__qa, .volt-card:focus-within .volt-card__qa { transform: translateY(0); }
+  .volt-card__qabtn { width: 100%; border: none; background: var(--color-ink); color: var(--color-bg); font-family: var(--font-body); font-weight: 500; font-size: 12px; letter-spacing: .08em; text-transform: uppercase; padding: 13px; cursor: pointer; }
+  .volt-card__qabtn:hover { background: var(--color-acid); color: var(--color-ink); }
+  .volt-card__body { padding: 16px 16px 18px; display: flex; flex-direction: column; gap: 9px; flex: 1; }
+  .volt-card__cat { font-family: var(--font-mono); font-size: 9px; letter-spacing: .14em; text-transform: uppercase; color: var(--color-mid); }
+  .volt-card__title { font-family: var(--font-display); font-weight: 700; font-size: 16px; line-height: 1.1; color: var(--color-ink); text-decoration: none; }
+  .volt-card__title:hover { color: var(--color-mid); }
+  .volt-card__specs { font-family: var(--font-mono); font-size: 10px; letter-spacing: .04em; color: var(--color-mid); margin-top: auto; }
+  .volt-card__price { display: flex; align-items: baseline; gap: 8px; margin-top: 4px; flex-wrap: wrap; }
+  .volt-card__amount { font-family: var(--font-display); font-weight: 700; font-size: 18px; color: var(--color-ink); }
+  .volt-card__compare { font-family: var(--font-mono); font-size: 12px; color: var(--color-mid); text-decoration: line-through; }
+  .volt-card__mp { font-family: var(--font-mono); font-size: 11px; color: var(--color-ink); background: var(--color-acid); padding: 2px 6px; margin-left: auto; }
+{% endstylesheet %}

@@ -176,78 +176,24 @@
     },
     "performance_stats": {
       "name": "Performance stats",
-      "heading": "Eyebrow",
-      "heading_info": "Short label above the stat grid",
-      "quote_header": "Member quote",
-      "show_quote": "Show quote column",
-      "quote": "Quote",
-      "quote_author": "Attribution",
       "blocks": {
         "stat": {
           "name": "Stat",
           "value": "Value",
+          "suffix": "Accent suffix",
           "label": "Label"
-        }
-      },
-      "performance_stats": {
-        "name": "Performance stats",
-        "heading": "Eyebrow",
-        "heading_info": "Short label above the stat grid",
-        "quote_header": "Member quote",
-        "show_quote": "Show quote column",
-        "quote": "Quote",
-        "quote_author": "Attribution",
-        "blocks": {
-          "stat": {
-            "name": "Stat",
-            "value": "Value",
-            "label": "Label"
-          }
         }
       }
     },
     "product_grid": {
       "name": "Product grid",
-      "title": {
-        "label": "Heading"
-      },
-      "subtitle": {
-        "label": "Eyebrow"
-      },
-      "collection": {
-        "label": "Collection"
-      },
-      "columns": {
-        "label": "Columns on desktop"
-      },
-      "show_view_all": {
-        "label": "Show \"View all\" link"
-      },
-      "card_header": {
-        "content": "Product card"
-      },
-      "image_radius": {
-        "label": "Image corner radius"
-      },
-      "hover_swap": {
-        "label": "Swap to second image on hover"
-      },
-      "quick_buy": {
-        "label": "Quick add to bag",
-        "info": "Slides an \"Add to bag\" button up from the bottom of the image on hover."
-      },
-      "stock_threshold": {
-        "label": "Low-stock threshold",
-        "info": "Show \"Only X left\" when remaining inventory is below this number."
-      },
-      "show_tasting_specs": {
-        "label": "Show spec line",
-        "info": "Displays the product's volt.specs metafield under the title."
-      },
-      "show_member_price": {
-        "label": "Show member price",
-        "info": "Shows the discounted member price to customers tagged volt-member."
-      }
+      "eyebrow": "Eyebrow",
+      "heading": "Heading",
+      "collection": "Collection",
+      "columns": "Columns",
+      "filter_menu": "Category filter menu",
+      "filter_menu_info": "Optional. Renders category pills linking to collections.",
+      "show_view_all": "Show \"View all\" link"
     },
     "announcement_bar": {
       "name": "Announcement bar",
