@@ -139,11 +139,7 @@
   }
   if (!customElements.get('countdown-timer')) customElements.define('countdown-timer', VoltCountdown);
 
-  /* ---------- Smooth scroll (Lenis, if present & enabled) ---------- */
-  if (Volt.settings.smoothScroll && !RM && window.Lenis) {
-    const lenis = new window.Lenis({ duration: 1.1, easing: (t) => 1 - Math.pow(1 - t, 3) });
-    window.Volt.lenis = lenis;
-    const raf = (time) => { lenis.raf(time); requestAnimationFrame(raf); };
-    requestAnimationFrame(raf);
-  }
+  /* ---------- Smooth scroll ---------- */
+  /* Lenis is initialised in assets/volt-scroll.js (loaded after GSAP so it can
+     be driven by the GSAP ticker). It sets window.Volt.lenis + window.VoltLenis. */
 })();

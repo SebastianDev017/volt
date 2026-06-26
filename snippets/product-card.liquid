@@ -54,6 +54,10 @@
         {%- if p.available and v.inventory_management != blank and v.inventory_quantity > 0 and v.inventory_quantity < settings.stock_threshold -%}
           <span class="volt-card__badge volt-card__badge--danger">{{ 'products.only_left' | t: count: v.inventory_quantity, default: 'Only X left' }}</span>
         {%- endif -%}
+        {%- if p.compare_at_price > p.price and tpl == blank and p.available -%}
+          {%- assign save_pct = p.compare_at_price | minus: p.price | times: 100 | divided_by: p.compare_at_price -%}
+          <span class="volt-card__badge volt-card__badge--save">{{ 'products.save' | t: default: 'Save' }} {{ save_pct }}%</span>
+        {%- endif -%}
       </div>
 
       {%- if show_member and p.compare_at_price > p.price -%}
@@ -147,6 +151,7 @@
   .volt-card__badge--ink { background: var(--color-ink); color: var(--color-bg); }
   .volt-card__badge--acid { background: var(--color-acid); color: var(--color-ink); }
   .volt-card__badge--danger { background: var(--color-danger); color: #fff; }
+  .volt-card__badge--save { background: var(--color-danger); color: #fff; font-weight: 700; font-size: 10px; letter-spacing: .1em; padding: 6px 10px; }
   .volt-card__member { position: absolute; top: 0; right: 0; z-index: 2; font-family: var(--font-mono); font-size: 9px; letter-spacing: .1em; text-transform: uppercase; background: var(--color-acid); color: var(--color-ink); padding: 5px 9px; }
   .volt-card__qv { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%) scale(.96); z-index: 3; opacity: 0; background: var(--color-bg); color: var(--color-ink); border: 1px solid var(--color-ink); font-family: var(--font-mono); font-size: 10px; letter-spacing: .1em; text-transform: uppercase; padding: 10px 16px; cursor: pointer; transition: opacity .3s var(--ease), background .2s var(--ease), color .2s var(--ease); }
   .volt-card:hover .volt-card__qv, .volt-card:focus-within .volt-card__qv { opacity: 1; }
@@ -158,7 +163,7 @@
   .volt-card__qabtn:hover { background: var(--color-acid); color: var(--color-ink); }
   .volt-card__body { padding: 16px 16px 18px; display: flex; flex-direction: column; gap: 9px; flex: 1; }
   .volt-card__cat { font-family: var(--font-mono); font-size: 9px; letter-spacing: .14em; text-transform: uppercase; color: var(--color-mid); }
-  .volt-card__title { font-family: var(--font-display); font-weight: 700; font-size: 16px; line-height: 1.1; color: var(--color-ink); text-decoration: none; }
+  .volt-card__title { font-family: var(--font-display); font-weight: 800; font-size: 16px; line-height: 1.1; color: var(--color-ink); text-decoration: none; }
   .volt-card__title:hover { color: var(--color-mid); }
   .volt-card__specs { font-family: var(--font-mono); font-size: 10px; letter-spacing: .04em; color: var(--color-mid); margin-top: auto; }
   .volt-card__price { display: flex; align-items: baseline; gap: 8px; margin-top: 4px; flex-wrap: wrap; }

@@ -1,0 +1,66 @@
+{%- comment -%}
+  VOLT — per-section customization overlay.
+  Renders scoped CSS (and an optional accent rule) from the shared section
+  settings: color_scheme, heading_size, heading_color, body_color,
+  button_style, show_accent_rule.
+
+  Safe to render on any section — unset settings simply fall back to inherit,
+  so it is a no-op until the merchant opts in. Scope is the Shopify-generated
+  #shopify-section-{{ section.id }} wrapper, so no markup change is needed and
+  the chosen scheme cascades to every token-driven child.
+
+  Usage: {% render 'section-style', section: section %}  (first line of a section)
+{%- endcomment -%}
+{%- liquid
+  assign vs_scheme = section.settings.color_scheme
+  assign vs_hsize = section.settings.heading_size | default: 'medium'
+  assign vs_hcolor = section.settings.heading_color
+  assign vs_bcolor = section.settings.body_color
+  assign vs_btn = section.settings.button_style | default: 'acid'
+  assign vs_rule = section.settings.show_accent_rule
+
+  case vs_hsize
+    when 'small'
+      assign vs_hscale = '0.8'
+    when 'large'
+      assign vs_hscale = '1.2'
+    when 'xl'
+      assign vs_hscale = '1.5'
+    else
+      assign vs_hscale = '1'
+  endcase
+  assign vs_id = '#shopify-section-' | append: section.id
+-%}
+<style>
+  {{ vs_id }}{ --section-heading-scale: {{ vs_hscale }}; }
+  {%- if vs_hsize != 'medium' -%}{{ vs_id }}{ --heading-scale: {{ vs_hscale }}; }{%- endif -%}
+  {%- case vs_scheme -%}
+    {%- when 'ink' -%}
+      {{ vs_id }}{ --color-bg:#0D0C0B; --color-surface:#181715; --color-ink:#F4F2EE; --color-mid:#9A958F; --color-border:rgba(244,242,238,.16); --color-acid-accessible:var(--color-acid); --color-ink-06:rgba(244,242,238,.06); --color-ink-10:rgba(244,242,238,.10); background:var(--color-bg); color:var(--color-ink); }
+    {%- when 'anthracite' -%}
+      {{ vs_id }}{ --color-bg:#23211E; --color-surface:#2C2A27; --color-ink:#EDEBE7; --color-mid:#9A958F; --color-border:rgba(237,235,231,.14); --color-acid-accessible:var(--color-acid); --color-ink-06:rgba(237,235,231,.06); --color-ink-10:rgba(237,235,231,.10); background:var(--color-bg); color:var(--color-ink); }
+    {%- when 'titanium' -%}
+      {{ vs_id }}{ --color-bg:#D7D4CE; --color-surface:#E4E1DB; --color-ink:#1A1917; --color-mid:#6E6A63; --color-border:#BCB8B0; background:var(--color-bg); color:var(--color-ink); }
+    {%- when 'acid' -%}
+      {{ vs_id }}{ --color-bg:#D4FF00; --color-surface:#C3EC00; --color-ink:#0D0C0B; --color-mid:#46550A; --color-border:rgba(13,12,11,.20); --color-acid-accessible:#0D0C0B; background:var(--color-bg); color:var(--color-ink); }
+    {%- when 'volt' -%}
+      {{ vs_id }}{ --color-bg:#F0EEEA; --color-surface:#E8E5E0; --color-ink:#0D0C0B; --color-mid:#8A8784; --color-border:#D0CDC8; background:var(--color-bg); color:var(--color-ink); }
+  {%- endcase -%}
+  {%- if vs_hcolor != blank -%}{{ vs_id }} h1, {{ vs_id }} h2, {{ vs_id }} h3, {{ vs_id }} .h0, {{ vs_id }} .h1, {{ vs_id }} .h2, {{ vs_id }} .h3, {{ vs_id }} [class$="__title"], {{ vs_id }} [class$="__heading"], {{ vs_id }} [class$="__name"]{ color: {{ vs_hcolor }}; }{%- endif -%}
+  {%- if vs_bcolor != blank -%}{{ vs_id }}, {{ vs_id }} p, {{ vs_id }} li, {{ vs_id }} [class$="__body"]{ color: {{ vs_bcolor }}; }{%- endif -%}
+  {%- case vs_btn -%}
+    {%- when 'outline' -%}
+      {{ vs_id }} .btn--acid{ background:transparent; border-color:var(--color-ink); color:var(--color-ink); box-shadow:none; }
+      {{ vs_id }} .btn--acid:hover{ background:var(--color-ink); color:var(--color-bg); box-shadow:none; filter:none; }
+    {%- when 'ghost' -%}
+      {{ vs_id }} .btn--acid{ background:transparent; border-color:var(--color-border); color:var(--color-ink); box-shadow:none; }
+      {{ vs_id }} .btn--acid:hover{ background:var(--color-ink-06); box-shadow:none; filter:none; }
+    {%- when 'ink' -%}
+      {{ vs_id }} .btn--acid{ background:var(--color-ink); border-color:var(--color-ink); color:var(--color-bg); box-shadow:none; }
+      {{ vs_id }} .btn--acid:hover{ filter:brightness(1.18); box-shadow:none; }
+    {%- when 'white' -%}
+      {{ vs_id }} .btn--acid{ background:var(--color-bg); border-color:var(--color-border); color:var(--color-ink); box-shadow:none; }
+      {{ vs_id }} .btn--acid:hover{ background:var(--color-surface); box-shadow:none; filter:none; }
+  {%- endcase -%}
+</style>
+{%- if vs_rule -%}<div class="volt-accent-rule" aria-hidden="true"></div>{%- endif -%}

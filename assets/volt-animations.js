@@ -55,6 +55,8 @@
     VoltAnim.draggableCarousel();
     VoltAnim.floatCarousel();
     VoltAnim.heroSlider();
+    VoltAnim.liquidCursor();
+    VoltAnim.ctaPulse();
 
     reveal();
     if (window.ScrollTrigger) ScrollTrigger.refresh();
@@ -519,6 +521,69 @@
         loop.draggable.addEventListener('press', pause);
         loop.draggable.addEventListener('release', play);
       }
+    },
+
+    // ── Liquid cursor (desktop pointer:fine only; velocity-driven deform) ──
+    liquidCursor: function () {
+      if (!document.body.classList.contains('volt-cursor-enabled')) return;
+      if (!window.matchMedia('(pointer: fine)').matches) return;
+      if (!window.gsap || typeof gsap.quickTo !== 'function') return;
+
+      var dot = document.createElement('div'); dot.className = 'volt-cursor-dot';
+      var fol = document.createElement('div'); fol.className = 'volt-cursor-follower';
+      document.body.appendChild(dot); document.body.appendChild(fol);
+      document.body.classList.add('has-custom-cursor');
+      gsap.set([dot, fol], { transformOrigin: '50% 50%' });
+
+      var dotX = gsap.quickSetter(dot, 'x', 'px'), dotY = gsap.quickSetter(dot, 'y', 'px');
+      var xTo = gsap.quickTo(fol, 'x', { duration: 0.12, ease: 'power3' });
+      var yTo = gsap.quickTo(fol, 'y', { duration: 0.12, ease: 'power3' });
+
+      var px = 0, py = 0, hovDot = 1, hovFol = 1, idle;
+      function deform(t, ang) {
+        gsap.to(fol, {
+          rotation: ang, scaleX: hovFol * (1 + t * 0.6), scaleY: hovFol * (1 - t * 0.35),
+          borderRadius: t > 0.5 ? '58% 42% 52% 48%' : (t > 0.12 ? '50% 45% 50% 45%' : '50%'),
+          duration: 0.2, ease: 'power3.out', overwrite: 'auto'
+        });
+      }
+      window.addEventListener('mousemove', function (e) {
+        dotX(e.clientX); dotY(e.clientY); xTo(e.clientX); yTo(e.clientY);
+        var vx = e.clientX - px, vy = e.clientY - py; px = e.clientX; py = e.clientY;
+        var t = Math.min(Math.sqrt(vx * vx + vy * vy), 60) / 60;
+        deform(t, Math.atan2(vy, vx) * 180 / Math.PI);
+        clearTimeout(idle); idle = setTimeout(function () { deform(0, 0); }, 90);
+      }, { passive: true });
+
+      function hover(ds, fs) { hovDot = ds; hovFol = fs; gsap.to(dot, { scale: ds, duration: 0.2, delay: 0.04, ease: 'power3.out' }); deform(0, 0); }
+      function unhover() { hovDot = 1; hovFol = 1; gsap.to(dot, { scale: 1, duration: 0.25, ease: 'power3.out' }); deform(0, 0); }
+      var sel = 'a, button, [data-quick-view], [role="button"], .btn, summary, label, input, select, textarea';
+      var media = 'img, picture, .volt-card__media, [data-cursor-image]';
+      document.addEventListener('mouseover', function (e) {
+        if (!e.target.closest) return;
+        if (e.target.closest(media)) hover(0.3, 2.0);
+        else if (e.target.closest(sel)) hover(0.5, 1.6);
+      });
+      document.addEventListener('mouseout', function (e) {
+        if (!e.target.closest) return;
+        var was = e.target.closest(sel + ', ' + media);
+        if (was && (!e.relatedTarget || !was.contains(e.relatedTarget))) unhover();
+      });
+      window.addEventListener('mousedown', function () { gsap.to(dot, { scale: 0.8, duration: 0.12 }); gsap.to(fol, { scale: 0.8, duration: 0.12, overwrite: 'auto' }); });
+      window.addEventListener('mouseup', function () { gsap.to(dot, { scale: hovDot, duration: 0.5, ease: 'elastic.out(1,0.5)' }); deform(0, 0); });
+    },
+
+    // ── Idle pulse on primary CTAs (stops on any user engagement) ──
+    ctaPulse: function () {
+      if (!window.gsap || window.matchMedia('(hover: none)').matches) return;
+      var ctas = document.querySelectorAll('.btn--acid:not(.volt-qv__add):not(.volt-sticky-cta__btn)');
+      if (!ctas.length) return;
+      var tween = null, idle = null;
+      function start() { if (tween) return; tween = gsap.to(ctas, { scale: 1.02, duration: 0.45, repeat: -1, yoyo: true, repeatDelay: 3.1, ease: 'sine.inOut', transformOrigin: '50% 50%' }); }
+      function stop() { if (tween) { tween.kill(); tween = null; gsap.to(ctas, { scale: 1, duration: 0.3, overwrite: 'auto' }); } }
+      function reset() { stop(); clearTimeout(idle); idle = setTimeout(start, 4000); }
+      ['mousemove', 'scroll', 'keydown', 'pointerdown', 'touchstart'].forEach(function (ev) { window.addEventListener(ev, reset, { passive: true }); });
+      reset();
     },
 
     // ── 10 · FLIP layout transitions (grid/list, filters, reorder) ────

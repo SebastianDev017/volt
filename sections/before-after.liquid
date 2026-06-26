@@ -1,3 +1,4 @@
+{% render 'section-style', section: section %}
 <section class="volt-ba" data-animate>
   <div class="volt-ba__inner">
     <div class="volt-ba__head">
@@ -53,10 +54,10 @@
 
 {% stylesheet %}
   .volt-ba { background: var(--color-ink); color: var(--color-bg); }
-  .volt-ba__inner { max-width: var(--page-width); margin-inline: auto; padding: 84px 28px; }
+  .volt-ba__inner { max-width: var(--page-width); margin-inline: auto; padding: 104px 28px; }
   .volt-ba__head { text-align: center; margin-bottom: 40px; }
   .volt-ba__eyebrow { font-family: var(--font-mono); font-size: 11px; letter-spacing: .18em; text-transform: uppercase; color: var(--color-acid); }
-  .volt-ba__title { font-family: var(--font-display); font-weight: 700; font-size: clamp(30px, 3vw, 46px); line-height: 1.02; letter-spacing: -.01em; margin: 14px 0 0; color: var(--color-bg); }
+  .volt-ba__title { font-family: var(--font-display); font-weight: 800; font-size: calc(clamp(35px, 3.45vw, 53px) * var(--section-heading-scale, 1)); line-height: 1.02; letter-spacing: -.01em; margin: 14px 0 0; color: var(--color-bg); }
   .volt-ba__grid { display: grid; grid-template-columns: 1.4fr 1fr; gap: 40px; align-items: center; }
   .volt-ba__viewer { position: relative; display: block; aspect-ratio: 4 / 3; overflow: hidden; border: 1px solid rgba(240,238,234,.16); touch-action: none; }
   .volt-ba__layer { position: absolute; inset: 0; }
@@ -104,6 +105,31 @@
   "name": "t:sections.before_after.name",
   "tag": "section",
   "settings": [
+    { "type": "header", "content": "t:sections.style.header" },
+    { "type": "select", "id": "color_scheme", "label": "t:sections.style.color_scheme", "default": "inherit", "options": [
+      { "value": "inherit", "label": "t:sections.style.scheme_inherit" },
+      { "value": "volt", "label": "t:sections.style.scheme_volt" },
+      { "value": "anthracite", "label": "t:sections.style.scheme_anthracite" },
+      { "value": "titanium", "label": "t:sections.style.scheme_titanium" },
+      { "value": "ink", "label": "t:sections.style.scheme_ink" },
+      { "value": "acid", "label": "t:sections.style.scheme_acid" }
+    ] },
+    { "type": "select", "id": "heading_size", "label": "t:sections.style.heading_size", "default": "medium", "options": [
+      { "value": "small", "label": "t:sections.style.size_small" },
+      { "value": "medium", "label": "t:sections.style.size_medium" },
+      { "value": "large", "label": "t:sections.style.size_large" },
+      { "value": "xl", "label": "t:sections.style.size_xl" }
+    ] },
+    { "type": "color", "id": "heading_color", "label": "t:sections.style.heading_color" },
+    { "type": "color", "id": "body_color", "label": "t:sections.style.body_color" },
+    { "type": "select", "id": "button_style", "label": "t:sections.style.button_style", "default": "acid", "options": [
+      { "value": "acid", "label": "t:sections.style.btn_acid" },
+      { "value": "outline", "label": "t:sections.style.btn_outline" },
+      { "value": "ghost", "label": "t:sections.style.btn_ghost" },
+      { "value": "ink", "label": "t:sections.style.btn_ink" },
+      { "value": "white", "label": "t:sections.style.btn_white" }
+    ] },
+    { "type": "checkbox", "id": "show_accent_rule", "label": "t:sections.style.show_accent_rule", "default": false },
     { "type": "text", "id": "eyebrow", "label": "t:sections.before_after.eyebrow", "default": "// Real Member Outcomes" },
     { "type": "text", "id": "heading", "label": "t:sections.before_after.heading", "default": "Six months on protocol." },
     { "type": "header", "content": "t:sections.before_after.images_header" },

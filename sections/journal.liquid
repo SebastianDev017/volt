@@ -1,3 +1,4 @@
+{% render 'section-style', section: section %}
 {%- liquid
   assign blog = blogs[section.settings.blog]
   assign posts = blog.articles
@@ -53,10 +54,10 @@
 
 {% stylesheet %}
   .volt-journal { background: var(--color-surface); border-top: 1px solid var(--color-border); }
-  .volt-journal__inner { max-width: var(--page-width); margin-inline: auto; padding: 84px 28px; }
+  .volt-journal__inner { max-width: var(--page-width); margin-inline: auto; padding: 104px 28px; }
   .volt-journal__head { display: flex; align-items: flex-end; justify-content: space-between; flex-wrap: wrap; gap: 16px; margin-bottom: 40px; }
   .volt-journal__eyebrow { font-family: var(--font-mono); font-size: 11px; letter-spacing: .18em; text-transform: uppercase; color: var(--color-mid); }
-  .volt-journal__title { font-family: var(--font-display); font-weight: 700; font-size: clamp(30px, 3vw, 46px); line-height: 1.02; letter-spacing: -.01em; margin: 14px 0 0; }
+  .volt-journal__title { font-family: var(--font-display); font-weight: 800; font-size: calc(clamp(35px, 3.45vw, 53px) * var(--section-heading-scale, 1)); line-height: 1.02; letter-spacing: -.01em; margin: 14px 0 0; }
   .volt-journal__all { font-family: var(--font-mono); font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: var(--color-ink); text-decoration: none; border-bottom: 2px solid var(--color-acid); padding-bottom: 3px; }
   .volt-journal__grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px; }
   .volt-jcard { display: flex; flex-direction: column; }
@@ -66,7 +67,7 @@
   .volt-jcard__meta { font-family: var(--font-mono); font-size: 10px; letter-spacing: .06em; color: var(--color-mid); }
   .volt-jcard__title { font-family: var(--font-display); font-weight: 700; font-size: 20px; line-height: 1.12; margin: 10px 0 8px; }
   .volt-jcard__title a { color: var(--color-ink); text-decoration: none; }
-  .volt-jcard__title a:hover { color: var(--color-mid); }
+  .volt-jcard__title a:hover { color: var(--color-mid); transition-delay: .03s; }
   .volt-jcard__excerpt { font-size: 14px; line-height: 1.6; color: var(--color-mid); margin: 0; }
   @media (max-width: 860px) { .volt-journal__grid { grid-template-columns: 1fr; gap: 32px; } }
 {% endstylesheet %}
@@ -76,6 +77,31 @@
   "name": "t:sections.journal.name",
   "tag": "section",
   "settings": [
+    { "type": "header", "content": "t:sections.style.header" },
+    { "type": "select", "id": "color_scheme", "label": "t:sections.style.color_scheme", "default": "inherit", "options": [
+      { "value": "inherit", "label": "t:sections.style.scheme_inherit" },
+      { "value": "volt", "label": "t:sections.style.scheme_volt" },
+      { "value": "anthracite", "label": "t:sections.style.scheme_anthracite" },
+      { "value": "titanium", "label": "t:sections.style.scheme_titanium" },
+      { "value": "ink", "label": "t:sections.style.scheme_ink" },
+      { "value": "acid", "label": "t:sections.style.scheme_acid" }
+    ] },
+    { "type": "select", "id": "heading_size", "label": "t:sections.style.heading_size", "default": "medium", "options": [
+      { "value": "small", "label": "t:sections.style.size_small" },
+      { "value": "medium", "label": "t:sections.style.size_medium" },
+      { "value": "large", "label": "t:sections.style.size_large" },
+      { "value": "xl", "label": "t:sections.style.size_xl" }
+    ] },
+    { "type": "color", "id": "heading_color", "label": "t:sections.style.heading_color" },
+    { "type": "color", "id": "body_color", "label": "t:sections.style.body_color" },
+    { "type": "select", "id": "button_style", "label": "t:sections.style.button_style", "default": "acid", "options": [
+      { "value": "acid", "label": "t:sections.style.btn_acid" },
+      { "value": "outline", "label": "t:sections.style.btn_outline" },
+      { "value": "ghost", "label": "t:sections.style.btn_ghost" },
+      { "value": "ink", "label": "t:sections.style.btn_ink" },
+      { "value": "white", "label": "t:sections.style.btn_white" }
+    ] },
+    { "type": "checkbox", "id": "show_accent_rule", "label": "t:sections.style.show_accent_rule", "default": false },
     { "type": "text", "id": "eyebrow", "label": "t:sections.journal.eyebrow", "default": "// Journal" },
     { "type": "text", "id": "heading", "label": "t:sections.journal.heading", "default": "Read the protocol." },
     { "type": "blog", "id": "blog", "label": "t:sections.journal.blog" },

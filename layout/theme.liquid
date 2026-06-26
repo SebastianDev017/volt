@@ -75,7 +75,7 @@
   </head>
 
   <body
-    class="template-{{ request.page_type | default: template.name | handle }}"
+    class="template-{{ request.page_type | default: template.name | handle }}{% if settings.enable_custom_cursor != false %} volt-cursor-enabled{% endif %}"
     data-smooth-scroll="{{ settings.smooth_scroll }}"
     data-animations="{{ settings.scroll_animations }}"
     data-transitions="{{ settings.page_transitions }}"
@@ -100,6 +100,7 @@
 
     {% render 'quick-view' %}
     {% render 'recently-viewed-tracker' %}
+    {%- if template.name == 'index' and settings.sticky_cta_enable -%}{% render 'sticky-cta' %}{%- endif -%}
 
     {%- if settings.use_gsap != false -%}
       {%- comment -%} GSAP 3.13 — standard (free) license incl. all plugins. Loaded from CDN by design choice (off the Theme-Store remote-asset path). {%- endcomment -%}
@@ -116,6 +117,10 @@
       <script src="https://cdn.jsdelivr.net/npm/gsap@3.13/dist/InertiaPlugin.min.js" defer></script>
       {%- if settings.use_scroll_smoother -%}
         <script src="https://cdn.jsdelivr.net/npm/gsap@3.13/dist/ScrollSmoother.min.js" defer></script>
+      {%- endif -%}
+      {%- if settings.smooth_scroll -%}
+        <script src="{{ 'lenis.min.js' | asset_url }}" defer></script>
+        <script src="{{ 'volt-scroll.js' | asset_url }}" defer></script>
       {%- endif -%}
       <script src="{{ 'volt-animations.js' | asset_url }}" defer></script>
       {%- # theme-check-enable AssetSizeJavaScript -%}

@@ -1,3 +1,4 @@
+{% render 'section-style', section: section %}
 <section class="volt-hs" data-animate>
   <div class="volt-hs__inner">
     {%- if section.settings.eyebrow != blank or section.settings.heading != blank -%}
@@ -61,16 +62,16 @@
 
 {% stylesheet %}
   .volt-hs { background: var(--color-bg); color: var(--color-ink); }
-  .volt-hs__inner { max-width: var(--page-width); margin-inline: auto; padding: 84px 28px; }
+  .volt-hs__inner { max-width: var(--page-width); margin-inline: auto; padding: 104px 28px; }
   .volt-hs__head { text-align: center; margin-bottom: 36px; }
   .volt-hs__eyebrow { margin-bottom: 14px; }
-  .volt-hs__title { font-family: var(--font-display); font-weight: 800; font-size: clamp(30px, 3vw, 46px); line-height: 1.02; letter-spacing: -.01em; margin: 0; color: var(--color-ink); }
+  .volt-hs__title { font-family: var(--font-display); font-weight: 800; font-size: calc(clamp(35px, 3.45vw, 53px) * var(--section-heading-scale, 1)); line-height: 1.02; letter-spacing: -.01em; margin: 0; color: var(--color-ink); }
   .volt-hs__scene { position: relative; display: block; overflow: hidden; background: var(--color-surface); border: 1px solid var(--color-border); }
   .volt-hs__img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
 
   .volt-hs__hotspot { position: absolute; transform: translate(-50%, -50%); z-index: 2; }
   .volt-hs__dot { position: relative; display: block; width: 26px; height: 26px; padding: 0; border: 2px solid var(--color-ink); border-radius: 50%; background: var(--color-acid); cursor: pointer; box-shadow: 0 2px 10px rgba(13,12,11,.35); transition: transform var(--dur-fast) var(--ease); }
-  .volt-hs__dot:hover { transform: scale(1.12); }
+  .volt-hs__dot:hover { transform: scale(1.12); transition-delay: .03s; }
   .volt-hs__dot:focus-visible { outline: 2px solid var(--color-ink); outline-offset: 3px; }
   .volt-hs__pulse { position: absolute; inset: -2px; border-radius: 50%; border: 2px solid var(--color-acid); pointer-events: none; animation: volt-hs-pulse 2.2s var(--ease) infinite; }
   @keyframes volt-hs-pulse { 0% { transform: scale(1); opacity: .8; } 70% { transform: scale(2.4); opacity: 0; } 100% { transform: scale(2.4); opacity: 0; } }
@@ -78,18 +79,18 @@
   .volt-hs__popup { position: absolute; left: 50%; bottom: calc(100% + 16px); transform: translateX(-50%) translateY(8px); width: 248px; display: flex; gap: 12px; padding: 12px; background: var(--color-bg); border: 1px solid var(--color-border); box-shadow: 0 14px 40px rgba(13,12,11,.28); opacity: 0; visibility: hidden; pointer-events: none; transition: opacity var(--dur-med) var(--ease), transform var(--dur-med) var(--ease), visibility var(--dur-med); z-index: 3; }
   .volt-hs__hotspot:hover .volt-hs__popup,
   .volt-hs__hotspot:focus-within .volt-hs__popup,
-  .volt-hs__hotspot.is-open .volt-hs__popup { opacity: 1; visibility: visible; pointer-events: auto; transform: translateX(-50%) translateY(0); }
+  .volt-hs__hotspot.is-open .volt-hs__popup { opacity: 1; visibility: visible; pointer-events: auto; transform: translateX(-50%) translateY(0); transition-delay: .08s; }
   .volt-hs__popup::after { content: ""; position: absolute; top: 100%; left: 50%; transform: translateX(-50%); border: 7px solid transparent; border-top-color: var(--color-bg); filter: drop-shadow(0 1px 0 var(--color-border)); }
 
   .volt-hs__media { display: block; flex-shrink: 0; width: 64px; height: 64px; overflow: hidden; background: var(--color-surface); position: relative; }
   .volt-hs__thumb { width: 100%; height: 100%; object-fit: cover; }
   .volt-hs__body { display: flex; flex-direction: column; gap: 5px; min-width: 0; }
   .volt-hs__ptitle { font-family: var(--font-display); font-weight: 700; font-size: 14px; line-height: 1.12; color: var(--color-ink); text-decoration: none; }
-  a.volt-hs__ptitle:hover { color: var(--color-mid); }
+  a.volt-hs__ptitle:hover { color: var(--color-mid); transition-delay: .03s; }
   .volt-hs__price { font-family: var(--font-mono); font-size: 13px; color: var(--color-ink); }
   .volt-hs__desc { font-family: var(--font-body); font-size: 12px; line-height: 1.5; color: var(--color-mid); margin: 0; }
   .volt-hs__cta { font-family: var(--font-mono); font-size: 10px; letter-spacing: .1em; text-transform: uppercase; color: var(--color-ink); text-decoration: none; border-bottom: 2px solid var(--color-acid); padding-bottom: 3px; align-self: flex-start; margin-top: 2px; }
-  .volt-hs__cta:hover { color: var(--color-mid); }
+  .volt-hs__cta:hover { color: var(--color-mid); transition-delay: .03s; }
 
   @media (max-width: 600px) { .volt-hs__inner { padding: 56px 20px; } .volt-hs__popup { width: 210px; } }
   @media (prefers-reduced-motion: reduce) { .volt-hs__pulse { animation: none; } }
@@ -146,6 +147,31 @@
   "name": "t:sections.image_hotspot.name",
   "tag": "section",
   "settings": [
+    { "type": "header", "content": "t:sections.style.header" },
+    { "type": "select", "id": "color_scheme", "label": "t:sections.style.color_scheme", "default": "inherit", "options": [
+      { "value": "inherit", "label": "t:sections.style.scheme_inherit" },
+      { "value": "volt", "label": "t:sections.style.scheme_volt" },
+      { "value": "anthracite", "label": "t:sections.style.scheme_anthracite" },
+      { "value": "titanium", "label": "t:sections.style.scheme_titanium" },
+      { "value": "ink", "label": "t:sections.style.scheme_ink" },
+      { "value": "acid", "label": "t:sections.style.scheme_acid" }
+    ] },
+    { "type": "select", "id": "heading_size", "label": "t:sections.style.heading_size", "default": "medium", "options": [
+      { "value": "small", "label": "t:sections.style.size_small" },
+      { "value": "medium", "label": "t:sections.style.size_medium" },
+      { "value": "large", "label": "t:sections.style.size_large" },
+      { "value": "xl", "label": "t:sections.style.size_xl" }
+    ] },
+    { "type": "color", "id": "heading_color", "label": "t:sections.style.heading_color" },
+    { "type": "color", "id": "body_color", "label": "t:sections.style.body_color" },
+    { "type": "select", "id": "button_style", "label": "t:sections.style.button_style", "default": "acid", "options": [
+      { "value": "acid", "label": "t:sections.style.btn_acid" },
+      { "value": "outline", "label": "t:sections.style.btn_outline" },
+      { "value": "ghost", "label": "t:sections.style.btn_ghost" },
+      { "value": "ink", "label": "t:sections.style.btn_ink" },
+      { "value": "white", "label": "t:sections.style.btn_white" }
+    ] },
+    { "type": "checkbox", "id": "show_accent_rule", "label": "t:sections.style.show_accent_rule", "default": false },
     { "type": "text", "id": "eyebrow", "label": "t:sections.image_hotspot.eyebrow", "default": "// Shop The Look" },
     { "type": "text", "id": "heading", "label": "t:sections.image_hotspot.heading", "default": "Built for the session." },
     { "type": "image_picker", "id": "image", "label": "t:sections.image_hotspot.image", "info": "t:sections.image_hotspot.image_info" },

@@ -661,7 +661,10 @@
     "main_cart": {
       "name": "Cart page",
       "free_shipping_threshold": "Free shipping threshold",
-      "show_free_shipping_bar": "Show free shipping progress bar"
+      "show_free_shipping_bar": "Show free shipping progress bar",
+      "show_viewers": "Show \"X people viewing\"",
+      "viewers_count": "Viewer count",
+      "viewers_label": "Viewer label"
     },
     "main_search": {
       "name": "Search results",
@@ -711,6 +714,30 @@
       "limit": "Products",
       "view_all_url": "View-all link",
       "view_all_label": "View-all label"
+    },
+    "style": {
+      "header": "Section style",
+      "color_scheme": "Color scheme",
+      "scheme_inherit": "Inherit (theme default)",
+      "scheme_volt": "Volt (light)",
+      "scheme_anthracite": "Anthracite",
+      "scheme_titanium": "Titanium",
+      "scheme_ink": "Ink (dark)",
+      "scheme_acid": "Acid",
+      "heading_size": "Heading size",
+      "size_small": "Small",
+      "size_medium": "Medium",
+      "size_large": "Large",
+      "size_xl": "Extra large",
+      "heading_color": "Heading color",
+      "body_color": "Body text color",
+      "button_style": "Primary button style",
+      "btn_acid": "Acid",
+      "btn_outline": "Outline",
+      "btn_ghost": "Ghost",
+      "btn_ink": "Ink",
+      "btn_white": "White",
+      "show_accent_rule": "Show accent rule"
     }
   },
   "settings": {
@@ -748,6 +775,17 @@
       "show_countdown": "Show countdown on recommended tier",
       "countdown_end_date": "Countdown end date",
       "countdown_info": "Format YYYY-MM-DD. The countdown hides after this date."
+    },
+    "conversion": {
+      "name": "Conversion & UX",
+      "cursor_header": "Custom cursor",
+      "custom_cursor": "Enable liquid cursor",
+      "custom_cursor_info": "A custom dot + follower cursor on desktop (pointer devices only). Automatically disabled on touch and for reduced-motion.",
+      "sticky_header": "Sticky CTA bar",
+      "sticky_enable": "Show sticky CTA on homepage",
+      "sticky_text": "Left text",
+      "sticky_label": "Button label",
+      "sticky_url": "Button link"
     },
     "animations": {
       "name": "Animations & experience",

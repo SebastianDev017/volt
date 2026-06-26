@@ -1,0 +1,30 @@
+{%- comment -%}
+  VOLT — sticky bottom conversion bar. Homepage only, revealed after 200px of
+  scroll, dismissable for the session. Rendered from layout/theme.liquid.
+{%- endcomment -%}
+{%- if settings.sticky_cta_text != blank or settings.sticky_cta_label != blank -%}
+  <div class="volt-sticky-cta" data-sticky-cta hidden>
+    {%- if settings.sticky_cta_text != blank -%}<span class="volt-sticky-cta__text">{{ settings.sticky_cta_text | escape }}</span>{%- endif -%}
+    {%- if settings.sticky_cta_label != blank -%}
+      <a class="btn btn--acid volt-sticky-cta__btn" href="{{ settings.sticky_cta_url | default: routes.all_products_collection_url }}">{{ settings.sticky_cta_label | escape }}</a>
+    {%- endif -%}
+    <button type="button" class="volt-sticky-cta__x" data-sticky-cta-close aria-label="{{ 'products.close' | t: default: 'Close' }}">&times;</button>
+  </div>
+  <script>
+    (function () {
+      var bar = document.querySelector('[data-sticky-cta]');
+      if (!bar) return;
+      try { if (sessionStorage.getItem('volt-sticky-cta-dismissed') === '1') return; } catch (e) {}
+      bar.hidden = false;
+      var onScroll = function () { bar.classList.toggle('is-visible', window.scrollY > 200); };
+      onScroll();
+      window.addEventListener('scroll', onScroll, { passive: true });
+      var x = bar.querySelector('[data-sticky-cta-close]');
+      if (x) x.addEventListener('click', function () {
+        bar.classList.remove('is-visible');
+        setTimeout(function () { bar.hidden = true; }, 400);
+        try { sessionStorage.setItem('volt-sticky-cta-dismissed', '1'); } catch (e) {}
+      });
+    })();
+  </script>
+{%- endif -%}

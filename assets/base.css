@@ -425,3 +425,45 @@ html:has(#smooth-wrapper) .volt-header{ position: relative; top: auto; }
 [dir="rtl"] .volt-dialog__close{ right: auto; left: 12px; }
 [dir="rtl"] .vitals-track{ animation-name: volt-marquee-rtl; }
 @keyframes volt-marquee-rtl{ to{ transform: translateX(50%); } }
+
+/* =====================================================================
+   FIX 5 — Visual weight, per-section accent, gentle hover, cursor, conversion
+   ===================================================================== */
+
+/* ---- Visual weight & energy (heavier headings, roomier rhythm) ---- */
+:root{ --section-space: clamp(100px, 10vw, 160px); }
+.h1{ font-size: calc(clamp(46px, 4.6vw, 74px) * var(--heading-scale)); font-weight: 800; }
+.h2{ font-size: calc(clamp(32px, 3.2vw, 50px) * var(--heading-scale)); font-weight: 800; }
+.h3{ font-size: calc(clamp(23px, 2.3vw, 32px) * var(--heading-scale)); }
+.eyebrow{ font-size: 11.5px; }
+
+/* ---- Per-section accent rule (optional, above the eyebrow) ---- */
+.volt-accent-rule{ max-width: var(--page-width); margin: 0 auto; padding: clamp(28px, 4vw, 48px) var(--container-padding) 0; }
+.volt-accent-rule::before{ content: ""; display: block; width: 56px; height: 3px; background: var(--color-acid-accessible); }
+
+/* ---- Gentle hover: ease IN with a small delay, snap OUT instantly ----
+   (delay lives only on :hover, so leaving the element is never laggy) */
+.btn:hover, .link-arrow:hover, .volt-nav__link:hover,
+.volt-header__icon:hover, .volt-header__account:hover, .volt-header__cta:hover,
+.volt-mega__list a:hover{ transition-delay: .03s; }
+.volt-card:hover .volt-card__img, .volt-card:hover .volt-card__img--2,
+.volt-card:hover .volt-card__qa, .volt-card:hover .volt-card__qv{ transition-delay: .08s; }
+.card-swatch:hover, .volt-card__badge:hover, .badge:hover{ transition-delay: .06s; }
+
+/* ---- Liquid cursor (desktop pointer:fine only; JS adds the body class) ---- */
+.volt-cursor-dot, .volt-cursor-follower{ position: fixed; top: 0; left: 0; z-index: 100000; pointer-events: none; border-radius: 50%; will-change: transform; }
+.volt-cursor-dot{ width: 10px; height: 10px; margin: -5px 0 0 -5px; background: color-mix(in srgb, var(--color-ink) 90%, transparent); }
+.volt-cursor-follower{ width: 36px; height: 36px; margin: -18px 0 0 -18px; background: color-mix(in srgb, var(--color-ink) 8%, transparent); border: 1px solid color-mix(in srgb, var(--color-ink) 20%, transparent); }
+body.has-custom-cursor, body.has-custom-cursor *{ cursor: none; }
+@media (hover: none), (pointer: coarse){ .volt-cursor-dot, .volt-cursor-follower{ display: none !important; } }
+@media (prefers-reduced-motion: reduce){ .volt-cursor-dot, .volt-cursor-follower{ display: none; } }
+
+/* ---- Conversion: sticky bottom CTA (homepage, after 200px scroll) ---- */
+.volt-sticky-cta{ position: fixed; left: 0; right: 0; bottom: 0; z-index: 150; display: flex; align-items: center; gap: 16px; height: 56px; padding: 0 14px 0 24px; background: var(--color-ink); color: var(--color-bg); transform: translateY(100%); transition: transform .4s var(--ease); }
+.volt-sticky-cta.is-visible{ transform: none; }
+.volt-sticky-cta[hidden]{ display: none; }
+.volt-sticky-cta__text{ font-family: var(--font-mono); font-size: 12px; letter-spacing: .04em; }
+.volt-sticky-cta__btn{ margin-left: auto; padding: 9px 18px; }
+.volt-sticky-cta__x{ color: var(--color-bg); opacity: .6; font-size: 18px; line-height: 1; padding: 6px; transition: opacity var(--dur-fast) var(--ease); }
+.volt-sticky-cta__x:hover{ opacity: 1; }
+@media (max-width: 600px){ .volt-sticky-cta{ gap: 10px; padding-left: 16px; } .volt-sticky-cta__text{ font-size: 10.5px; } .volt-sticky-cta__btn{ padding: 9px 12px; font-size: 11px; } }

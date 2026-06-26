@@ -371,6 +371,49 @@
     ]
   },
   {
+    "name": "t:settings.conversion.name",
+    "settings": [
+      {
+        "type": "header",
+        "content": "t:settings.conversion.cursor_header"
+      },
+      {
+        "type": "checkbox",
+        "id": "enable_custom_cursor",
+        "label": "t:settings.conversion.custom_cursor",
+        "info": "t:settings.conversion.custom_cursor_info",
+        "default": true
+      },
+      {
+        "type": "header",
+        "content": "t:settings.conversion.sticky_header"
+      },
+      {
+        "type": "checkbox",
+        "id": "sticky_cta_enable",
+        "label": "t:settings.conversion.sticky_enable",
+        "default": true
+      },
+      {
+        "type": "text",
+        "id": "sticky_cta_text",
+        "label": "t:settings.conversion.sticky_text",
+        "default": "Join 2,400+ members"
+      },
+      {
+        "type": "text",
+        "id": "sticky_cta_label",
+        "label": "t:settings.conversion.sticky_label",
+        "default": "Start your protocol →"
+      },
+      {
+        "type": "url",
+        "id": "sticky_cta_url",
+        "label": "t:settings.conversion.sticky_url"
+      }
+    ]
+  },
+  {
     "name": "t:settings.header.name",
     "settings": [
       {

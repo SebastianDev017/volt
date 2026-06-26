@@ -1,3 +1,4 @@
+{% render 'section-style', section: section %}
 <section class="volt-stats" data-animate>
   <div class="volt-stats__inner">
     <div class="volt-stats__grid" {% render 'anim-attrs', value: section.settings.cards_animation, enabled: section.settings.enable_animations %}>
@@ -29,10 +30,10 @@
 </section>
 
 {% stylesheet %}
-  .volt-stats__inner { max-width: var(--page-width); margin-inline: auto; padding: 84px 28px; }
+  .volt-stats__inner { max-width: var(--page-width); margin-inline: auto; padding: 104px 28px; }
   .volt-stats__grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: var(--color-border); border: 1px solid var(--color-border); }
   .volt-stats__cell { background: var(--color-bg); padding: 40px 28px; }
-  .volt-stats__num { font-family: var(--font-display); font-weight: 800; font-size: clamp(40px, 4.4vw, 60px); line-height: 1; letter-spacing: -.02em; }
+  .volt-stats__num { font-family: var(--font-display); font-weight: 800; font-size: calc(clamp(46px, 5vw, 69px) * var(--section-heading-scale, 1)); line-height: 1; letter-spacing: -.02em; }
   .volt-stats__count { color: var(--color-ink); }
   .volt-stats__suffix { color: var(--color-acid-accessible); }
   .volt-stats__bar { width: 34px; height: 4px; background: var(--color-acid); margin: 16px 0 12px; }
@@ -57,6 +58,31 @@
     }
   ],
   "settings": [
+    { "type": "header", "content": "t:sections.style.header" },
+    { "type": "select", "id": "color_scheme", "label": "t:sections.style.color_scheme", "default": "inherit", "options": [
+      { "value": "inherit", "label": "t:sections.style.scheme_inherit" },
+      { "value": "volt", "label": "t:sections.style.scheme_volt" },
+      { "value": "anthracite", "label": "t:sections.style.scheme_anthracite" },
+      { "value": "titanium", "label": "t:sections.style.scheme_titanium" },
+      { "value": "ink", "label": "t:sections.style.scheme_ink" },
+      { "value": "acid", "label": "t:sections.style.scheme_acid" }
+    ] },
+    { "type": "select", "id": "heading_size", "label": "t:sections.style.heading_size", "default": "medium", "options": [
+      { "value": "small", "label": "t:sections.style.size_small" },
+      { "value": "medium", "label": "t:sections.style.size_medium" },
+      { "value": "large", "label": "t:sections.style.size_large" },
+      { "value": "xl", "label": "t:sections.style.size_xl" }
+    ] },
+    { "type": "color", "id": "heading_color", "label": "t:sections.style.heading_color" },
+    { "type": "color", "id": "body_color", "label": "t:sections.style.body_color" },
+    { "type": "select", "id": "button_style", "label": "t:sections.style.button_style", "default": "acid", "options": [
+      { "value": "acid", "label": "t:sections.style.btn_acid" },
+      { "value": "outline", "label": "t:sections.style.btn_outline" },
+      { "value": "ghost", "label": "t:sections.style.btn_ghost" },
+      { "value": "ink", "label": "t:sections.style.btn_ink" },
+      { "value": "white", "label": "t:sections.style.btn_white" }
+    ] },
+    { "type": "checkbox", "id": "show_accent_rule", "label": "t:sections.style.show_accent_rule", "default": false },
     { "type": "header", "content": "t:sections.animation.header" },
     { "type": "checkbox", "id": "enable_animations", "label": "t:sections.animation.enable", "default": true },
     { "type": "select", "id": "cards_animation", "label": "t:sections.animation.cards", "default": "stagger-up", "options": [

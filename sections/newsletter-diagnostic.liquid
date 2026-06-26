@@ -1,3 +1,4 @@
+{% render 'section-style', section: section %}
 {%- liquid
   assign tier_starter = section.settings.tier_starter_handle | default: 'starter'
   assign tier_performance = section.settings.tier_performance_handle | default: 'performance'
@@ -92,10 +93,10 @@
 
 {% stylesheet %}
   .volt-diag { background: var(--color-ink); color: var(--color-bg); }
-  .volt-diag__inner { max-width: var(--page-width); margin-inline: auto; padding: clamp(64px, 9vw, 100px) 28px; }
+  .volt-diag__inner { max-width: var(--page-width); margin-inline: auto; padding: calc(clamp(64px, 9vw, 100px) + 20px) 28px; }
   .volt-diag__grid { display: grid; grid-template-columns: 60fr 40fr; gap: clamp(32px, 5vw, 72px); align-items: start; }
   .volt-diag__eyebrow { font-family: var(--font-mono); font-size: 11px; letter-spacing: .18em; text-transform: uppercase; color: var(--color-acid); margin: 0; }
-  .volt-diag__heading { font-family: var(--font-display); font-weight: 800; font-size: clamp(30px, 3.4vw, 52px); line-height: 1.02; letter-spacing: -.02em; color: var(--color-bg); margin: 16px 0 0; }
+  .volt-diag__heading { font-family: var(--font-display); font-weight: 800; font-size: calc(clamp(35px, 3.9vw, 60px) * var(--section-heading-scale, 1)); line-height: 1.02; letter-spacing: -.02em; color: var(--color-bg); margin: 16px 0 0; }
   .volt-diag__body { font-size: 15px; line-height: 1.6; color: rgba(240,238,234,.7); margin: 16px 0 0; max-width: 46ch; }
 
   .volt-quiz { display: block; margin-top: clamp(28px, 4vw, 40px); }
@@ -108,7 +109,7 @@
   .volt-quiz__legend { padding: 0; font-family: var(--font-mono); font-size: 10px; letter-spacing: .18em; text-transform: uppercase; color: rgba(240,238,234,.5); margin-bottom: 16px; }
   .volt-quiz__options { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
   .volt-quiz__opt { display: flex; align-items: center; justify-content: space-between; gap: 10px; text-align: left; background: rgba(240,238,234,.05); border: 1px solid rgba(240,238,234,.2); color: var(--color-bg); padding: 16px 18px; font-family: var(--font-body); font-weight: 500; font-size: 14px; cursor: pointer; transition: border-color var(--dur-fast) var(--ease), background var(--dur-fast) var(--ease), color var(--dur-fast) var(--ease), transform var(--dur-fast) var(--ease); }
-  .volt-quiz__opt:hover { border-color: var(--color-bg); }
+  .volt-quiz__opt:hover { border-color: var(--color-bg); transition-delay: .03s; }
   .volt-quiz__opt:active { transform: translateY(1px); }
   .volt-quiz__opt[aria-pressed="true"] { border-color: var(--color-acid); background: var(--color-acid); color: var(--color-ink); }
   .volt-quiz__price { font-family: var(--font-mono); font-size: 11px; color: var(--color-acid); white-space: nowrap; }
@@ -116,7 +117,7 @@
   .volt-quiz__cta { display: inline-flex; align-items: center; gap: 8px; margin-top: 22px; width: 100%; justify-content: center; background: var(--color-acid); color: var(--color-ink); font-family: var(--font-body); font-weight: 500; font-size: 13px; letter-spacing: .06em; text-transform: uppercase; padding: 15px 24px; text-decoration: none; }
   .volt-quiz__nav { margin-top: 16px; min-height: 20px; }
   .volt-quiz__back { background: none; border: 0; color: rgba(240,238,234,.6); font-family: var(--font-mono); font-size: 11px; letter-spacing: .08em; text-transform: uppercase; cursor: pointer; }
-  .volt-quiz__back:hover { color: var(--color-bg); }
+  .volt-quiz__back:hover { color: var(--color-bg); transition-delay: .03s; }
   .volt-quiz__back[hidden] { display: none; }
 
   .volt-diag__right { border: 1px solid rgba(240,238,234,.18); background: rgba(240,238,234,.04); padding: clamp(24px, 3vw, 36px); }
@@ -197,6 +198,31 @@
   "name": "t:sections.newsletter_diagnostic.name",
   "tag": "section",
   "settings": [
+    { "type": "header", "content": "t:sections.style.header" },
+    { "type": "select", "id": "color_scheme", "label": "t:sections.style.color_scheme", "default": "inherit", "options": [
+      { "value": "inherit", "label": "t:sections.style.scheme_inherit" },
+      { "value": "volt", "label": "t:sections.style.scheme_volt" },
+      { "value": "anthracite", "label": "t:sections.style.scheme_anthracite" },
+      { "value": "titanium", "label": "t:sections.style.scheme_titanium" },
+      { "value": "ink", "label": "t:sections.style.scheme_ink" },
+      { "value": "acid", "label": "t:sections.style.scheme_acid" }
+    ] },
+    { "type": "select", "id": "heading_size", "label": "t:sections.style.heading_size", "default": "medium", "options": [
+      { "value": "small", "label": "t:sections.style.size_small" },
+      { "value": "medium", "label": "t:sections.style.size_medium" },
+      { "value": "large", "label": "t:sections.style.size_large" },
+      { "value": "xl", "label": "t:sections.style.size_xl" }
+    ] },
+    { "type": "color", "id": "heading_color", "label": "t:sections.style.heading_color" },
+    { "type": "color", "id": "body_color", "label": "t:sections.style.body_color" },
+    { "type": "select", "id": "button_style", "label": "t:sections.style.button_style", "default": "acid", "options": [
+      { "value": "acid", "label": "t:sections.style.btn_acid" },
+      { "value": "outline", "label": "t:sections.style.btn_outline" },
+      { "value": "ghost", "label": "t:sections.style.btn_ghost" },
+      { "value": "ink", "label": "t:sections.style.btn_ink" },
+      { "value": "white", "label": "t:sections.style.btn_white" }
+    ] },
+    { "type": "checkbox", "id": "show_accent_rule", "label": "t:sections.style.show_accent_rule", "default": false },
     { "type": "text", "id": "eyebrow", "label": "t:sections.newsletter_diagnostic.eyebrow", "default": "// Diagnostic Capture" },
     { "type": "text", "id": "heading", "label": "t:sections.newsletter_diagnostic.heading", "default": "What's your training level?" },
     { "type": "textarea", "id": "body", "label": "t:sections.newsletter_diagnostic.body", "default": "Four questions. Sixty seconds. We map your goals, frequency and obstacles to the protocol built to move your numbers." },
