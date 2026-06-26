@@ -1,12 +1,37 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
 {
   "sections": {
     "hero_diagnostic_1": {
       "type": "hero-diagnostic",
-      "settings": {}
+      "settings": {
+        "eyebrow": "Member Protocol 2025",
+        "heading_pre": "Train with",
+        "heading_highlight": "data",
+        "heading_post": ", not guesswork.",
+        "subheading": "Track your strain, protect your recovery, and train with purpose. Your membership is a performance system — not a punch card.",
+        "primary_label": "Start your protocol",
+        "primary_link": "",
+        "secondary_label": "Diagnose your level",
+        "secondary_link": "",
+        "recovery_score": 87,
+        "strain_label": "14.2",
+        "strain_fill": 68,
+        "week_label": "14 DAYS",
+        "hrv": "68",
+        "rhr": "52",
+        "sleep": "7.4"
+      }
     },
     "vitals_strip_2": {
       "type": "vitals-strip",
-      "settings": {},
       "blocks": {
         "block_1": {
           "type": "stat",
@@ -45,11 +70,11 @@
         "block_3",
         "block_4",
         "block_5"
-      ]
+      ],
+      "settings": {}
     },
     "membership_tiers_3": {
       "type": "membership-tiers",
-      "settings": {},
       "blocks": {
         "block_1": {
           "type": "tier",
@@ -63,7 +88,8 @@
             "accent": "mid",
             "features_on": "Member dashboard access\n8 classes / month\n10% off all gear",
             "features_off": "Strain & recovery tracking\n1:1 coaching sessions",
-            "cta_label": "Choose Protocol"
+            "cta_label": "Choose Protocol",
+            "cta_link": ""
           }
         },
         "block_2": {
@@ -78,7 +104,8 @@
             "accent": "acid",
             "features_on": "Everything in Starter\nUnlimited classes\n20% off all gear\nStrain & recovery tracking",
             "features_off": "1:1 coaching sessions",
-            "cta_label": "Choose Protocol"
+            "cta_label": "Choose Protocol",
+            "cta_link": ""
           }
         },
         "block_3": {
@@ -93,7 +120,8 @@
             "accent": "ink",
             "features_on": "Everything in Performance\n4 × 1:1 coaching / month\n30% off all gear\nCustom nutrition protocol\nPriority class booking",
             "features_off": "",
-            "cta_label": "Choose Protocol"
+            "cta_label": "Choose Protocol",
+            "cta_link": ""
           }
         }
       },
@@ -101,15 +129,29 @@
         "block_1",
         "block_2",
         "block_3"
-      ]
+      ],
+      "settings": {
+        "eyebrow": "// The Core Model",
+        "heading": "Choose your protocol.",
+        "body": "Three tiers, one system. Every membership unlocks the dashboard, class booking, and member pricing on gear.",
+        "countdown_end_date": "2026-12-31T23:59:59",
+        "dashboard_link_label": "Already a member? Access your dashboard →",
+        "dashboard_link": ""
+      }
     },
     "product_grid_4": {
       "type": "product-grid",
-      "settings": {}
+      "settings": {
+        "eyebrow": "// The Upsell",
+        "heading": "Gear the protocol.",
+        "collection": "",
+        "columns": 4,
+        "filter_menu": "",
+        "show_view_all": true
+      }
     },
     "performance_stats_5": {
       "type": "performance-stats",
-      "settings": {},
       "blocks": {
         "block_1": {
           "type": "stat",
@@ -149,11 +191,11 @@
         "block_2",
         "block_3",
         "block_4"
-      ]
+      ],
+      "settings": {}
     },
     "before_after_6": {
       "type": "before-after",
-      "settings": {},
       "blocks": {
         "block_1": {
           "type": "stat",
@@ -184,19 +226,30 @@
         "block_1",
         "block_2",
         "block_3"
-      ]
+      ],
+      "settings": {
+        "eyebrow": "// Real Member Outcomes",
+        "heading": "Six months on protocol.",
+        "before_label": "MONTH 0 · 92KG · PRs: 0",
+        "after_label": "MONTH 6 · 78KG · PRs: 8",
+        "quote": "<p>\"The dashboard changed everything. I stopped guessing and started reading my recovery. Eight PRs in six months — and I trained less than before.\"</p>",
+        "author_name": "Marcus T.",
+        "author_tier": "Performance",
+        "author_since": "Member since 2024"
+      }
     },
     "how_it_works_7": {
       "type": "how-it-works",
-      "settings": {},
       "blocks": {
         "block_1": {
           "type": "phase",
           "settings": {
             "icon": "bolt",
             "title": "Pre-Workout",
+            "a_product": "",
             "a_name": "Pre-Workout V2",
             "a_specs": "CAF 200mg · BETA-AL",
+            "b_product": "",
             "b_name": "Creatine Mono",
             "b_specs": "5g · CREAPURE®"
           }
@@ -206,8 +259,10 @@
           "settings": {
             "icon": "dumbbell",
             "title": "Training",
+            "a_product": "",
             "a_name": "EAA Intra-Fuel",
             "a_specs": "EAA 8g · ELECTROLYTE",
+            "b_product": "",
             "b_name": "Whey Isolate",
             "b_specs": "PRO 24g · NSF ✓"
           }
@@ -217,8 +272,10 @@
           "settings": {
             "icon": "moon",
             "title": "Recovery",
+            "a_product": "",
             "a_name": "Magnesium Recovery",
             "a_specs": "MG 300mg · ZINC · B6",
+            "b_product": "",
             "b_name": "Slow Casein · Choc",
             "b_specs": "PRO 26g · NIGHT"
           }
@@ -228,15 +285,34 @@
         "block_1",
         "block_2",
         "block_3"
-      ]
+      ],
+      "settings": {
+        "eyebrow": "// Build Your Stack",
+        "heading": "The recovery protocol."
+      }
     },
     "journal_8": {
       "type": "journal",
-      "settings": {}
+      "settings": {
+        "eyebrow": "// Journal",
+        "heading": "Read the protocol.",
+        "blog": "",
+        "view_all_label": "All articles"
+      }
     },
     "newsletter_diagnostic_9": {
       "type": "newsletter-diagnostic",
-      "settings": {}
+      "settings": {
+        "eyebrow": "// Diagnostic Capture",
+        "heading": "What's your training level?",
+        "body": "Four questions. Sixty seconds. We map your goals, frequency and obstacles to the protocol built to move your numbers.",
+        "tier_starter_handle": "starter",
+        "tier_performance_handle": "performance",
+        "tier_elite_handle": "elite",
+        "newsletter_heading": "Or join the dispatch",
+        "newsletter_body": "Weekly performance science, member protocols and early access to drops. No filler.",
+        "consent_text": "By subscribing you agree to receive marketing emails. Unsubscribe anytime."
+      }
     }
   },
   "order": [
