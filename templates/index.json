@@ -24,7 +24,7 @@
         "primary_link": "",
         "secondary_label": "Diagnose your level",
         "secondary_link": "",
-        "carousel_collection": "",
+        "carousel_collection": "automated-collection",
         "carousel_limit": 6,
         "carousel_label": "Explore the protocol",
         "enable_animations": true,
