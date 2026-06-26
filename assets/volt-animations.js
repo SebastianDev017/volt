@@ -53,6 +53,7 @@
     VoltAnim.morphStateChange();
     VoltAnim.flipLayoutTransition();
     VoltAnim.draggableCarousel();
+    VoltAnim.floatCarousel();
 
     reveal();
     if (window.ScrollTrigger) ScrollTrigger.refresh();
@@ -274,6 +275,47 @@
           });
         }
       });
+    },
+
+    // ── Floating scattered-card carousel (hero rail, inertia throw) ──
+    floatCarousel: function () {
+      var track = document.getElementById('fc-track');
+      var stage = document.getElementById('fc-stage');
+      if (!track || !stage) return;
+      var cards = track.querySelectorAll('.fc-card');
+      if (!cards.length) return;
+
+      function v(card, prop, fb) { var n = parseFloat(card.style.getPropertyValue(prop)); return isNaN(n) ? fb : n; }
+      function settle() {
+        cards.forEach(function (card) {
+          gsap.to(card, {
+            y: v(card, '--fc-y', 0), rotation: v(card, '--fc-rot', 0), scale: v(card, '--fc-scale', 1),
+            duration: 0.7, ease: 'elastic.out(1, 0.6)', delay: Math.random() * 0.2
+          });
+        });
+      }
+
+      // Cards rise into their scattered CSS positions (rotation/scale preserved).
+      if (window.ScrollTrigger) {
+        gsap.from(cards, {
+          y: 60, opacity: 0, duration: 0.6, stagger: 0.07, ease: 'power3.out',
+          scrollTrigger: { trigger: stage, start: 'top 85%', once: true }
+        });
+      }
+
+      if (!window.Draggable) return; // native scroll fallback stays active
+      var bounds = function () { var max = -(track.scrollWidth - stage.offsetWidth + 24); return { minX: max > 0 ? 0 : max, maxX: 0 }; };
+      Draggable.create(track, {
+        type: 'x', bounds: bounds(), inertia: !!window.InertiaPlugin,
+        edgeResistance: 0.85, dragClickables: true,
+        onPress: function () { stage.classList.add('has-dragged'); },
+        onDragStart: function () { gsap.to(cards, { y: 0, rotation: 0, scale: 1, duration: 0.3, ease: 'power2.out' }); },
+        onDragEnd: settle,
+        onThrowComplete: settle
+      });
+      var d = Draggable.get(track);
+      stage.style.overflowX = 'hidden'; // Draggable owns movement now
+      window.addEventListener('resize', function () { if (d) d.applyBounds(bounds()); });
     },
 
     // ── 10 · FLIP layout transitions (grid/list, filters, reorder) ────

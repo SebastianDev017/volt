@@ -1,35 +1,116 @@
 {%- liquid
   assign coll = section.settings.carousel_collection
   assign lim = section.settings.carousel_limit | default: 8
+  if coll != blank and coll.products.size > 0
+    assign products = coll.products
+  else
+    assign products = collections.all.products
+  endif
+  assign qv_lbl = 'products.quick_view' | t: default: 'Quick view'
 -%}
-{%- if coll != blank and coll.products.size > 0 -%}
-  <section class="volt-hcar" data-animate>
-    <div class="volt-hcar__head">
+{%- if products.size > 0 -%}
+  <section class="float-carousel" aria-label="{{ section.settings.carousel_heading | escape }}">
+    <div class="float-carousel__header">
       {%- if section.settings.carousel_heading != blank -%}<span class="eyebrow">{{ section.settings.carousel_heading }}</span>{%- endif -%}
       {%- if section.settings.view_all_url != blank -%}<a href="{{ section.settings.view_all_url }}" class="link-arrow">{{ section.settings.view_all_label | default: 'View all' }} &rarr;</a>{%- endif -%}
     </div>
-    <div class="volt-hcar__wrap" data-carousel-wrap>
-      <div class="volt-hcar__track" data-draggable-carousel>
-        {%- for product in coll.products limit: lim -%}
-          <div class="volt-hcar__item">{% render 'product-card', card_product: product %}</div>
+
+    <div class="float-carousel__stage" id="fc-stage">
+      <div class="float-carousel__track" id="fc-track">
+        {%- for product in products limit: lim -%}
+          {%- liquid
+            assign m = forloop.index0 | modulo: 7
+            assign off_y = 0
+            assign off_rot = 0
+            assign off_scale = 1
+            case m
+              when 0
+                assign off_y = -16
+                assign off_rot = -2
+              when 1
+                assign off_y = 12
+                assign off_rot = 1
+              when 2
+                assign off_y = -8
+                assign off_rot = -1
+                assign off_scale = 1.04
+              when 3
+                assign off_y = 20
+                assign off_rot = 2
+              when 4
+                assign off_y = -4
+                assign off_rot = -1.5
+              when 5
+                assign off_y = 16
+                assign off_rot = 1.5
+              when 6
+                assign off_y = -20
+                assign off_rot = -0.5
+            endcase
+          -%}
+          <div class="fc-card" data-fc-index="{{ forloop.index0 }}" style="--fc-y: {{ off_y }}px; --fc-rot: {{ off_rot }}deg; --fc-scale: {{ off_scale }};">
+            <div class="fc-card__inner">
+              <a href="{{ product.url }}" class="fc-card__media">
+                {%- if product.featured_image != blank -%}
+                  {{ product.featured_image | image_url: width: 560 | image_tag: loading: 'lazy', widths: '280, 420, 560', sizes: '260px', class: 'fc-card__image', alt: product.featured_image.alt | default: product.title | escape }}
+                {%- else -%}
+                  <span class="fc-card__image-placeholder"></span>
+                {%- endif -%}
+                <span class="fc-card__overlay">
+                  {%- if settings.quick_view and product.template_suffix == blank -%}
+                    <button type="button" class="fc-card__quick-add" data-quick-view data-handle="{{ product.handle }}" aria-label="{{ qv_lbl | escape }} {{ product.title | escape }}">{{ qv_lbl | upcase }}</button>
+                  {%- endif -%}
+                </span>
+              </a>
+              <div class="fc-card__info">
+                {%- if product.vendor != blank -%}<span class="fc-card__vendor">{{ product.vendor }}</span>{%- endif -%}
+                <a href="{{ product.url }}" class="fc-card__title">{{ product.title | truncate: 30 }}</a>
+                <span class="fc-card__price">{{ product.price | money }}</span>
+              </div>
+            </div>
+          </div>
         {%- endfor -%}
       </div>
+
+      <div class="float-carousel__hint" aria-hidden="true">&larr;&nbsp;&nbsp;drag&nbsp;&nbsp;&rarr;</div>
     </div>
-    <div class="volt-hcar__hint" data-carousel-hint aria-hidden="true">&larr;&nbsp;&nbsp;drag&nbsp;&nbsp;&rarr;</div>
   </section>
 {%- endif -%}
 
 {% stylesheet %}
-  .volt-hcar { padding: 44px 0 72px; overflow: hidden; }
-  .volt-hcar__head { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; flex-wrap: wrap; max-width: var(--page-width); margin-inline: auto; padding: 0 28px; margin-bottom: 26px; }
-  /* Native horizontal scroll by default (no-JS / reduced-motion fallback); Draggable takes over when it inits. */
-  .volt-hcar__wrap { position: relative; overflow-x: auto; scrollbar-width: none; cursor: grab; }
-  .volt-hcar__wrap::-webkit-scrollbar { display: none; }
-  .volt-hcar__wrap.is-dragging { cursor: grabbing; }
-  .volt-hcar__track { display: flex; gap: 20px; padding: 0 28px; will-change: transform; }
-  .volt-hcar__item { flex: 0 0 clamp(220px, 62vw, 280px); }
-  .volt-hcar__hint { text-align: center; font-family: var(--font-mono); font-size: 9px; letter-spacing: .2em; text-transform: uppercase; color: var(--color-mid); margin-top: 16px; transition: opacity .3s var(--ease); }
-  .volt-hcar__wrap.has-dragged ~ .volt-hcar__hint { opacity: 0; }
+  .float-carousel { padding: 8px 0 80px; overflow: hidden; }
+  .float-carousel__header { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; flex-wrap: wrap; max-width: var(--page-width); margin-inline: auto; padding: 0 clamp(24px, 5vw, 56px); margin-bottom: 32px; }
+
+  /* Native horizontal scroll by default (no-JS / reduced-motion fallback); Draggable disables it on init. */
+  .float-carousel__stage { position: relative; padding: 44px 0 56px; cursor: grab; overflow-x: auto; overflow-y: hidden; scrollbar-width: none; }
+  .float-carousel__stage::-webkit-scrollbar { display: none; }
+  .float-carousel__stage:active { cursor: grabbing; }
+  .float-carousel__track { display: flex; gap: 20px; padding: 0 clamp(24px, 5vw, 56px); width: max-content; will-change: transform; user-select: none; }
+
+  .fc-card { flex: 0 0 260px; transform: translateY(var(--fc-y, 0)) rotate(var(--fc-rot, 0deg)) scale(var(--fc-scale, 1)); transition: transform .35s var(--ease); }
+  .fc-card__inner { background: var(--color-surface); border: 1px solid var(--color-border); overflow: hidden; box-shadow: 0 8px 32px rgba(13, 12, 11, .08), 0 2px 8px rgba(13, 12, 11, .04); }
+
+  .fc-card__media { position: relative; display: block; aspect-ratio: 3 / 4; overflow: hidden; }
+  .fc-card__image { width: 100%; height: 100%; object-fit: cover; transition: transform .5s var(--ease); }
+  .fc-card:hover .fc-card__image { transform: scale(1.04); }
+  .fc-card__image-placeholder { display: block; width: 100%; height: 100%; background: linear-gradient(135deg, var(--color-surface) 0%, var(--color-border) 100%); }
+
+  .fc-card__overlay { position: absolute; inset: 0; background: rgba(13, 12, 11, .45); display: flex; align-items: flex-end; padding: 16px; opacity: 0; transition: opacity .3s var(--ease); }
+  .fc-card:hover .fc-card__overlay, .fc-card:focus-within .fc-card__overlay { opacity: 1; }
+  .fc-card__quick-add { font-family: var(--font-mono); font-size: 9px; font-weight: 500; letter-spacing: .2em; text-transform: uppercase; background: var(--color-acid); color: var(--on-acid); border: none; padding: 11px 16px; cursor: pointer; width: 100%; transition: background .2s var(--ease); }
+  .fc-card__quick-add:hover { background: var(--color-bg); }
+  @media (hover: none) { .fc-card__overlay { display: none; } }
+
+  .fc-card__info { padding: 14px 16px; display: flex; flex-direction: column; gap: 3px; }
+  .fc-card__vendor { font-family: var(--font-mono); font-size: 9px; font-weight: 500; letter-spacing: .2em; text-transform: uppercase; color: var(--color-mid); }
+  .fc-card__title { font-family: var(--font-display); font-weight: var(--font-display-weight-2); font-size: 15px; color: var(--color-ink); line-height: 1.2; text-decoration: none; }
+  .fc-card__title:hover { color: var(--color-mid); }
+  .fc-card__price { font-family: var(--font-mono); font-size: 13px; color: var(--color-ink); margin-top: 4px; }
+
+  .float-carousel__hint { position: absolute; bottom: 14px; left: 50%; transform: translateX(-50%); font-family: var(--font-mono); font-size: 9px; letter-spacing: .2em; text-transform: uppercase; color: var(--color-mid); opacity: 1; transition: opacity .4s var(--ease); }
+  .float-carousel__stage.has-dragged .float-carousel__hint { opacity: 0; }
+
+  @media (max-width: 768px) { .fc-card { flex: 0 0 72vw; } }
 {% endstylesheet %}
 
 {% schema %}

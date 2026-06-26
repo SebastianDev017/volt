@@ -1,178 +1,162 @@
 {%- liquid
-  assign circ = 326.726
-  assign rec = section.settings.recovery_score | at_least: 0 | at_most: 100
-  assign rec_fill = rec | times: circ | divided_by: 100.0
-  assign rec_off = circ | minus: rec_fill
-  assign str = section.settings.strain_fill | at_least: 0 | at_most: 100
-  assign str_fill = str | times: circ | divided_by: 100.0
-  assign str_off = circ | minus: str_fill
   assign layout = section.settings.hero_layout | default: 'split-image-right'
   assign img = section.settings.hero_image
-  assign is_split = false
-  if layout == 'split-image-right' or layout == 'split-image-left'
-    assign is_split = true
-  endif
-  assign centered = false
-  if section.settings.content_align == 'center' or layout == 'full-image' or layout == 'full-bg'
-    assign centered = true
-  endif
+  assign anim = section.settings.enable_animations
+  assign delay = section.settings.section_delay | default: 0 | divided_by: 1000.0
+  assign overlay = section.settings.overlay_opacity | default: 40 | divided_by: 100.0
+  assign aria_heading = section.settings.heading_pre | append: ' ' | append: section.settings.heading_highlight | append: ' ' | append: section.settings.heading_post | strip
 -%}
-<section class="volt-hero volt-hero--{{ layout }}{% if centered %} volt-hero--center{% endif %}" data-animate>
-  {%- if layout == 'full-image' and img != blank -%}
-    <div class="volt-hero__bg" aria-hidden="true">
-      {{ img | image_url: width: 2000 | image_tag: loading: 'eager', fetchpriority: 'high', class: 'volt-hero__bgimg', widths: '800, 1200, 1600, 2000', sizes: '100vw', alt: '' }}
-      <span class="volt-hero__overlay" style="opacity: {{ section.settings.overlay_opacity | default: 40 | divided_by: 100.0 }};"></span>
-    </div>
-  {%- endif -%}
+<section class="hero-split" data-layout="{{ layout }}">
 
-  <div class="volt-hero__inner">
-    <div class="volt-hero__grid">
-
-      <div class="volt-hero__copy">
-        {%- if section.settings.eyebrow != blank -%}
-          <div class="volt-hero__eyebrow"><span class="volt-hero__dot"></span>{{ section.settings.eyebrow }}</div>
-        {%- endif -%}
-        <h1 class="volt-hero__title" {% render 'anim-attrs', value: section.settings.heading_animation, enabled: section.settings.enable_animations, delay_ms: section.settings.section_delay %}>{{ section.settings.heading_pre }}<span class="volt-hl">{{ section.settings.heading_highlight }}</span>{{ section.settings.heading_post }}</h1>
-        {%- if section.settings.subheading != blank -%}
-          <p class="volt-hero__sub" {% render 'anim-attrs', value: section.settings.body_animation, enabled: section.settings.enable_animations %}>{{ section.settings.subheading }}</p>
-        {%- endif -%}
-        <div class="volt-hero__cta">
-          {%- if section.settings.primary_label != blank -%}
-            <a href="{{ section.settings.primary_link | default: '#' }}" class="btn btn--acid" data-magnetic>{{ section.settings.primary_label }}</a>
-          {%- endif -%}
-          {%- if section.settings.secondary_label != blank -%}
-            <a href="{{ section.settings.secondary_link | default: '#' }}" class="btn btn--outline" data-magnetic>{{ section.settings.secondary_label }}</a>
-          {%- endif -%}
-        </div>
+  {%- comment -%} Backgrounds — absolute, never affect the text flow {%- endcomment -%}
+  <div class="hero-split__left" aria-hidden="true"></div>
+  <div class="hero-split__right" aria-hidden="true">
+    {%- if img != blank -%}
+      <div class="hero-split__imgwrap"{% if anim %} data-parallax="0.08"{% endif %}>
+        {{ img | image_url: width: 1600 | image_tag: loading: 'eager', fetchpriority: 'high', class: 'hero-split__image', widths: '600, 900, 1200, 1600', sizes: '(max-width: 768px) 100vw, 50vw', alt: '' }}
       </div>
-
-      {%- if is_split -%}
-        {%- if img != blank -%}
-          <div class="volt-hero__visual"{% if section.settings.enable_animations != false %} data-clip="{% if layout == 'split-image-left' %}right{% else %}left{% endif %}"{% endif %}>
-            {{ img | image_url: width: 1200 | image_tag: loading: 'eager', fetchpriority: 'high', class: 'volt-hero__visualimg', widths: '500, 800, 1200', sizes: '(max-width: 860px) 100vw, 50vw', alt: '', style: 'object-position: center ' | append: section.settings.hero_image_position | default: 'center' }}
-          </div>
-        {%- elsif section.settings.show_dashboard_panel -%}
-          <div class="volt-hero__panel" aria-hidden="true"{% if section.settings.enable_animations != false %} data-clip="{% if layout == 'split-image-left' %}right{% else %}left{% endif %}"{% endif %}>
-            <div class="volt-hero__panelhead">
-              <span class="volt-hero__pretitle">Member dashboard preview</span>
-              <span class="volt-hero__live"><span class="volt-hero__livedot"></span>Live</span>
-            </div>
-            <div class="volt-hero__gauges">
-              <div class="volt-hero__gauge">
-                <div class="volt-hero__dial">
-                  <svg viewBox="0 0 120 120"><circle cx="60" cy="60" r="52" fill="none" stroke="rgba(240,238,234,.12)" stroke-width="8"/><circle cx="60" cy="60" r="52" fill="none" stroke="var(--color-success)" stroke-width="8" stroke-linecap="round" stroke-dasharray="{{ circ }}" stroke-dashoffset="{{ rec_off }}" transform="rotate(-90 60 60)"/></svg>
-                  <div class="volt-hero__dialval">{{ rec }}<span>%</span></div>
-                </div>
-                <div class="volt-hero__gaugelabel">Recovery score</div>
-              </div>
-              <div class="volt-hero__gauge">
-                <div class="volt-hero__dial">
-                  <svg viewBox="0 0 120 120"><circle cx="60" cy="60" r="52" fill="none" stroke="rgba(240,238,234,.12)" stroke-width="8"/><circle cx="60" cy="60" r="52" fill="none" stroke="var(--color-amber)" stroke-width="8" stroke-linecap="round" stroke-dasharray="{{ circ }}" stroke-dashoffset="{{ str_off }}" transform="rotate(-90 60 60)"/></svg>
-                  <div class="volt-hero__dialval">{{ section.settings.strain_label }}</div>
-                </div>
-                <div class="volt-hero__gaugelabel">Day strain</div>
-              </div>
-            </div>
-            <div class="volt-hero__streak">
-              <div class="volt-hero__streakhead"><span>Week streak</span><span class="volt-hero__streakval">{{ section.settings.week_label }}</span></div>
-              <div class="volt-hero__bars">
-                <i style="height:46%;opacity:.5"></i><i style="height:62%;opacity:.6"></i><i style="height:38%;opacity:.5"></i><i style="height:70%;opacity:.7"></i><i style="height:54%;opacity:.6"></i><i style="height:80%;opacity:.8"></i><i style="height:60%;opacity:.6"></i><i style="height:74%;opacity:.7"></i><i style="height:48%;opacity:.5"></i><i style="height:88%;opacity:.85"></i><i style="height:66%;opacity:.6"></i><i style="height:92%;opacity:.9"></i><i style="height:78%;opacity:.7"></i><i style="height:100%;opacity:1"></i>
-              </div>
-            </div>
-            <div class="volt-hero__metrics">
-              <div class="volt-hero__metric"><span class="k">HRV</span><span class="v">{{ section.settings.hrv }}<small>ms</small></span></div>
-              <div class="volt-hero__metric"><span class="k">RHR</span><span class="v">{{ section.settings.rhr }}<small>bpm</small></span></div>
-              <div class="volt-hero__metric"><span class="k">Sleep</span><span class="v">{{ section.settings.sleep }}<small>h</small></span></div>
-            </div>
-          </div>
-        {%- endif -%}
-      {%- endif -%}
-
-    </div>
+    {%- endif -%}
+    <div class="hero-split__overlay" style="--overlay-opacity: {{ overlay }};"></div>
   </div>
 
-  {%- if section.settings.show_scroll_indicator -%}
-    <div class="volt-hero__scroll" aria-hidden="true"><span class="volt-hero__scrollline"></span><span class="volt-hero__scrolltext">Scroll</span></div>
-  {%- endif -%}
+  {%- comment -%} Content — centered over the full width, text crosses the divide {%- endcomment -%}
+  <div class="hero-split__content">
+
+    {%- if section.settings.eyebrow != blank -%}
+      <div class="hero-eyebrow-wrap"{% if anim %} data-anim="fade-up" data-anim-delay="{{ delay }}"{% endif %}>
+        <div class="hero-eyebrow hero-eyebrow--ink" aria-hidden="true"><span class="hero-eyebrow__dot"></span>{{ section.settings.eyebrow }}</div>
+        <div class="hero-eyebrow hero-eyebrow--cream" aria-hidden="true"><span class="hero-eyebrow__dot"></span>{{ section.settings.eyebrow }}</div>
+        <span class="visually-hidden">{{ section.settings.eyebrow }}</span>
+      </div>
+    {%- endif -%}
+
+    <div class="hero-heading-wrap" role="heading" aria-level="1" aria-label="{{ aria_heading | escape }}"{% if anim %} data-anim="fade-up" data-anim-delay="{{ delay | plus: 0.12 }}"{% endif %}>
+      <div class="hero-h1 hero-h1--ink" aria-hidden="true">{{ section.settings.heading_pre }}<span class="hero-h1__hl hero-h1__hl--dark">{{ section.settings.heading_highlight }}</span>{{ section.settings.heading_post }}</div>
+      <div class="hero-h1 hero-h1--cream" aria-hidden="true">{{ section.settings.heading_pre }}<span class="hero-h1__hl hero-h1__hl--light">{{ section.settings.heading_highlight }}</span>{{ section.settings.heading_post }}</div>
+    </div>
+
+    {%- if section.settings.subheading != blank -%}
+      <div class="hero-sub-wrap"{% if anim %} data-anim="fade-up" data-anim-delay="{{ delay | plus: 0.22 }}"{% endif %}>
+        <p class="hero-sub hero-sub--ink" aria-hidden="true">{{ section.settings.subheading }}</p>
+        <p class="hero-sub hero-sub--cream" aria-hidden="true">{{ section.settings.subheading }}</p>
+        <span class="visually-hidden">{{ section.settings.subheading }}</span>
+      </div>
+    {%- endif -%}
+
+    {%- if section.settings.primary_label != blank or section.settings.secondary_label != blank -%}
+      <div class="hero-ctas"{% if anim %} data-anim="fade-up" data-anim-delay="{{ delay | plus: 0.34 }}"{% endif %}>
+        {%- if section.settings.primary_label != blank -%}
+          <a href="{{ section.settings.primary_link | default: '#' }}" class="btn btn--acid" data-magnetic>{{ section.settings.primary_label }}</a>
+        {%- endif -%}
+        {%- if section.settings.secondary_label != blank -%}
+          <a href="{{ section.settings.secondary_link | default: '#' }}" class="btn hero-split__outline" data-magnetic>{{ section.settings.secondary_label }}</a>
+        {%- endif -%}
+      </div>
+    {%- endif -%}
+
+    {%- if section.settings.show_scroll_indicator -%}
+      <div class="scroll-indicator" aria-hidden="true"><span class="scroll-indicator__line"></span></div>
+    {%- endif -%}
+
+  </div>
 
   {%- comment -%} sentinel for the header transparent→solid scroll state {%- endcomment -%}
   <div class="header-sentinel" aria-hidden="true"></div>
 </section>
 
 {% stylesheet %}
-  .volt-hero { position: relative; }
-  .volt-hero__bg { position: absolute; inset: 0; z-index: 0; overflow: hidden; }
-  .volt-hero__bgimg { width: 100%; height: 100%; object-fit: cover; }
-  .volt-hero__overlay { position: absolute; inset: 0; background: var(--color-ink); }
-  .volt-hero__inner { position: relative; z-index: 1; max-width: var(--page-width); margin-inline: auto; padding-inline: 28px; }
-  .volt-hero__grid { display: grid; grid-template-columns: 1fr; }
-  .volt-hero--split-image-right .volt-hero__grid { grid-template-columns: 55fr 45fr; min-height: 600px; border-left: 1px solid var(--color-border); border-right: 1px solid var(--color-border); }
-  .volt-hero--split-image-left .volt-hero__grid { grid-template-columns: 45fr 55fr; min-height: 600px; border-left: 1px solid var(--color-border); border-right: 1px solid var(--color-border); }
-  .volt-hero--split-image-left .volt-hero__copy { order: 2; border-right: none; border-left: 1px solid var(--color-border); }
-  .volt-hero--split-image-left .volt-hero__visual, .volt-hero--split-image-left .volt-hero__panel { order: 1; }
-  .volt-hero__copy { padding: 72px 56px; display: flex; flex-direction: column; justify-content: center; }
-  .volt-hero--split-image-right .volt-hero__copy { border-right: 1px solid var(--color-border); }
-  .volt-hero--full-image, .volt-hero--full-bg { min-height: 88svh; display: flex; align-items: center; }
-  .volt-hero--full-bg { background: var(--color-bg); }
-  .volt-hero--full-image .volt-hero__inner, .volt-hero--full-bg .volt-hero__inner { width: 100%; }
-  .volt-hero--full-image .volt-hero__copy, .volt-hero--full-bg .volt-hero__copy { padding-block: clamp(120px, 12vh, 180px); }
-  .volt-hero--center .volt-hero__copy { align-items: center; text-align: center; }
-  .volt-hero--center .volt-hero__sub { max-width: 46ch; }
-  .volt-hero--full-image .volt-hero__title { color: var(--color-bg); }
-  .volt-hero--full-image .volt-hero__sub { color: rgba(240,238,234,.85); }
-  .volt-hero--full-image .volt-hero__eyebrow { color: rgba(240,238,234,.7); }
+  .hero-split { position: relative; min-height: 100svh; display: flex; align-items: center; overflow: hidden; }
 
-  .volt-hero__eyebrow { display: flex; align-items: center; font-family: var(--font-mono); font-size: 11px; letter-spacing: .18em; text-transform: uppercase; color: var(--color-mid); }
-  .volt-hero--center .volt-hero__eyebrow { justify-content: center; }
-  .volt-hero__dot { display: inline-block; width: 7px; height: 7px; background: var(--color-acid); margin-right: 10px; }
-  .volt-hero__title { font-family: var(--font-display); font-weight: 800; font-size: clamp(44px, 5vw, 72px); line-height: .94; letter-spacing: -.02em; text-transform: uppercase; margin: 22px 0 0; }
-  .volt-hl { background: var(--color-acid); color: var(--color-ink); padding: 0 .08em; -webkit-box-decoration-break: clone; box-decoration-break: clone; }
-  .volt-hero__sub { font-size: 16px; line-height: 1.65; color: var(--color-mid); max-width: 34ch; margin: 24px 0 0; }
-  .volt-hero--center .volt-hero__cta { justify-content: center; }
-  .volt-hero__cta { display: flex; gap: 14px; margin-top: 34px; flex-wrap: wrap; }
+  /* Background halves (absolute) */
+  .hero-split__left { position: absolute; top: 0; bottom: 0; left: 0; width: 50%; background: var(--color-bg); z-index: 0; }
+  .hero-split__right { position: absolute; top: 0; bottom: 0; right: 0; width: 50%; z-index: 0; overflow: hidden; background: var(--color-ink); }
+  .hero-split__imgwrap { position: absolute; top: -5%; left: 0; right: 0; height: 110%; }
+  .hero-split__image { width: 100%; height: 100%; object-fit: cover; object-position: center; }
+  .hero-split__overlay { position: absolute; inset: 0; background: rgba(13, 12, 11, var(--overlay-opacity, 0)); }
 
-  .volt-hero__visual { position: relative; overflow: hidden; min-height: 600px; background: var(--color-surface); }
-  .volt-hero__visualimg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+  /* Content layer */
+  .hero-split__content { position: relative; z-index: 2; width: 100%; max-width: 100%; display: flex; flex-direction: column; align-items: center; text-align: center; padding: clamp(100px, 12vh, 160px) clamp(24px, 5vw, 80px); gap: 24px; }
 
-  .volt-hero__panel { background: var(--color-ink); color: var(--color-bg); padding: 34px 36px; display: flex; flex-direction: column; justify-content: center; }
-  .volt-hero__panelhead { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; }
-  .volt-hero__pretitle { font-family: var(--font-mono); font-size: 9px; letter-spacing: .2em; text-transform: uppercase; color: rgba(240,238,234,.5); }
-  .volt-hero__live { display: flex; align-items: center; gap: 7px; font-family: var(--font-mono); font-size: 9px; letter-spacing: .16em; text-transform: uppercase; color: var(--color-success); }
-  .volt-hero__livedot { width: 6px; height: 6px; border-radius: 50%; background: var(--color-success); }
-  .volt-hero__gauges { display: flex; gap: 16px; }
-  .volt-hero__gauge { flex: 1; background: rgba(240,238,234,.04); border: 1px solid rgba(240,238,234,.1); padding: 18px 12px; text-align: center; }
-  .volt-hero__dial { position: relative; width: 104px; height: 104px; margin: 0 auto; }
-  .volt-hero__dial svg { width: 104px; height: 104px; }
-  .volt-hero__dialval { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-weight: 700; font-size: 28px; color: var(--color-bg); }
-  .volt-hero__dialval span, .volt-hero__dialval small { font-size: 13px; color: var(--color-mid); font-weight: 700; }
-  .volt-hero__gaugelabel { font-family: var(--font-mono); font-size: 9px; letter-spacing: .16em; text-transform: uppercase; color: rgba(240,238,234,.55); margin-top: 10px; }
-  .volt-hero__streak { background: rgba(240,238,234,.04); border: 1px solid rgba(240,238,234,.1); padding: 16px 18px; margin-top: 16px; }
-  .volt-hero__streakhead { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; font-family: var(--font-mono); font-size: 9px; letter-spacing: .16em; text-transform: uppercase; color: rgba(240,238,234,.55); }
-  .volt-hero__streakval { color: var(--color-acid); font-size: 11px; }
-  .volt-hero__bars { display: flex; align-items: flex-end; gap: 4px; height: 38px; }
-  .volt-hero__bars i { flex: 1; background: var(--color-acid); }
-  .volt-hero__metrics { display: flex; gap: 10px; margin-top: 16px; }
-  .volt-hero__metric { flex: 1; border: 1px solid rgba(240,238,234,.1); padding: 12px; }
-  .volt-hero__metric .k { display: block; font-family: var(--font-mono); font-size: 9px; letter-spacing: .14em; text-transform: uppercase; color: rgba(240,238,234,.45); }
-  .volt-hero__metric .v { display: block; font-family: var(--font-mono); font-size: 16px; color: var(--color-bg); margin-top: 3px; }
-  .volt-hero__metric .v small { font-size: 10px; color: var(--color-mid); }
+  /* Eyebrow — duplicated, clipped per half */
+  .hero-eyebrow-wrap { position: relative; width: 100%; display: flex; justify-content: center; margin-bottom: 4px; }
+  .hero-eyebrow { display: flex; align-items: center; gap: 10px; font-family: var(--font-mono); font-size: 10px; font-weight: 500; letter-spacing: .22em; text-transform: uppercase; }
+  .hero-eyebrow--ink { color: var(--color-acid-accessible); clip-path: inset(0 50% 0 0); }
+  .hero-eyebrow--cream { color: var(--color-acid); position: absolute; top: 0; left: 0; width: 100%; display: flex; justify-content: center; clip-path: inset(0 0 0 50%); }
+  .hero-eyebrow__dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; flex-shrink: 0; }
 
-  .volt-hero__scroll { position: absolute; bottom: 28px; left: 50%; transform: translateX(-50%); z-index: 2; display: flex; flex-direction: column; align-items: center; gap: 8px; }
-  .volt-hero__scrollline { width: 1px; height: 40px; background: var(--color-border); position: relative; overflow: hidden; }
-  .volt-hero__scrollline::after { content: ""; position: absolute; top: -100%; left: 0; width: 100%; height: 100%; background: var(--color-acid-accessible); animation: volt-scrollline 1.6s ease-in-out infinite; }
-  .volt-hero--full-image .volt-hero__scrollline::after { background: var(--color-acid); }
-  .volt-hero__scrolltext { font-family: var(--font-mono); font-size: 8px; letter-spacing: .3em; color: var(--color-mid); text-transform: uppercase; }
-  @keyframes volt-scrollline { 0% { top: -100%; } 100% { top: 100%; } }
-  @media (prefers-reduced-motion: reduce) { .volt-hero__scrollline::after { animation: none; } }
+  /* Heading — the dual-colour crossover */
+  .hero-heading-wrap { position: relative; width: 100%; }
+  .hero-h1 { font-family: var(--font-display); font-weight: var(--font-display-weight); font-size: clamp(46px, 7.5vw, 108px); line-height: .94; letter-spacing: -.025em; text-transform: uppercase; width: 100%; text-align: center; margin: 0; }
+  .hero-h1--ink { color: var(--color-ink); clip-path: inset(0 50% 0 0); }
+  .hero-h1--cream { color: #FFFFFF; position: absolute; top: 0; left: 0; width: 100%; clip-path: inset(0 0 0 50%); }
+  .hero-h1__hl { font-style: italic; }
+  .hero-h1__hl--dark { color: var(--color-acid-accessible); }
+  .hero-h1__hl--light { color: var(--color-acid); }
 
-  @media (max-width: 860px) {
-    .volt-hero--split-image-right .volt-hero__grid, .volt-hero--split-image-left .volt-hero__grid { grid-template-columns: 1fr; min-height: 0; }
-    .volt-hero--split-image-left .volt-hero__copy { order: 0; border-left: none; }
-    .volt-hero--split-image-left .volt-hero__visual, .volt-hero--split-image-left .volt-hero__panel { order: 0; }
-    .volt-hero__copy { padding: 48px 24px; border-right: none !important; border-bottom: 1px solid var(--color-border); }
-    .volt-hero__panel { padding: 28px 24px; }
-    .volt-hero__visual { min-height: 320px; }
-    .volt-hero__scroll { display: none; }
+  /* Subheading — duplicated, clipped per half */
+  .hero-sub-wrap { position: relative; width: 100%; display: flex; justify-content: center; margin-top: 4px; }
+  .hero-sub { font-size: 16px; line-height: 1.7; max-width: 520px; margin: 0; text-align: center; }
+  .hero-sub--ink { color: var(--color-mid); clip-path: inset(0 50% 0 0); }
+  .hero-sub--cream { color: rgba(255, 255, 255, .78); position: absolute; top: 0; left: 0; right: 0; margin-inline: auto; clip-path: inset(0 0 0 50%); }
+
+  .hero-ctas { display: flex; gap: 14px; flex-wrap: wrap; justify-content: center; margin-top: 8px; }
+  .hero-split__outline { border: 1.5px solid rgba(13, 12, 11, .35); background: rgba(240, 238, 234, .14); backdrop-filter: blur(8px); color: var(--color-ink); }
+  .hero-split__outline:hover { background: rgba(240, 238, 234, .3); }
+
+  .scroll-indicator { position: absolute; bottom: 26px; left: 50%; transform: translateX(-50%); z-index: 3; }
+  .scroll-indicator__line { display: block; width: 1px; height: 42px; background: var(--color-border); position: relative; overflow: hidden; }
+  .scroll-indicator__line::after { content: ""; position: absolute; top: -100%; left: 0; width: 100%; height: 100%; background: var(--color-acid-accessible); animation: hero-scrollline 1.6s ease-in-out infinite; }
+  @keyframes hero-scrollline { 0% { top: -100%; } 100% { top: 100%; } }
+  @media (prefers-reduced-motion: reduce) { .scroll-indicator__line::after { animation: none; } }
+
+  /* ── Layout: image-left (mirror the divide) ── */
+  [data-layout="split-image-left"] .hero-split__left { left: auto; right: 0; }
+  [data-layout="split-image-left"] .hero-split__right { right: auto; left: 0; }
+  [data-layout="split-image-left"] .hero-h1--ink,
+  [data-layout="split-image-left"] .hero-eyebrow--ink,
+  [data-layout="split-image-left"] .hero-sub--ink { clip-path: inset(0 0 0 50%); }
+  [data-layout="split-image-left"] .hero-h1--cream,
+  [data-layout="split-image-left"] .hero-eyebrow--cream,
+  [data-layout="split-image-left"] .hero-sub--cream { clip-path: inset(0 50% 0 0); }
+
+  /* ── Layout: full-image (cream version only) ── */
+  [data-layout="full-image"] .hero-split__left { display: none; }
+  [data-layout="full-image"] .hero-split__right { width: 100%; left: 0; right: 0; }
+  [data-layout="full-image"] .hero-h1--ink,
+  [data-layout="full-image"] .hero-eyebrow--ink,
+  [data-layout="full-image"] .hero-sub--ink { display: none; }
+  [data-layout="full-image"] .hero-h1--cream,
+  [data-layout="full-image"] .hero-eyebrow--cream,
+  [data-layout="full-image"] .hero-sub--cream { position: relative; clip-path: none; }
+  [data-layout="full-image"] .hero-split__outline { border-color: rgba(255, 255, 255, .4); color: #FFFFFF; background: rgba(13, 12, 11, .2); }
+
+  /* ── Layout: full-bg (ink version only) ── */
+  [data-layout="full-bg"] .hero-split__right { display: none; }
+  [data-layout="full-bg"] .hero-split__left { width: 100%; }
+  [data-layout="full-bg"] .hero-h1--cream,
+  [data-layout="full-bg"] .hero-eyebrow--cream,
+  [data-layout="full-bg"] .hero-sub--cream { display: none; }
+  [data-layout="full-bg"] .hero-h1--ink,
+  [data-layout="full-bg"] .hero-sub--ink { position: relative; clip-path: none; }
+  [data-layout="full-bg"] .hero-eyebrow--ink { position: relative; clip-path: none; }
+
+  /* ── Mobile: split stacks vertically; clip horizontal → vertical ── */
+  @media (max-width: 768px) {
+    .hero-split__left { width: 100%; height: 50%; top: 0; bottom: auto; }
+    .hero-split__right { width: 100%; height: 50%; top: auto; bottom: 0; right: 0; left: 0; }
+    [data-layout="split-image-right"] .hero-h1--ink,
+    [data-layout="split-image-left"] .hero-h1--ink,
+    [data-layout="split-image-right"] .hero-eyebrow--ink,
+    [data-layout="split-image-left"] .hero-eyebrow--ink,
+    [data-layout="split-image-right"] .hero-sub--ink,
+    [data-layout="split-image-left"] .hero-sub--ink { clip-path: inset(0 0 50% 0); }
+    [data-layout="split-image-right"] .hero-h1--cream,
+    [data-layout="split-image-left"] .hero-h1--cream,
+    [data-layout="split-image-right"] .hero-eyebrow--cream,
+    [data-layout="split-image-left"] .hero-eyebrow--cream,
+    [data-layout="split-image-right"] .hero-sub--cream,
+    [data-layout="split-image-left"] .hero-sub--cream { clip-path: inset(50% 0 0 0); }
+    .hero-h1 { font-size: clamp(40px, 13vw, 64px); }
   }
 {% endstylesheet %}
 
@@ -189,56 +173,22 @@
       { "value": "full-bg", "label": "t:sections.hero_diagnostic.layout_full_bg" }
     ] },
     { "type": "image_picker", "id": "hero_image", "label": "t:sections.hero_diagnostic.hero_image" },
-    { "type": "select", "id": "hero_image_position", "label": "t:sections.hero_diagnostic.hero_image_position", "default": "center", "options": [
-      { "value": "center", "label": "t:sections.hero_diagnostic.pos_center" },
-      { "value": "top", "label": "t:sections.hero_diagnostic.pos_top" },
-      { "value": "bottom", "label": "t:sections.hero_diagnostic.pos_bottom" }
-    ] },
-    { "type": "select", "id": "content_align", "label": "t:sections.hero_diagnostic.content_align", "default": "left", "options": [
-      { "value": "left", "label": "t:sections.hero_diagnostic.align_left" },
-      { "value": "center", "label": "t:sections.hero_diagnostic.align_center" }
-    ] },
     { "type": "range", "id": "overlay_opacity", "min": 0, "max": 70, "step": 5, "unit": "%", "label": "t:sections.hero_diagnostic.overlay_opacity", "default": 40 },
-    { "type": "checkbox", "id": "show_dashboard_panel", "label": "t:sections.hero_diagnostic.show_dashboard_panel", "default": true },
     { "type": "checkbox", "id": "show_scroll_indicator", "label": "t:sections.hero_diagnostic.show_scroll_indicator", "default": true },
     { "type": "header", "content": "t:sections.hero_diagnostic.content_header" },
     { "type": "text", "id": "eyebrow", "label": "t:sections.hero_diagnostic.eyebrow", "default": "Member Protocol 2025" },
     { "type": "text", "id": "heading_pre", "label": "t:sections.hero_diagnostic.heading_pre", "default": "Train with " },
     { "type": "text", "id": "heading_highlight", "label": "t:sections.hero_diagnostic.heading_highlight", "default": "data" },
-    { "type": "text", "id": "heading_post", "label": "t:sections.hero_diagnostic.heading_post", "default": ", not guesswork." },
+    { "type": "text", "id": "heading_post", "label": "t:sections.hero_diagnostic.heading_post", "default": " not guesswork" },
     { "type": "textarea", "id": "subheading", "label": "t:sections.hero_diagnostic.subheading", "default": "Track your strain, protect your recovery, and train with purpose. Your membership is a performance system — not a punch card." },
     { "type": "header", "content": "t:sections.hero_diagnostic.cta_header" },
     { "type": "text", "id": "primary_label", "label": "t:sections.hero_diagnostic.primary_label", "default": "Start your protocol" },
     { "type": "url", "id": "primary_link", "label": "t:sections.hero_diagnostic.primary_link" },
     { "type": "text", "id": "secondary_label", "label": "t:sections.hero_diagnostic.secondary_label", "default": "Diagnose your level" },
     { "type": "url", "id": "secondary_link", "label": "t:sections.hero_diagnostic.secondary_link" },
-    { "type": "header", "content": "t:sections.hero_diagnostic.dash_header" },
-    { "type": "range", "id": "recovery_score", "min": 0, "max": 100, "step": 1, "unit": "%", "label": "t:sections.hero_diagnostic.recovery_score", "default": 87 },
-    { "type": "text", "id": "strain_label", "label": "t:sections.hero_diagnostic.strain_label", "default": "14.2" },
-    { "type": "range", "id": "strain_fill", "min": 0, "max": 100, "step": 1, "unit": "%", "label": "t:sections.hero_diagnostic.strain_fill", "default": 68 },
-    { "type": "text", "id": "week_label", "label": "t:sections.hero_diagnostic.week_label", "default": "14 DAYS" },
-    { "type": "text", "id": "hrv", "label": "t:sections.hero_diagnostic.hrv", "default": "68" },
-    { "type": "text", "id": "rhr", "label": "t:sections.hero_diagnostic.rhr", "default": "52" },
-    { "type": "text", "id": "sleep", "label": "t:sections.hero_diagnostic.sleep", "default": "7.4" },
     { "type": "header", "content": "t:sections.animation.header" },
     { "type": "checkbox", "id": "enable_animations", "label": "t:sections.animation.enable", "default": true },
-    { "type": "select", "id": "heading_animation", "label": "t:sections.animation.heading", "default": "split-words", "options": [
-      { "value": "none", "label": "t:sections.animation.opt_none" },
-      { "value": "split-chars", "label": "t:sections.animation.opt_split_chars" },
-      { "value": "split-words", "label": "t:sections.animation.opt_split_words" },
-      { "value": "split-lines", "label": "t:sections.animation.opt_split_lines" },
-      { "value": "fade-up", "label": "t:sections.animation.opt_fade_up" },
-      { "value": "clip-bottom", "label": "t:sections.animation.opt_clip_bottom" },
-      { "value": "clip-left", "label": "t:sections.animation.opt_clip_left" }
-    ] },
-    { "type": "select", "id": "body_animation", "label": "t:sections.animation.body", "default": "fade-up", "options": [
-      { "value": "none", "label": "t:sections.animation.opt_none" },
-      { "value": "fade-up", "label": "t:sections.animation.opt_fade_up" },
-      { "value": "fade-in", "label": "t:sections.animation.opt_fade_in" },
-      { "value": "slide-left", "label": "t:sections.animation.opt_slide_left" },
-      { "value": "slide-right", "label": "t:sections.animation.opt_slide_right" }
-    ] },
-    { "type": "range", "id": "section_delay", "label": "t:sections.animation.delay", "min": 0, "max": 800, "step": 50, "unit": "ms", "default": 0 }
+    { "type": "range", "id": "section_delay", "label": "t:sections.animation.delay", "min": 0, "max": 800, "step": 50, "unit": "ms", "default": 300 }
   ],
   "presets": [
     { "name": "t:sections.hero_diagnostic.name" }
