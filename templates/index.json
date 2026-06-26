@@ -18,7 +18,7 @@
         "content_align": "left",
         "overlay_opacity": 40,
         "show_dashboard_panel": true,
-        "show_scroll_indicator": true,
+        "show_scroll_indicator": false,
         "eyebrow": "Member Protocol 2025",
         "heading_pre": "Train with",
         "heading_highlight": "data",
