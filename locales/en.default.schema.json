@@ -788,7 +788,13 @@
       "menu": "Menu",
       "header_height": "Header height",
       "transparent_hero": "Transparent header over hero",
-      "mega_menu_enable": "Enable mega menu"
+      "mega_menu_enable": "Enable mega menu",
+      "nav_uppercase": "Uppercase navigation",
+      "scroll_indicator": "Show scroll progress bar",
+      "scroll_indicator_info": "A thin acid bar under the header that tracks page scroll.",
+      "cta_label": "Header button label",
+      "cta_label_info": "Optional compact button on the right (e.g. Join VOLT). Leave blank to hide.",
+      "cta_url": "Header button link"
     },
     "footer": {
       "name": "Footer",

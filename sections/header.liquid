@@ -7,7 +7,7 @@
   endif
   assign logo_alt = shop.name | escape
 -%}
-<site-header class="volt-header" data-sticky="{{ section.settings.enable_sticky }}">
+<site-header class="volt-header" data-sticky="{{ section.settings.enable_sticky }}" data-transparent="{% if settings.transparent_hero %}true{% else %}false{% endif %}" data-nav-upper="{% if settings.nav_uppercase != false %}true{% else %}false{% endif %}" data-progress="{% if settings.header_scroll_indicator %}true{% else %}false{% endif %}">
   <div class="volt-header__bar">
     <a href="{{ routes.root_url }}" class="volt-header__logo">
       {%- if section.settings.logo != blank -%}
@@ -60,11 +60,16 @@
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 7h12l-1.2 12.2a2 2 0 0 1-2 1.8H9.2a2 2 0 0 1-2-1.8Z"/><path d="M9 7a3 3 0 0 1 6 0"/></svg>
         <span class="volt-header__count" data-cart-count>{{ cart.item_count }}</span>
       </a>
+      {%- if settings.header_cta_label != blank -%}
+        <a href="{{ settings.header_cta_url | default: routes.root_url }}" class="volt-header__cta" data-magnetic data-magnetic-strength="0.25">{{ settings.header_cta_label }}</a>
+      {%- endif -%}
       <button type="button" class="volt-header__burger" data-drawer-open aria-label="{{ 'sections.header_main.open_menu' | t: default: 'Open menu' }}">
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
       </button>
     </div>
   </div>
+
+  {%- if settings.header_scroll_indicator -%}<span class="volt-header__progress" data-header-progress aria-hidden="true"></span>{%- endif -%}
 
   <div class="volt-drawer" data-drawer hidden>
     <div class="volt-drawer__head">
@@ -85,9 +90,16 @@
 </site-header>
 
 {% stylesheet %}
-  .volt-header { display: block; position: sticky; top: 0; z-index: var(--z-header); background: var(--color-bg); border-bottom: 1px solid var(--color-border); }
+  .volt-header { display: block; position: sticky; top: 0; z-index: var(--z-header); background: var(--color-bg); border-bottom: 1px solid var(--color-border); transition: background .35s var(--ease), border-color .35s var(--ease), box-shadow .35s var(--ease); }
   .volt-header[data-sticky="false"] { position: static; }
-  .volt-header.is-stuck { background: color-mix(in srgb, var(--color-bg) 82%, transparent); -webkit-backdrop-filter: blur(20px) saturate(150%); backdrop-filter: blur(20px) saturate(150%); }
+  /* Transparent over the hero at the top; solid + blur once scrolled. */
+  .volt-header[data-transparent="true"]:not(.is-stuck) { background: transparent; border-bottom-color: transparent; }
+  .volt-header.is-stuck { background: var(--color-bg); -webkit-backdrop-filter: blur(24px) saturate(160%); backdrop-filter: blur(24px) saturate(160%); border-bottom-color: var(--color-border); box-shadow: 0 2px 40px rgba(13,12,11,.06); }
+  .volt-header[data-nav-upper="false"] .volt-nav__link { text-transform: none; }
+  .volt-header__cta { display: inline-flex; align-items: center; font-family: var(--font-body); font-weight: 500; font-size: 10px; letter-spacing: .1em; text-transform: uppercase; background: var(--color-acid); color: var(--on-acid); padding: 9px 16px; text-decoration: none; transition: filter .2s var(--ease); }
+  .volt-header__cta:hover { filter: brightness(1.05); }
+  .volt-header__progress { position: absolute; left: 0; bottom: 0; height: 2px; width: 0; background: var(--color-acid); transition: width .1s linear; }
+  @media (max-width: 600px) { .volt-header__cta { display: none; } }
   .volt-header__bar { max-width: var(--page-width); margin-inline: auto; height: var(--header-height); padding: 0 28px; display: flex; align-items: center; justify-content: space-between; gap: 24px; }
   .volt-header__logo { font-family: var(--font-display); font-weight: 800; font-size: 24px; letter-spacing: -.02em; color: var(--color-ink); text-decoration: none; flex-shrink: 0; }
   .volt-header__logoimg { height: 26px; width: auto; }
@@ -147,8 +159,15 @@
         if (this.close) this.close.addEventListener('click', () => this.classList.remove('drawer-open'));
         this.addEventListener('keydown', (e) => { if (e.key === 'Escape') this.classList.remove('drawer-open'); });
         this.addEventListener('click', (e) => { if (e.target === this) this.classList.remove('drawer-open'); });
-        if (this.getAttribute('data-sticky') !== 'false') {
-          var onScroll = () => this.classList.toggle('is-stuck', window.scrollY > 8);
+        var progress = this.querySelector('[data-header-progress]');
+        if (this.getAttribute('data-sticky') !== 'false' || progress) {
+          var onScroll = () => {
+            this.classList.toggle('is-stuck', window.scrollY > 8);
+            if (progress) {
+              var h = document.documentElement.scrollHeight - window.innerHeight;
+              progress.style.width = (h > 0 ? (window.scrollY / h) * 100 : 0) + '%';
+            }
+          };
           onScroll(); window.addEventListener('scroll', onScroll, { passive: true });
         }
       }

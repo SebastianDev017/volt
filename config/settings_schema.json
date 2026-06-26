@@ -406,6 +406,30 @@
         "id": "mega_menu_enable",
         "label": "t:settings.header.mega_menu_enable",
         "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "nav_uppercase",
+        "label": "t:settings.header.nav_uppercase",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "header_scroll_indicator",
+        "label": "t:settings.header.scroll_indicator",
+        "info": "t:settings.header.scroll_indicator_info",
+        "default": false
+      },
+      {
+        "type": "text",
+        "id": "header_cta_label",
+        "label": "t:settings.header.cta_label",
+        "info": "t:settings.header.cta_label_info"
+      },
+      {
+        "type": "url",
+        "id": "header_cta_url",
+        "label": "t:settings.header.cta_url"
       }
     ]
   },
