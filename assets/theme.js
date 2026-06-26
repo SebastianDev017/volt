@@ -139,24 +139,48 @@
   }
   if (!customElements.get('countdown-timer')) customElements.define('countdown-timer', VoltCountdown);
 
-  /* ---------- Card colour swatches (hover swaps card image) ---------- */
+  /* ---------- Card colour swatches (hover/click swaps image + label) ---------- */
+  const swImg = (card) => card.querySelector('.volt-card__img');
+  const swLabel = (card) => card.querySelector('.card-swatch-label');
+  function swApply(card, sw) {
+    const img = swImg(card), label = swLabel(card);
+    if (img && sw.dataset.swatchImage) {
+      if (!img.dataset.origSrc) img.dataset.origSrc = img.currentSrc || img.src;
+      img.src = sw.dataset.swatchImage;
+      if (window.gsap) gsap.fromTo(img, { opacity: 0.7 }, { opacity: 1, duration: 0.25, ease: 'power2.out' });
+    }
+    if (label) {
+      if (!label.dataset.orig) label.dataset.orig = label.textContent.trim();
+      if (sw.dataset.colorName) label.textContent = sw.dataset.colorName;
+    }
+  }
   document.addEventListener('mouseover', (e) => {
-    const sw = e.target.closest ? e.target.closest('.volt-card__swatch[data-swatch-img]') : null;
+    const sw = e.target.closest ? e.target.closest('.card-swatch') : null;
     if (!sw) return;
     const card = sw.closest('.volt-card');
-    const img = card && card.querySelector('.volt-card__img');
-    if (!img) return;
-    if (!img.dataset.origSrc) img.dataset.origSrc = img.currentSrc || img.src;
-    img.src = sw.dataset.swatchImg;
-    card.querySelectorAll('.volt-card__swatch').forEach((s) => s.classList.remove('is-active'));
-    sw.classList.add('is-active');
+    if (card) swApply(card, sw);
   });
   document.addEventListener('mouseout', (e) => {
     const card = e.target.closest ? e.target.closest('.volt-card') : null;
     if (!card || card.contains(e.relatedTarget)) return;
-    const img = card.querySelector('.volt-card__img');
-    if (img && img.dataset.origSrc) img.src = img.dataset.origSrc;
-    card.querySelectorAll('.volt-card__swatch.is-active').forEach((s) => s.classList.remove('is-active'));
+    const img = swImg(card), label = swLabel(card), active = card.querySelector('.card-swatch.is-active');
+    if (active) {
+      swApply(card, active);
+      if (!active.dataset.swatchImage && img && img.dataset.origSrc) img.src = img.dataset.origSrc;
+    } else {
+      if (img && img.dataset.origSrc) img.src = img.dataset.origSrc;
+      if (label && label.dataset.orig) label.textContent = label.dataset.orig;
+    }
+  });
+  document.addEventListener('click', (e) => {
+    const sw = e.target.closest ? e.target.closest('.card-swatch') : null;
+    if (!sw) return;
+    e.preventDefault();
+    const card = sw.closest('.volt-card');
+    if (!card) return;
+    card.querySelectorAll('.card-swatch').forEach((s) => s.classList.remove('is-active'));
+    sw.classList.add('is-active');
+    swApply(card, sw);
   });
 
   /* ---------- Smooth scroll (Lenis, if present & enabled) ---------- */

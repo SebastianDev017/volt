@@ -321,6 +321,64 @@ html:has(#smooth-wrapper) .volt-header{ position: relative; top: auto; }
 @media (max-width: 680px){ .volt-qv__grid{ grid-template-columns: 1fr; } .volt-qv__media{ aspect-ratio: 16/9; } }
 
 /* =====================================================================
+   Swatch System — product card colours (30-colour map + variant images)
+   ===================================================================== */
+.card-swatches{ display: flex; gap: 7px; align-items: center; flex-wrap: wrap; margin-top: 2px; }
+.card-swatch{
+  display: inline-block; width: 20px; height: 20px; border-radius: 50%;
+  border: 1.5px solid var(--color-border); cursor: pointer; position: relative;
+  overflow: hidden; flex-shrink: 0; background-color: var(--color-surface);
+  background-size: cover; background-position: center;
+  transition: transform .2s var(--ease), border-color .2s var(--ease), box-shadow .2s var(--ease);
+}
+.card-swatch:hover{ transform: scale(1.2); border-color: var(--color-mid); }
+.card-swatch.is-active{ border-color: var(--color-ink); box-shadow: 0 0 0 2px var(--color-bg), 0 0 0 3.5px var(--color-ink); }
+.card-swatch[data-swatch-image]{ background-size: cover; background-position: center; border-color: var(--color-border); }
+.card-swatch-label{ font-family: var(--font-mono); font-size: 9px; font-weight: 500; letter-spacing: .12em; text-transform: uppercase; color: var(--color-mid); display: block; margin-top: 5px; min-height: 12px; }
+.card-swatches__overflow{ font-family: var(--font-mono); font-size: 9px; color: var(--color-mid); align-self: center; line-height: 20px; }
+
+/* 30-colour map — Liquid normalises "Forest Green" → "forest-green" */
+[data-swatch-color="black"], [data-swatch-color="negro"], [data-swatch-color="noir"]{ background-color: #0D0C0B; border-color: #0D0C0B; }
+[data-swatch-color="white"], [data-swatch-color="blanco"], [data-swatch-color="blanc"]{ background-color: #F8F6F3; border-color: var(--color-border); }
+[data-swatch-color="grey"], [data-swatch-color="gray"], [data-swatch-color="gris"]{ background-color: #8A8784; }
+[data-swatch-color="light-grey"], [data-swatch-color="light-gray"], [data-swatch-color="gris-claro"]{ background-color: #C8C5C0; }
+[data-swatch-color="charcoal"], [data-swatch-color="carbon"], [data-swatch-color="carbón"]{ background-color: #3A3836; }
+[data-swatch-color="navy"], [data-swatch-color="navy-blue"], [data-swatch-color="azul-marino"], [data-swatch-color="marino"]{ background-color: #1B2A4A; }
+[data-swatch-color="blue"], [data-swatch-color="azul"]{ background-color: #1E68C8; }
+[data-swatch-color="sky-blue"], [data-swatch-color="light-blue"], [data-swatch-color="azul-claro"], [data-swatch-color="celeste"]{ background-color: #87CEEB; }
+[data-swatch-color="royal-blue"], [data-swatch-color="azul-royal"]{ background-color: #2251CC; }
+[data-swatch-color="teal"], [data-swatch-color="verde-azulado"]{ background-color: #00897B; }
+[data-swatch-color="red"], [data-swatch-color="rojo"]{ background-color: #D93025; }
+[data-swatch-color="burgundy"], [data-swatch-color="bordeaux"], [data-swatch-color="burdeos"], [data-swatch-color="wine"], [data-swatch-color="vino"]{ background-color: #6B1220; }
+[data-swatch-color="maroon"], [data-swatch-color="granate"]{ background-color: #7B1C2E; }
+[data-swatch-color="coral"]{ background-color: #FF7043; }
+[data-swatch-color="rose"], [data-swatch-color="rosa"]{ background-color: #F48FB1; }
+[data-swatch-color="green"], [data-swatch-color="verde"]{ background-color: #2E8B44; }
+[data-swatch-color="forest-green"], [data-swatch-color="verde-bosque"], [data-swatch-color="dark-green"], [data-swatch-color="verde-oscuro"]{ background-color: #1B5E20; }
+[data-swatch-color="olive"], [data-swatch-color="oliva"]{ background-color: #6B7C2A; }
+[data-swatch-color="mint"], [data-swatch-color="menta"]{ background-color: #A8D5B5; }
+[data-swatch-color="sage"], [data-swatch-color="salvia"]{ background-color: #8FA882; }
+[data-swatch-color="yellow"], [data-swatch-color="amarillo"]{ background-color: #F5C800; }
+[data-swatch-color="orange"], [data-swatch-color="naranja"]{ background-color: #E8720C; }
+[data-swatch-color="mustard"], [data-swatch-color="mostaza"]{ background-color: #C8A000; }
+[data-swatch-color="purple"], [data-swatch-color="morado"], [data-swatch-color="púrpura"]{ background-color: #7B1FA2; }
+[data-swatch-color="lavender"], [data-swatch-color="lavanda"]{ background-color: #B39DDB; }
+[data-swatch-color="pink"], [data-swatch-color="rosa-fucsia"], [data-swatch-color="fucsia"]{ background-color: #E91E8C; }
+[data-swatch-color="brown"], [data-swatch-color="marrón"], [data-swatch-color="café"], [data-swatch-color="marron"]{ background-color: #6D4C41; }
+[data-swatch-color="camel"], [data-swatch-color="camello"], [data-swatch-color="tan"]{ background-color: #C19A6B; }
+[data-swatch-color="beige"], [data-swatch-color="sand"], [data-swatch-color="arena"]{ background-color: #D4B896; }
+[data-swatch-color="cream"], [data-swatch-color="crema"], [data-swatch-color="ivory"], [data-swatch-color="marfil"]{ background-color: #F0EDE4; border-color: var(--color-border); }
+[data-swatch-color="khaki"], [data-swatch-color="caqui"]{ background-color: #C8B560; }
+[data-swatch-color="stone"], [data-swatch-color="piedra"], [data-swatch-color="taupe"]{ background-color: #9E9589; }
+[data-swatch-color="acid"], [data-swatch-color="volt"], [data-swatch-color="lime"], [data-swatch-color="lima"]{ background-color: #D4FF00; border-color: var(--color-border); }
+[data-swatch-color="turquoise"], [data-swatch-color="turquesa"]{ background-color: #00BCD4; }
+[data-swatch-color="silver"], [data-swatch-color="plata"]{ background: linear-gradient(135deg, #C8C8C8 0%, #E8E8E8 50%, #B0B0B0 100%); }
+[data-swatch-color="gold"], [data-swatch-color="oro"], [data-swatch-color="golden"]{ background: linear-gradient(135deg, #C8A000 0%, #E8C840 50%, #A88000 100%); }
+[data-swatch-color="multicolor"], [data-swatch-color="multicolour"], [data-swatch-color="multi"]{ background: conic-gradient(#D93025 0deg 60deg, #1E68C8 60deg 120deg, #F5C800 120deg 180deg, #2E8B44 180deg 240deg, #E8720C 240deg 300deg, #7B1FA2 300deg 360deg); }
+/* variant-image swatch keeps its inline background-image above the colour map */
+.card-swatch[data-swatch-image]{ background-color: var(--color-surface); }
+
+/* =====================================================================
    RTL support
    ===================================================================== */
 [dir="rtl"]{ direction: rtl; }

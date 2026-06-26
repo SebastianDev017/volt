@@ -80,22 +80,32 @@
       {% render 'product-rating', product: p %}
 
       {%- liquid
-        assign color_opt = p.options_with_values | where: 'name', 'Color' | first
-        unless color_opt
-          assign color_opt = p.options_with_values | where: 'name', 'Colour' | first
-        endunless
+        assign color_idx = nil
+        for opt in p.options
+          assign opt_d = opt | downcase
+          if opt_d == 'color' or opt_d == 'colour'
+            assign color_idx = forloop.index0
+          endif
+        endfor
       -%}
-      {%- if color_opt and color_opt.values.size > 1 -%}
-        <div class="volt-card__swatches">
-          {%- for val in color_opt.values limit: 5 -%}
-            {%- assign vimg = '' -%}
-            {%- for variant in p.variants -%}
-              {%- if variant.options contains val and variant.featured_image -%}{%- assign vimg = variant.featured_image | image_url: width: 600 -%}{%- break -%}{%- endif -%}
+      {%- if color_idx != nil -%}
+        {%- assign color_opt = p.options_with_values[color_idx] -%}
+        {%- if color_opt.values.size > 1 -%}
+          <div class="card-swatches" role="list" aria-label="Available colours">
+            {%- for cval in color_opt.values limit: 6 -%}
+              {%- assign vfc = nil -%}
+              {%- for variant in p.variants -%}
+                {%- if variant.options[color_idx] == cval -%}{%- assign vfc = variant -%}{%- break -%}{%- endif -%}
+              {%- endfor -%}
+              {%- assign has_img = false -%}
+              {%- if vfc.image != blank and vfc.image.id != p.featured_image.id -%}{%- assign has_img = true -%}{%- endif -%}
+              {%- assign ckey = cval | downcase | strip | replace: ' ', '-' | replace: '/', '-' -%}
+              <span class="card-swatch" role="listitem" aria-label="{{ cval | escape }}" title="{{ cval | escape }}" data-swatch-color="{{ ckey }}" data-color-name="{{ cval | escape }}" data-variant-id="{{ vfc.id }}"{% if has_img %} data-swatch-image="{{ vfc.image | image_url: width: 120 }}" style="background-image: url('{{ vfc.image | image_url: width: 120 }}');"{% endif %}></span>
             {%- endfor -%}
-            <button type="button" class="volt-card__swatch" aria-label="{{ val | escape }}" title="{{ val | escape }}"{% if vimg != blank %} data-swatch-img="{{ vimg }}"{% endif %} style="background-color: {{ val | handleize }};"></button>
-          {%- endfor -%}
-          {%- if color_opt.values.size > 5 -%}<span class="volt-card__swatchmore">+{{ color_opt.values.size | minus: 5 }}</span>{%- endif -%}
-        </div>
+            {%- if color_opt.values.size > 6 -%}<span class="card-swatches__overflow">+{{ color_opt.values.size | minus: 6 }}</span>{%- endif -%}
+          </div>
+          <span class="card-swatch-label" aria-live="polite">{{ color_opt.values.first }}</span>
+        {%- endif -%}
       {%- endif -%}
 
       {%- if tpl == 'membership' -%}
@@ -144,10 +154,6 @@
   .volt-card__title { font-family: var(--font-display); font-weight: 700; font-size: 16px; line-height: 1.1; color: var(--color-ink); text-decoration: none; }
   .volt-card__title:hover { color: var(--color-mid); }
   .volt-card__specs { font-family: var(--font-mono); font-size: 10px; letter-spacing: .04em; color: var(--color-mid); margin-top: auto; }
-  .volt-card__swatches { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; margin-top: 2px; }
-  .volt-card__swatch { width: 18px; height: 18px; border-radius: 50%; border: 1.5px solid var(--color-border); background-size: cover; background-position: center; padding: 0; cursor: pointer; transition: border-color .2s var(--ease), transform .2s var(--ease); }
-  .volt-card__swatch:hover, .volt-card__swatch.is-active { border-color: var(--color-ink); transform: scale(1.15); }
-  .volt-card__swatchmore { font-family: var(--font-mono); font-size: 9px; color: var(--color-mid); }
   .volt-card__price { display: flex; align-items: baseline; gap: 8px; margin-top: 4px; flex-wrap: wrap; }
   .volt-card__amount { font-family: var(--font-display); font-weight: 700; font-size: 18px; color: var(--color-ink); }
   .volt-card__permo { font-family: var(--font-mono); font-size: 11px; color: var(--color-mid); }
