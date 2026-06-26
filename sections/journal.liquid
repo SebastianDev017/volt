@@ -1,0 +1,88 @@
+{%- liquid
+  assign blog = blogs[section.settings.blog]
+  assign posts = blog.articles
+-%}
+<section class="volt-journal" data-animate>
+  <div class="volt-journal__inner">
+    <div class="volt-journal__head">
+      <div>
+        {%- if section.settings.eyebrow != blank -%}<div class="volt-journal__eyebrow">{{ section.settings.eyebrow }}</div>{%- endif -%}
+        {%- if section.settings.heading != blank -%}<h2 class="volt-journal__title">{{ section.settings.heading }}</h2>{%- endif -%}
+      </div>
+      {%- if blog != blank -%}
+        <a href="{{ blog.url }}" class="volt-journal__all">{{ section.settings.view_all_label }} &rarr;</a>
+      {%- endif -%}
+    </div>
+    <div class="volt-journal__grid">
+      {%- if posts != blank and posts.size > 0 -%}
+        {%- for article in posts limit: 3 -%}
+          {%- liquid
+            assign words = article.content | strip_html | split: ' ' | size
+            assign read = words | divided_by: 200 | at_least: 1
+            assign cat = article.metafields.volt.category | default: article.tags.first | default: 'Training'
+          -%}
+          <article class="volt-jcard">
+            <a href="{{ article.url }}" class="volt-jcard__media">
+              {%- if article.image -%}{{ article.image | image_url: width: 700 | image_tag: loading: 'lazy', widths: '300, 500, 700', class: 'volt-jcard__img', alt: article.title | escape }}
+              {%- else -%}{{ 'image' | placeholder_svg_tag: 'volt-jcard__img' }}{%- endif -%}
+            </a>
+            <span class="volt-jcard__cat">{{ cat }}</span>
+            <div class="volt-jcard__meta">{{ read }} MIN READ{% for tag in article.tags limit: 2 %} · {{ tag | upcase }}{% endfor %}</div>
+            <h3 class="volt-jcard__title"><a href="{{ article.url }}">{{ article.title }}</a></h3>
+            {%- if article.excerpt_or_content != blank -%}<p class="volt-jcard__excerpt">{{ article.excerpt_or_content | strip_html | truncatewords: 22 }}</p>{%- endif -%}
+          </article>
+        {%- endfor -%}
+      {%- else -%}
+        {%- assign ph_titles = 'Why your recovery score predicts your next PR|Protein timing is overrated. Total intake is not.|Sleep is the only legal performance enhancer' | split: '|' -%}
+        {%- assign ph_cats = 'Strength|Nutrition|Recovery' | split: '|' -%}
+        {%- assign ph_meta = '8 MIN READ · STRENGTH · INTERMEDIATE|6 MIN READ · NUTRITION · ALL LEVELS|5 MIN READ · RECOVERY · BEGINNER' | split: '|' -%}
+        {%- assign ph_ex = 'The data behind training readiness — and how to stop leaving PRs on the table.|What the research actually says about the anabolic window and daily targets.|How HRV and resting heart rate reveal whether you are actually recovering.' | split: '|' -%}
+        {%- for i in (0..2) -%}
+          <article class="volt-jcard">
+            <span class="volt-jcard__media">{{ 'image' | placeholder_svg_tag: 'volt-jcard__img' }}</span>
+            <span class="volt-jcard__cat">{{ ph_cats[i] }}</span>
+            <div class="volt-jcard__meta">{{ ph_meta[i] }}</div>
+            <h3 class="volt-jcard__title">{{ ph_titles[i] }}</h3>
+            <p class="volt-jcard__excerpt">{{ ph_ex[i] }}</p>
+          </article>
+        {%- endfor -%}
+      {%- endif -%}
+    </div>
+  </div>
+</section>
+
+{% stylesheet %}
+  .volt-journal { background: var(--color-surface); border-top: 1px solid var(--color-border); }
+  .volt-journal__inner { max-width: var(--page-width); margin-inline: auto; padding: 84px 28px; }
+  .volt-journal__head { display: flex; align-items: flex-end; justify-content: space-between; flex-wrap: wrap; gap: 16px; margin-bottom: 40px; }
+  .volt-journal__eyebrow { font-family: var(--font-mono); font-size: 11px; letter-spacing: .18em; text-transform: uppercase; color: var(--color-mid); }
+  .volt-journal__title { font-family: var(--font-display); font-weight: 700; font-size: clamp(30px, 3vw, 46px); line-height: 1.02; letter-spacing: -.01em; margin: 14px 0 0; }
+  .volt-journal__all { font-family: var(--font-mono); font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: var(--color-ink); text-decoration: none; border-bottom: 2px solid var(--color-acid); padding-bottom: 3px; }
+  .volt-journal__grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px; }
+  .volt-jcard { display: flex; flex-direction: column; }
+  .volt-jcard__media { display: block; aspect-ratio: 16 / 9; background: var(--color-bg); overflow: hidden; }
+  .volt-jcard__img { width: 100%; height: 100%; object-fit: cover; }
+  .volt-jcard__cat { align-self: flex-start; font-family: var(--font-mono); font-size: 9px; letter-spacing: .12em; text-transform: uppercase; background: var(--color-acid); color: var(--color-ink); padding: 4px 8px; margin: 16px 0 12px; }
+  .volt-jcard__meta { font-family: var(--font-mono); font-size: 10px; letter-spacing: .06em; color: var(--color-mid); }
+  .volt-jcard__title { font-family: var(--font-display); font-weight: 700; font-size: 20px; line-height: 1.12; margin: 10px 0 8px; }
+  .volt-jcard__title a { color: var(--color-ink); text-decoration: none; }
+  .volt-jcard__title a:hover { color: var(--color-mid); }
+  .volt-jcard__excerpt { font-size: 14px; line-height: 1.6; color: var(--color-mid); margin: 0; }
+  @media (max-width: 860px) { .volt-journal__grid { grid-template-columns: 1fr; gap: 32px; } }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:sections.journal.name",
+  "tag": "section",
+  "settings": [
+    { "type": "text", "id": "eyebrow", "label": "t:sections.journal.eyebrow", "default": "// Journal" },
+    { "type": "text", "id": "heading", "label": "t:sections.journal.heading", "default": "Read the protocol." },
+    { "type": "blog", "id": "blog", "label": "t:sections.journal.blog" },
+    { "type": "text", "id": "view_all_label", "label": "t:sections.journal.view_all_label", "default": "All articles" }
+  ],
+  "presets": [
+    { "name": "t:sections.journal.name" }
+  ]
+}
+{% endschema %}

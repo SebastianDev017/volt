@@ -305,6 +305,13 @@
         "name": "Item",
         "text": "Text"
       }
+    },
+    "journal": {
+      "name": "Journal",
+      "eyebrow": "Eyebrow",
+      "heading": "Heading",
+      "blog": "Blog",
+      "view_all_label": "View-all label"
     }
   },
   "settings": {
