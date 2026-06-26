@@ -1,35 +1,229 @@
-{% comment %}
-  This section is used in the blog template to render the blog page listing all
-  articles within a blog.
+{%- comment -%}
+  VOLT — Blog index (main_blog)
+  OS 2.0 section. Server-rendered tag filtering via /tagged/ links (no JS).
+  Reuses the homepage journal card style. Template passes empty settings,
+  so every setting carries a default.
+{%- endcomment -%}
 
-  https://shopify.dev/docs/storefronts/themes/architecture/templates/blog
-{% endcomment %}
+<section class="volt-blog" data-animate>
+  <div class="volt-blog__inner">
 
-<h1>{{ blog.title }}</h1>
+    <header class="volt-blog__head">
+      <h1 class="volt-blog__title">{{ section.settings.heading | default: 'The Journal' }}</h1>
+      {%- if blog.description != blank -%}
+        <div class="volt-blog__desc">{{ blog.description }}</div>
+      {%- endif -%}
+    </header>
 
-{% paginate blog.articles by 5 %}
-  {% for article in blog.articles %}
-    <div>
-      {% if article.image %}
-        {{ article.image | image_url: width: 1000 | image_tag }}
-      {% endif %}
-      <h2>
-        {{ article.title | link_to: article.url }}
-      </h2>
-      {% assign date = article.published_at | time_tag: format: 'date' %}
-      <p>{{ 'blog.article_metadata_html' | t: date: date, author: article.author }}</p>
-      <p>{{ article.excerpt }}</p>
-    </div>
-  {% endfor %}
+    {%- comment -%} Category filter pills — distinct first-tags across the blog {%- endcomment -%}
+    {%- assign seen_tags = '' -%}
+    {%- capture pill_markup -%}
+      {%- for article in blog.articles -%}
+        {%- assign first_tag = article.tags.first -%}
+        {%- if first_tag != blank -%}
+          {%- assign tag_token = first_tag | handleize -%}
+          {%- unless seen_tags contains tag_token -%}
+            {%- assign seen_tags = seen_tags | append: ',' | append: tag_token -%}
+            {%- assign tag_url = blog.url | append: '/tagged/' | append: first_tag | handleize -%}
+            {%- if current_tags contains first_tag -%}
+              <a href="{{ tag_url }}" class="volt-blog__pill is-active" aria-current="true">{{ first_tag }}</a>
+            {%- else -%}
+              <a href="{{ tag_url }}" class="volt-blog__pill">{{ first_tag }}</a>
+            {%- endif -%}
+          {%- endunless -%}
+        {%- endif -%}
+      {%- endfor -%}
+    {%- endcapture -%}
 
-  {%- if paginate.pages > 1 -%}
-    {{- paginate | default_pagination -}}
-  {%- endif -%}
-{% endpaginate %}
+    {%- if pill_markup != blank -%}
+      <nav class="volt-blog__filters" aria-label="{{ section.settings.heading | default: 'The Journal' }}">
+        {%- if current_tags == blank or current_tags == empty -%}
+          <a href="{{ blog.url }}" class="volt-blog__pill is-active" aria-current="true">All</a>
+        {%- else -%}
+          <a href="{{ blog.url }}" class="volt-blog__pill">All</a>
+        {%- endif -%}
+        {{ pill_markup }}
+      </nav>
+    {%- endif -%}
+
+    {%- paginate blog.articles by 12 -%}
+
+      {%- if blog.articles.size > 0 -%}
+
+        {%- assign show_featured = false -%}
+        {%- if section.settings.show_featured and paginate.current_page == 1 and current_tags == blank -%}
+          {%- assign show_featured = true -%}
+        {%- endif -%}
+
+        {%- if show_featured -%}
+          {%- assign featured = blog.articles.first -%}
+          {%- liquid
+            assign f_words = featured.content | strip_html | split: ' ' | size
+            assign f_read = f_words | divided_by: 200 | at_least: 1
+            assign f_cat = featured.tags.first
+          -%}
+          <article class="volt-blog__featured" data-stagger-item>
+            <a href="{{ featured.url }}" class="volt-blog__feat-media" data-clip="left" tabindex="-1" aria-hidden="true">
+              {%- if featured.image -%}
+                {{ featured.image | image_url: width: 1200 | image_tag: loading: 'eager', widths: '500, 800, 1200, 1600', sizes: '(max-width: 900px) 100vw, 60vw', class: 'volt-blog__feat-img', alt: featured.title | escape }}
+              {%- else -%}
+                {{ 'image' | placeholder_svg_tag: 'volt-blog__feat-img' }}
+              {%- endif -%}
+            </a>
+            <div class="volt-blog__feat-body">
+              {%- if f_cat != blank -%}<span class="volt-blog__cat">{{ f_cat }}</span>{%- endif -%}
+              <div class="volt-blog__feat-meta">{{ f_read }} MIN READ &middot; {{ featured.published_at | date: '%b %d, %Y' }}</div>
+              <h2 class="volt-blog__feat-title"><a href="{{ featured.url }}">{{ featured.title }}</a></h2>
+              {%- if featured.excerpt_or_content != blank -%}
+                <p class="volt-blog__feat-excerpt">{{ featured.excerpt_or_content | strip_html | truncatewords: 40 }}</p>
+              {%- endif -%}
+              <a href="{{ featured.url }}" class="volt-blog__feat-cta">Read article <span aria-hidden="true">&rarr;</span></a>
+            </div>
+          </article>
+        {%- endif -%}
+
+        <div class="volt-blog__grid" data-stagger-group>
+          {%- for article in blog.articles -%}
+            {%- if show_featured and forloop.first -%}{%- continue -%}{%- endif -%}
+            {%- liquid
+              assign words = article.content | strip_html | split: ' ' | size
+              assign read = words | divided_by: 200 | at_least: 1
+              assign cat = article.tags.first
+            -%}
+            <article class="volt-bcard" data-stagger-item>
+              <a href="{{ article.url }}" class="volt-bcard__media" data-clip="bottom">
+                {%- if article.image -%}
+                  {{ article.image | image_url: width: 700 | image_tag: loading: 'lazy', widths: '300, 500, 700', sizes: '(max-width: 860px) 100vw, 33vw', class: 'volt-bcard__img', alt: article.title | escape }}
+                {%- else -%}
+                  {{ 'image' | placeholder_svg_tag: 'volt-bcard__img' }}
+                {%- endif -%}
+              </a>
+              {%- if cat != blank -%}<span class="volt-bcard__cat">{{ cat }}</span>{%- endif -%}
+              <div class="volt-bcard__meta">{{ read }} MIN READ &middot; {{ article.published_at | date: '%b %d, %Y' }}</div>
+              <h3 class="volt-bcard__title"><a href="{{ article.url }}">{{ article.title }}</a></h3>
+              {%- if article.excerpt_or_content != blank -%}
+                <p class="volt-bcard__excerpt">{{ article.excerpt_or_content | strip_html | truncatewords: 22 }}</p>
+              {%- endif -%}
+            </article>
+          {%- endfor -%}
+        </div>
+
+        {%- if paginate.pages > 1 -%}
+          <nav class="volt-blog__pager" aria-label="Pagination">
+            {%- if paginate.previous -%}
+              <a href="{{ paginate.previous.url }}" class="volt-blog__page volt-blog__page--nav" rel="prev"><span aria-hidden="true">&larr;</span> Prev</a>
+            {%- else -%}
+              <span class="volt-blog__page volt-blog__page--nav is-disabled" aria-hidden="true"><span aria-hidden="true">&larr;</span> Prev</span>
+            {%- endif -%}
+
+            <span class="volt-blog__pages">
+              {%- for part in paginate.parts -%}
+                {%- if part.is_link -%}
+                  <a href="{{ part.url }}" class="volt-blog__page">{{ part.title }}</a>
+                {%- elsif part.title == paginate.current_page -%}
+                  <span class="volt-blog__page is-current" aria-current="page">{{ part.title }}</span>
+                {%- else -%}
+                  <span class="volt-blog__page is-gap">{{ part.title }}</span>
+                {%- endif -%}
+              {%- endfor -%}
+            </span>
+
+            {%- if paginate.next -%}
+              <a href="{{ paginate.next.url }}" class="volt-blog__page volt-blog__page--nav" rel="next">Next <span aria-hidden="true">&rarr;</span></a>
+            {%- else -%}
+              <span class="volt-blog__page volt-blog__page--nav is-disabled" aria-hidden="true">Next <span aria-hidden="true">&rarr;</span></span>
+            {%- endif -%}
+          </nav>
+        {%- endif -%}
+
+      {%- else -%}
+        <div class="volt-blog__empty">No articles yet.</div>
+      {%- endif -%}
+
+    {%- endpaginate -%}
+
+  </div>
+</section>
+
+{% stylesheet %}
+  .volt-blog { background: var(--color-bg); }
+  .volt-blog__inner { max-width: var(--page-width); margin-inline: auto; padding: 84px 28px; }
+
+  .volt-blog__head { max-width: 760px; margin-bottom: 36px; }
+  .volt-blog__title { font-family: var(--font-display); font-weight: 800; font-size: clamp(40px, 6vw, 80px); line-height: 0.96; letter-spacing: -0.02em; margin: 0; }
+  .volt-blog__desc { font-size: 16px; line-height: 1.6; color: var(--color-mid); margin-top: 16px; }
+
+  .volt-blog__filters { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 48px; padding-bottom: 28px; border-bottom: 1px solid var(--color-border); }
+  .volt-blog__pill { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--color-ink); background: var(--color-surface); border: 1px solid var(--color-border); border-radius: 0; padding: 9px 16px; text-decoration: none; transition: background var(--ease), color var(--ease), border-color var(--ease); }
+  .volt-blog__pill:hover { border-color: var(--color-ink); }
+  .volt-blog__pill.is-active { background: var(--color-acid); color: var(--color-ink); border-color: var(--color-acid); }
+
+  .volt-blog__featured { display: grid; grid-template-columns: 60% 40%; gap: 0; border: 1px solid var(--color-border); background: var(--color-surface); margin-bottom: 56px; }
+  .volt-blog__feat-media { display: block; overflow: hidden; aspect-ratio: 3 / 2; background: var(--color-bg); }
+  .volt-blog__feat-img { width: 100%; height: 100%; object-fit: cover; transition: transform var(--dur-slow) var(--ease); }
+  .volt-blog__featured:hover .volt-blog__feat-img { transform: scale(1.03); }
+  .volt-blog__feat-body { display: flex; flex-direction: column; align-items: flex-start; justify-content: center; padding: clamp(28px, 4vw, 56px); }
+  .volt-blog__cat { font-family: var(--font-mono); font-size: 9px; letter-spacing: 0.12em; text-transform: uppercase; background: var(--color-acid); color: var(--color-ink); padding: 4px 8px; }
+  .volt-blog__feat-meta { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.06em; color: var(--color-mid); margin-top: 18px; }
+  .volt-blog__feat-title { font-family: var(--font-display); font-weight: 800; font-size: clamp(26px, 3vw, 40px); line-height: 1.04; letter-spacing: -0.01em; margin: 12px 0 0; }
+  .volt-blog__feat-title a { color: var(--color-ink); text-decoration: none; }
+  .volt-blog__feat-title a:hover { color: var(--color-mid); }
+  .volt-blog__feat-excerpt { font-size: 15px; line-height: 1.6; color: var(--color-mid); margin: 16px 0 0; }
+  .volt-blog__feat-cta { font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--color-ink); text-decoration: none; border-bottom: 2px solid var(--color-acid); padding-bottom: 3px; margin-top: 24px; display: inline-flex; gap: 8px; align-items: center; transition: gap var(--dur-med) var(--ease); }
+  .volt-blog__feat-cta:hover { gap: 13px; }
+
+  .volt-blog__grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px; }
+  .volt-bcard { display: flex; flex-direction: column; }
+  .volt-bcard__media { display: block; aspect-ratio: 16 / 9; background: var(--color-surface); overflow: hidden; }
+  .volt-bcard__img { width: 100%; height: 100%; object-fit: cover; transition: transform var(--dur-slow) var(--ease); }
+  .volt-bcard:hover .volt-bcard__img { transform: scale(1.04); }
+  .volt-bcard__cat { align-self: flex-start; font-family: var(--font-mono); font-size: 9px; letter-spacing: 0.12em; text-transform: uppercase; background: var(--color-acid); color: var(--color-ink); padding: 4px 8px; margin: 16px 0 12px; }
+  .volt-bcard__meta { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.06em; color: var(--color-mid); }
+  .volt-bcard__title { font-family: var(--font-display); font-weight: 700; font-size: 20px; line-height: 1.12; margin: 10px 0 8px; }
+  .volt-bcard__title a { color: var(--color-ink); text-decoration: none; }
+  .volt-bcard__title a:hover { color: var(--color-mid); }
+  .volt-bcard__excerpt { font-size: 14px; line-height: 1.6; color: var(--color-mid); margin: 0; }
+
+  .volt-blog__empty { font-family: var(--font-mono); font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--color-mid); padding: 48px 0; }
+
+  .volt-blog__pager { display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 8px; margin-top: 64px; padding-top: 40px; border-top: 1px solid var(--color-border); }
+  .volt-blog__pages { display: inline-flex; flex-wrap: wrap; gap: 8px; }
+  .volt-blog__page { font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.04em; color: var(--color-ink); background: var(--color-surface); border: 1px solid var(--color-border); border-radius: 0; min-width: 40px; height: 40px; padding: 0 12px; display: inline-flex; align-items: center; justify-content: center; gap: 8px; text-decoration: none; transition: background var(--ease), color var(--ease), border-color var(--ease); }
+  .volt-blog__page:hover { border-color: var(--color-ink); }
+  .volt-blog__page.is-current { background: var(--color-acid); color: var(--color-ink); border-color: var(--color-acid); }
+  .volt-blog__page.is-gap { background: transparent; border-color: transparent; color: var(--color-mid); }
+  .volt-blog__page.is-disabled { color: var(--color-mid); opacity: 0.45; cursor: default; }
+  .volt-blog__page--nav { letter-spacing: 0.1em; text-transform: uppercase; }
+
+  @media (max-width: 900px) {
+    .volt-blog__featured { grid-template-columns: 1fr; }
+    .volt-blog__feat-media { aspect-ratio: 16 / 9; }
+  }
+  @media (max-width: 860px) {
+    .volt-blog__grid { grid-template-columns: 1fr; gap: 32px; }
+  }
+  @media (max-width: 600px) {
+    .volt-blog__inner { padding: 56px 28px; }
+  }
+{% endstylesheet %}
 
 {% schema %}
 {
-  "name": "t:general.blog",
-  "settings": []
+  "name": "t:sections.main_blog.name",
+  "tag": "section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "t:sections.main_blog.heading",
+      "default": "The Journal"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_featured",
+      "label": "t:sections.main_blog.show_featured",
+      "default": true
+    }
+  ]
 }
 {% endschema %}

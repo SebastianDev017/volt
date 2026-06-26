@@ -611,6 +611,76 @@
           "url": "Link"
         }
       }
+    },
+    "main_collection": {
+      "name": "Collection page",
+      "layout_header": "Layout",
+      "show_filter_sidebar": "Show filter sidebar",
+      "show_filter_sidebar_info": "Renders standard Shopify faceted filters in a sticky left sidebar. Requires filters set up in Search & Discovery.",
+      "columns_desktop": "Columns (desktop)",
+      "columns_3": "3 columns",
+      "columns_4": "4 columns",
+      "per_page": "Products per page",
+      "banner_header": "Collection banner",
+      "show_collection_banner": "Show collection image banner",
+      "banner_opacity": "Banner overlay opacity",
+      "labels_header": "Labels",
+      "filters_title": "Filters title",
+      "sort_label": "Sort label",
+      "results_label": "Results label",
+      "apply_label": "Apply button label",
+      "clear_label": "Clear all label",
+      "mobile_filter_label": "Mobile filter button label",
+      "empty_title": "Empty state message",
+      "price_min_label": "Price min placeholder",
+      "price_max_label": "Price max placeholder",
+      "pagination_label": "Pagination aria label"
+    },
+    "main_cart": {
+      "name": "Cart page",
+      "free_shipping_threshold": "Free shipping threshold",
+      "show_free_shipping_bar": "Show free shipping progress bar"
+    },
+    "main_search": {
+      "name": "Search results",
+      "suggestions": "Suggestion pills (comma-separated)",
+      "columns": "Product columns",
+      "labels_header": "Labels",
+      "results_label": "Results heading prefix",
+      "results_suffix": "Result-count suffix",
+      "no_results_label": "Empty-state heading prefix",
+      "try_label": "Suggestions prompt",
+      "tab_products": "Products tab label",
+      "tab_articles": "Articles tab label",
+      "no_products_label": "No products message",
+      "no_articles_label": "No articles message",
+      "fallback_category": "Article fallback category"
+    },
+    "main_blog": {
+      "name": "Blog",
+      "heading": "Heading",
+      "show_featured": "Show featured article"
+    },
+    "main_article": {
+      "name": "Article",
+      "show_related": "Show related articles",
+      "author_role": "Author role line"
+    },
+    "not_found_page": {
+      "name": "404 page",
+      "heading_404": "Headline",
+      "eyebrow": "Eyebrow",
+      "body": "Body text",
+      "actions_header": "Actions",
+      "cta1_label": "Primary button label",
+      "cta1_info": "Always links to the store homepage.",
+      "cta2_label": "Secondary button label",
+      "cta2_url": "Secondary button link"
+    },
+    "recently_viewed": {
+      "name": "Recently viewed",
+      "heading": "Heading",
+      "max_items": "Max items"
     }
   },
   "settings": {

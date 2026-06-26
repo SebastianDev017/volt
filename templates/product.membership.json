@@ -33,7 +33,8 @@
       },
       "block_order": ["s1", "s2", "s3"],
       "settings": {}
-    }
+    },
+    "recently_viewed": { "type": "recently-viewed", "settings": {} }
   },
-  "order": ["main", "proof"]
+  "order": ["main", "proof", "recently_viewed"]
 }

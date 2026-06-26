@@ -27,11 +27,7 @@
         "week_label": "14 DAYS",
         "hrv": "68",
         "rhr": "52",
-        "sleep": "7.4",
-        "enable_animations": true,
-        "heading_animation": "split-words",
-        "body_animation": "fade-up",
-        "section_delay": 0
+        "sleep": "7.4"
       }
     },
     "vitals_strip_2": {
@@ -140,11 +136,7 @@
         "body": "Three tiers, one system. Every membership unlocks the dashboard, class booking, and member pricing on gear.",
         "countdown_end_date": "2026-12-31T23:59:59",
         "dashboard_link_label": "Already a member? Access your dashboard →",
-        "dashboard_link": "",
-        "enable_animations": true,
-        "heading_animation": "split-words",
-        "cards_animation": "stagger-up",
-        "section_delay": 0
+        "dashboard_link": ""
       }
     },
     "product_grid_4": {
@@ -152,14 +144,10 @@
       "settings": {
         "eyebrow": "// The Upsell",
         "heading": "Gear the protocol.",
-        "collection": "hydrogen",
+        "collection": "",
         "columns": 4,
         "filter_menu": "",
-        "show_view_all": true,
-        "enable_animations": true,
-        "heading_animation": "split-words",
-        "cards_animation": "stagger-up",
-        "section_delay": 0
+        "show_view_all": true
       }
     },
     "performance_stats_5": {
@@ -204,10 +192,7 @@
         "block_3",
         "block_4"
       ],
-      "settings": {
-        "enable_animations": true,
-        "cards_animation": "stagger-up"
-      }
+      "settings": {}
     },
     "before_after_6": {
       "type": "before-after",
@@ -245,19 +230,12 @@
       "settings": {
         "eyebrow": "// Real Member Outcomes",
         "heading": "Six months on protocol.",
-        "before_image": "shopify://shop_images/Main_b13ad453-477c-4ed1-9b43-81f3345adfd6.jpg",
-        "after_image": "shopify://shop_images/Main_d624f226-0a89-4fe1-b333-0d1548b43c06.jpg",
         "before_label": "MONTH 0 · 92KG · PRs: 0",
         "after_label": "MONTH 6 · 78KG · PRs: 8",
         "quote": "<p>\"The dashboard changed everything. I stopped guessing and started reading my recovery. Eight PRs in six months — and I trained less than before.\"</p>",
         "author_name": "Marcus T.",
         "author_tier": "Performance",
-        "author_since": "Member since 2024",
-        "enable_animations": true,
-        "heading_animation": "split-words",
-        "image_animation": "clip-bottom",
-        "cards_animation": "stagger-scale",
-        "section_delay": 0
+        "author_since": "Member since 2024"
       }
     },
     "how_it_works_7": {
@@ -310,11 +288,7 @@
       ],
       "settings": {
         "eyebrow": "// Build Your Stack",
-        "heading": "The recovery protocol.",
-        "enable_animations": true,
-        "heading_animation": "split-words",
-        "cards_animation": "stagger-up",
-        "section_delay": 0
+        "heading": "The recovery protocol."
       }
     },
     "journal_8": {
@@ -322,12 +296,8 @@
       "settings": {
         "eyebrow": "// Journal",
         "heading": "Read the protocol.",
-        "blog": "news",
-        "view_all_label": "All articles",
-        "enable_animations": true,
-        "heading_animation": "split-words",
-        "cards_animation": "stagger-up",
-        "section_delay": 0
+        "blog": "",
+        "view_all_label": "All articles"
       }
     },
     "newsletter_diagnostic_9": {
@@ -341,10 +311,7 @@
         "tier_elite_handle": "elite",
         "newsletter_heading": "Or join the dispatch",
         "newsletter_body": "Weekly performance science, member protocols and early access to drops. No filler.",
-        "consent_text": "By subscribing you agree to receive marketing emails. Unsubscribe anytime.",
-        "enable_animations": true,
-        "heading_animation": "split-words",
-        "section_delay": 0
+        "consent_text": "By subscribing you agree to receive marketing emails. Unsubscribe anytime."
       }
     },
     "recently_viewed_10": {

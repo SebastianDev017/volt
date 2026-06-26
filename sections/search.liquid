@@ -1,70 +1,235 @@
 {% comment %}
-  This section is used in the search template to render search results for
-  products, articles, and pages.
+  VOLT — search results page.
+  Wired via templates/search.json (type "search"). Template passes empty
+  settings, so every setting below carries an English default.
 
   https://shopify.dev/docs/storefronts/themes/architecture/templates/search
 {% endcomment %}
 
-<h1>{{ 'search.title' | t }}</h1>
+{%- liquid
+  assign suggestion_list = section.settings.suggestions | split: ','
+  assign cols = section.settings.columns | default: 4
 
-<form action="{{ routes.search_url }}" method="get" role="search">
-  <input
-    type="search"
-    size="50"
-    name="q"
-    value="{{ search.terms | escape }}"
-    placeholder="{{ 'search.placeholder' | t }}"
-  >
-  <button type="submit">{{ 'search.submit' | t }}</button>
-</form>
+  assign product_count = 0
+  assign article_count = 0
+  if search.performed
+    for item in search.results
+      if item.object_type == 'product'
+        assign product_count = product_count | plus: 1
+      elsif item.object_type == 'article'
+        assign article_count = article_count | plus: 1
+      endif
+    endfor
+  endif
+-%}
 
-{% if search.performed %}
-  {% if search.results_count == 0 %}
-    <p>{{ 'search.no_results_html' | t: terms: search.terms }}</p>
-  {% else %}
-    <p>{{ 'search.results_for_html' | t: terms: search.terms, count: search.results_count }}</p>
+<section class="volt-search" data-animate style="--volt-search-cols: {{ cols }};">
+  <div class="volt-search__inner">
 
-    <div class="search-results">
-      {% paginate search.results by 20 %}
-        {% # Search result items may be an article, a page, or a product. %}
-        {% for result in search.results %}
-          <div class="search-result">
-            {% assign featured_image = result.featured_image | default: result.image %}
-            {% if featured_image %}
-              {% render 'image', class: 'search-result__image', image: featured_image, url: result.url, width: 400 %}
-            {% endif %}
-            <div class="search-result__content">
-              <p>
-                {{ result.title | link_to: result.url }}
-                {% if result.price %}
-                  {{ result.price | money_with_currency }}
-                {% endif %}
-              </p>
+    <form class="volt-search__form" action="{{ routes.search_url }}" method="get" role="search">
+      <label class="visually-hidden" for="volt-search-input">{{ 'search.title' | t }}</label>
+      <input
+        class="volt-search__input"
+        id="volt-search-input"
+        type="search"
+        name="q"
+        value="{{ search.terms | escape }}"
+        placeholder="{{ 'search.placeholder' | t }}"
+        autocomplete="off"
+      >
+      <button type="submit" class="volt-search__submit">{{ 'search.submit' | t }}</button>
+    </form>
+
+    {%- if search.performed -%}
+
+      {%- if search.results_count == 0 -%}
+
+        <div class="volt-search__empty">
+          <h1 class="volt-search__emptytitle">{{ section.settings.no_results_label }} '<span class="acid">{{ search.terms }}</span>'</h1>
+          <svg class="volt-search__underline" width="220" height="14" viewBox="0 0 220 14" fill="none" aria-hidden="true">
+            <path data-draw d="M2 9C44 4 110 2 152 5C180 7 200 8 218 5" stroke="var(--color-acid)" stroke-width="3" stroke-linecap="round"/>
+          </svg>
+          <p class="volt-search__try">{{ section.settings.try_label }}</p>
+          {%- if suggestion_list.size > 0 -%}
+            <div class="volt-search__pills">
+              {%- for term in suggestion_list -%}
+                {%- assign clean = term | strip -%}
+                {%- if clean != blank -%}
+                  <a class="volt-search__pill" href="{{ routes.search_url }}?q={{ clean | url_encode }}">{{ clean }}</a>
+                {%- endif -%}
+              {%- endfor -%}
             </div>
-          </div>
-        {% endfor %}
+          {%- endif -%}
+        </div>
 
-        {{ paginate | default_pagination }}
-      {% endpaginate %}
-    </div>
-  {% endif %}
-{% endif %}
+      {%- else -%}
+
+        <header class="volt-search__head">
+          <h1 class="volt-search__title">{{ section.settings.results_label }} '<span class="acid">{{ search.terms }}</span>'</h1>
+          <span class="volt-search__count">{{ search.results_count }} {{ section.settings.results_suffix }}</span>
+        </header>
+
+        <div class="volt-search__tabs">
+          <input class="volt-search__radio" type="radio" name="search-tab" id="volt-tab-products" checked>
+          <input class="volt-search__radio" type="radio" name="search-tab" id="volt-tab-articles">
+
+          <div class="volt-search__tablist" role="tablist">
+            <label class="volt-search__tab volt-search__tab--products" for="volt-tab-products">
+              {{ section.settings.tab_products }} <span class="volt-search__tabnum">{{ product_count }}</span>
+            </label>
+            <label class="volt-search__tab volt-search__tab--articles" for="volt-tab-articles">
+              {{ section.settings.tab_articles }} <span class="volt-search__tabnum">{{ article_count }}</span>
+            </label>
+          </div>
+
+          <div class="volt-search__panel volt-search__panel--products">
+            {%- if product_count > 0 -%}
+              <div class="volt-search__grid" data-stagger-group data-stagger-dir="up">
+                {%- for item in search.results -%}
+                  {%- if item.object_type == 'product' -%}
+                    {% render 'product-card', card_product: item %}
+                  {%- endif -%}
+                {%- endfor -%}
+              </div>
+            {%- else -%}
+              <p class="volt-search__none">{{ section.settings.no_products_label }}</p>
+            {%- endif -%}
+          </div>
+
+          <div class="volt-search__panel volt-search__panel--articles">
+            {%- if article_count > 0 -%}
+              <div class="volt-search__journal" data-stagger-group data-stagger-dir="fade">
+                {%- for item in search.results -%}
+                  {%- if item.object_type == 'article' -%}
+                    {%- assign article = item -%}
+                    {%- assign cat = article.tags.first | default: section.settings.fallback_category -%}
+                    <article class="volt-scard" data-stagger-item>
+                      <a href="{{ article.url }}" class="volt-scard__media">
+                        {%- if article.image -%}
+                          {{ article.image | image_url: width: 700 | image_tag: loading: 'lazy', widths: '300, 500, 700', class: 'volt-scard__img', alt: article.title | escape }}
+                        {%- else -%}
+                          {{ 'image' | placeholder_svg_tag: 'volt-scard__img' }}
+                        {%- endif -%}
+                      </a>
+                      <span class="volt-scard__cat">{{ cat }}</span>
+                      <h3 class="volt-scard__title"><a href="{{ article.url }}">{{ article.title }}</a></h3>
+                      {%- if article.published_at -%}
+                        <div class="volt-scard__meta">{{ article.published_at | date: '%b %d, %Y' | upcase }}</div>
+                      {%- endif -%}
+                    </article>
+                  {%- endif -%}
+                {%- endfor -%}
+              </div>
+            {%- else -%}
+              <p class="volt-search__none">{{ section.settings.no_articles_label }}</p>
+            {%- endif -%}
+          </div>
+        </div>
+
+      {%- endif -%}
+
+    {%- else -%}
+
+      {%- if suggestion_list.size > 0 -%}
+        <div class="volt-search__prompt">
+          <p class="volt-search__try">{{ section.settings.try_label }}</p>
+          <div class="volt-search__pills">
+            {%- for term in suggestion_list -%}
+              {%- assign clean = term | strip -%}
+              {%- if clean != blank -%}
+                <a class="volt-search__pill" href="{{ routes.search_url }}?q={{ clean | url_encode }}">{{ clean }}</a>
+              {%- endif -%}
+            {%- endfor -%}
+          </div>
+        </div>
+      {%- endif -%}
+
+    {%- endif -%}
+
+  </div>
+</section>
 
 {% stylesheet %}
-  .search-results {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  .volt-search { background: var(--color-bg); }
+  .volt-search__inner { max-width: var(--page-width); margin-inline: auto; padding-block: clamp(56px, 8vw, 110px); padding-inline: 28px; }
+
+  .volt-search__form { display: flex; gap: 0; max-width: 640px; margin-bottom: clamp(36px, 5vw, 56px); border: 1px solid var(--color-ink); }
+  .volt-search__input { flex: 1; min-width: 0; background: var(--color-bg); color: var(--color-ink); border: 0; border-radius: 0; padding: 16px 18px; font-family: var(--font-body); font-size: 15px; }
+  .volt-search__input::placeholder { color: var(--color-mid); }
+  .volt-search__input:focus { outline: none; }
+  .volt-search__submit { flex: none; background: var(--color-ink); color: var(--color-bg); border: 0; border-radius: 0; padding: 16px 26px; font-family: var(--font-body); font-weight: 500; font-size: 12px; letter-spacing: .12em; text-transform: uppercase; cursor: pointer; transition: background var(--dur-fast) var(--ease), color var(--dur-fast) var(--ease); }
+  .volt-search__submit:hover { background: var(--color-acid); color: var(--on-acid); }
+
+  .volt-search__head { display: flex; align-items: baseline; justify-content: space-between; flex-wrap: wrap; gap: 12px 24px; margin-bottom: 28px; }
+  .volt-search__title { font-family: var(--font-display); font-weight: 800; font-size: clamp(30px, 4vw, 56px); line-height: 0.98; letter-spacing: -.02em; margin: 0; }
+  .volt-search__count { font-family: var(--font-mono); font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--color-mid); }
+
+  .volt-search__radio { position: absolute; opacity: 0; pointer-events: none; }
+  .volt-search__tablist { display: flex; gap: 28px; border-bottom: 1px solid var(--color-border); margin-bottom: clamp(28px, 4vw, 44px); }
+  .volt-search__tab { display: inline-flex; align-items: center; gap: 8px; padding: 0 0 14px; margin-bottom: -1px; font-family: var(--font-body); font-weight: 500; font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: var(--color-mid); cursor: pointer; border-bottom: 2px solid transparent; transition: color var(--dur-fast) var(--ease), border-color var(--dur-fast) var(--ease); }
+  .volt-search__tab:hover { color: var(--color-ink); }
+  .volt-search__tabnum { font-family: var(--font-mono); font-size: 11px; letter-spacing: .04em; color: var(--color-mid); }
+  .volt-search__panel { display: none; }
+
+  #volt-tab-products:checked ~ .volt-search__tablist .volt-search__tab--products,
+  #volt-tab-articles:checked ~ .volt-search__tablist .volt-search__tab--articles { color: var(--color-ink); border-bottom-color: var(--color-acid); }
+  #volt-tab-products:checked ~ .volt-search__tablist .volt-search__tab--products .volt-search__tabnum,
+  #volt-tab-articles:checked ~ .volt-search__tablist .volt-search__tab--articles .volt-search__tabnum { color: var(--color-ink); }
+  #volt-tab-products:checked ~ .volt-search__panel--products,
+  #volt-tab-articles:checked ~ .volt-search__panel--articles { display: block; }
+
+  .volt-search__grid { display: grid; grid-template-columns: repeat(var(--volt-search-cols, 4), 1fr); gap: var(--gutter); }
+  .volt-search__journal { display: grid; grid-template-columns: repeat(2, 1fr); gap: 28px; }
+
+  .volt-scard { display: flex; flex-direction: column; }
+  .volt-scard__media { display: block; aspect-ratio: 16 / 9; background: var(--color-surface); overflow: hidden; }
+  .volt-scard__img { width: 100%; height: 100%; object-fit: cover; transition: transform .5s var(--ease); }
+  .volt-scard:hover .volt-scard__img { transform: scale(1.04); }
+  .volt-scard__cat { align-self: flex-start; font-family: var(--font-mono); font-size: 9px; letter-spacing: .12em; text-transform: uppercase; background: var(--color-acid); color: var(--on-acid); padding: 4px 8px; margin: 16px 0 10px; }
+  .volt-scard__title { font-family: var(--font-display); font-weight: 700; font-size: 20px; line-height: 1.12; margin: 0 0 8px; }
+  .volt-scard__title a { color: var(--color-ink); text-decoration: none; }
+  .volt-scard__title a:hover { color: var(--color-mid); }
+  .volt-scard__meta { font-family: var(--font-mono); font-size: 10px; letter-spacing: .06em; color: var(--color-mid); }
+
+  .volt-search__none { font-family: var(--font-mono); font-size: 12px; letter-spacing: .06em; text-transform: uppercase; color: var(--color-mid); padding: 8px 0; }
+
+  .volt-search__empty,
+  .volt-search__prompt { max-width: 720px; }
+  .volt-search__emptytitle { font-family: var(--font-display); font-weight: 800; font-size: clamp(30px, 4vw, 56px); line-height: 0.98; letter-spacing: -.02em; margin: 0; }
+  .volt-search__underline { display: block; margin: 6px 0 28px; overflow: visible; }
+  .volt-search__try { font-family: var(--font-mono); font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--color-mid); margin: 0 0 16px; }
+  .volt-search__prompt { margin-top: 8px; }
+
+  .volt-search__pills { display: flex; flex-wrap: wrap; gap: 10px; }
+  .volt-search__pill { display: inline-flex; align-items: center; border: 1px solid var(--color-border); border-radius: 0; padding: 10px 16px; font-family: var(--font-body); font-weight: 500; font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--color-ink); transition: background var(--dur-fast) var(--ease), color var(--dur-fast) var(--ease), border-color var(--dur-fast) var(--ease); }
+  .volt-search__pill:hover { background: var(--color-acid); color: var(--on-acid); border-color: var(--color-acid); }
+
+  @media (max-width: 1024px) {
+    .volt-search__grid { grid-template-columns: repeat(2, 1fr); }
   }
-  .search-results .prev,
-  .search-results .page,
-  .search-results .next {
-    grid-column: 1 / -1;
+  @media (max-width: 600px) {
+    .volt-search__grid { grid-template-columns: 1fr; }
+    .volt-search__journal { grid-template-columns: 1fr; }
   }
 {% endstylesheet %}
 
 {% schema %}
 {
-  "name": "t:general.search",
-  "settings": []
+  "name": "t:sections.main_search.name",
+  "tag": "section",
+  "settings": [
+    { "type": "text", "id": "suggestions", "label": "t:sections.main_search.suggestions", "default": "Membership, Supplements, Apparel, Recovery" },
+    { "type": "range", "id": "columns", "label": "t:sections.main_search.columns", "min": 3, "max": 4, "step": 1, "default": 4 },
+    { "type": "header", "content": "t:sections.main_search.labels_header" },
+    { "type": "text", "id": "results_label", "label": "t:sections.main_search.results_label", "default": "Results for" },
+    { "type": "text", "id": "results_suffix", "label": "t:sections.main_search.results_suffix", "default": "results" },
+    { "type": "text", "id": "no_results_label", "label": "t:sections.main_search.no_results_label", "default": "No results for" },
+    { "type": "text", "id": "try_label", "label": "t:sections.main_search.try_label", "default": "Try searching for:" },
+    { "type": "text", "id": "tab_products", "label": "t:sections.main_search.tab_products", "default": "Products" },
+    { "type": "text", "id": "tab_articles", "label": "t:sections.main_search.tab_articles", "default": "Articles" },
+    { "type": "text", "id": "no_products_label", "label": "t:sections.main_search.no_products_label", "default": "No products matched your search." },
+    { "type": "text", "id": "no_articles_label", "label": "t:sections.main_search.no_articles_label", "default": "No articles matched your search." },
+    { "type": "text", "id": "fallback_category", "label": "t:sections.main_search.fallback_category", "default": "Journal" }
+  ]
 }
 {% endschema %}

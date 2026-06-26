@@ -1,68 +1,230 @@
-{% comment %}
-  This section is used in the article template to render the article page, which
-  displays the full content of the blog post and can optionally include a
-  comments section for customers (not shown in this example).
+{%- comment -%}
+  VOLT — Article page section.
+  Filename/type preserved so templates/article.json stays wired.
+{%- endcomment -%}
+{%- liquid
+  assign words = article.content | strip_html | split: ' ' | size
+  assign read_time = words | divided_by: 200 | at_least: 1
+-%}
+<article class="volt-article" data-animate>
+  <header class="volt-article__head">
+    {%- if article.tags.first != blank -%}
+      <span class="volt-article__pill">{{ article.tags.first }}</span>
+    {%- endif -%}
+    <h1 class="volt-article__title">{{ article.title }}</h1>
+    <div class="volt-article__meta">
+      <span>{{ article.published_at | date: '%B %d, %Y' }}</span>
+      <span class="volt-article__dot" aria-hidden="true">&middot;</span>
+      <span>{{ read_time }} MIN READ</span>
+      {%- if article.author != blank -%}
+        <span class="volt-article__dot" aria-hidden="true">&middot;</span>
+        <span>{{ article.author }}</span>
+      {%- endif -%}
+    </div>
+  </header>
 
-  https://shopify.dev/docs/storefronts/themes/architecture/templates/article
-{% endcomment %}
+  {%- if article.image -%}
+    <div class="volt-article__feature" data-clip="bottom" data-parallax="0.1">
+      {{
+        article.image
+        | image_url: width: 1600
+        | image_tag:
+          width: article.image.width,
+          height: article.image.height,
+          widths: '640, 960, 1280, 1600, 2000',
+          sizes: '100vw',
+          loading: 'eager',
+          fetchpriority: 'high',
+          class: 'volt-article__img',
+          alt: article.title | escape
+      }}
+    </div>
+  {%- endif -%}
 
-{% if article.image %}
-  {{ article.image | image_url: width: 1000 | image_tag }}
-{% endif %}
+  <div class="volt-article__body">
+    <div class="rte">{{ article.content }}</div>
 
-<h1>{{ article.title }}</h1>
+    {%- if article.tags.size > 0 -%}
+      <div class="volt-article__tags">
+        {%- for tag in article.tags -%}
+          <a class="volt-article__tag" href="{{ blog.url | append: '/tagged/' | append: tag | handleize }}">{{ tag }}</a>
+        {%- endfor -%}
+      </div>
+    {%- endif -%}
 
-{% assign date = article.published_at | time_tag: format: 'date' %}
-<p>{{ 'blog.article_metadata_html' | t: date: date, author: article.author }}</p>
-
-{{ article.content }}
-
-{% if blog.comments_enabled? %}
-  <h2>{{ 'blog.article_comments' | t }}</h2>
-
-  <div id="comments">
-    {% paginate article.comments by 10 %}
-      {% for comment in article.comments %}
-        <div>
-          <p>{{ comment.author }}</p>
-          <p>
-            {{- comment.created_at | time_tag: format: 'date' -}}
-          </p>
-          <p>{{ comment.content }}</p>
-        </div>
-      {% endfor %}
-
-      {{ paginate | default_pagination: anchor: 'comments' }}
-    {% endpaginate %}
+    {%- if article.author != blank -%}
+      <div class="volt-article__author card">
+        <span class="volt-article__author-label">Written by</span>
+        <span class="volt-article__author-name">{{ article.author }}</span>
+        <span class="volt-article__author-role">{{ section.settings.author_role }}</span>
+      </div>
+    {%- endif -%}
   </div>
 
-  {% form 'new_comment', article %}
-    <h2>{{ 'blog.comment_form_title' | t }}</h2>
+  {%- if blog.comments_enabled? -%}
+    <section class="volt-article__comments">
+      <div class="volt-article__comments-inner">
+        <h2 class="volt-article__comments-title">{{ 'blog.article_comments' | t }}</h2>
 
-    {{ form.errors | default_errors }}
+        {%- if article.comments.size > 0 -%}
+          <ul class="volt-comments">
+            {%- for comment in article.comments -%}
+              <li class="volt-comment">
+                <div class="volt-comment__head">
+                  <span class="volt-comment__author">{{ comment.author }}</span>
+                  <span class="volt-comment__date">{{ comment.created_at | date: '%B %d, %Y' }}</span>
+                </div>
+                <div class="volt-comment__body rte">{{ comment.content }}</div>
+              </li>
+            {%- endfor -%}
+          </ul>
+        {%- endif -%}
 
-    <div>
-      <label for="author">{{ 'blog.comment_form_name' | t }}</label>
-      <input type="text" name="comment[author]" id="author" value="{{ form.author }}" required>
-    </div>
+        {%- form 'new_comment', article -%}
+          <h3 class="volt-form__title">{{ 'blog.comment_form_name' | t }}</h3>
+          {{ form.errors | default_errors }}
+          {%- if form.posted_successfully? -%}
+            <p class="volt-form__success">{{ 'blog.comment_form_name' | t }}</p>
+          {%- endif -%}
+          <div class="volt-form__grid">
+            <div class="volt-form__field">
+              <label class="volt-form__label" for="comment-author">{{ 'blog.comment_form_name' | t }}</label>
+              <input class="input" type="text" name="comment[author]" id="comment-author" value="{{ form.author }}" required>
+            </div>
+            <div class="volt-form__field">
+              <label class="volt-form__label" for="comment-email">{{ 'blog.comment_form_email' | t }}</label>
+              <input class="input" type="email" name="comment[email]" id="comment-email" value="{{ form.email }}" required>
+            </div>
+          </div>
+          <div class="volt-form__field">
+            <label class="volt-form__label" for="comment-body">{{ 'blog.comment_form_body' | t }}</label>
+            <textarea class="input" name="comment[body]" id="comment-body" rows="5" required>{{ form.body }}</textarea>
+          </div>
+          <button type="submit" class="btn btn--acid">{{ 'blog.comment_form_submit' | t }}</button>
+        {%- endform -%}
+      </div>
+    </section>
+  {%- endif -%}
 
-    <div>
-      <label for="email">{{ 'blog.comment_form_email' | t }}</label>
-      <input type="email" name="comment[email]" id="email" value="{{ form.email }}" required>
-    </div>
+  {%- if section.settings.show_related -%}
+    {%- liquid
+      assign count = 0
+    -%}
+    <section class="volt-related" data-animate>
+      <div class="volt-related__inner">
+        <div class="volt-related__head">
+          <h2 class="volt-related__title">Related articles</h2>
+          {%- if blog.url != blank -%}
+            <a href="{{ blog.url }}" class="volt-related__all">All articles &rarr;</a>
+          {%- endif -%}
+        </div>
+        <div class="volt-related__grid" data-stagger-group>
+          {%- for post in blog.articles -%}
+            {%- if post.id == article.id -%}{%- continue -%}{%- endif -%}
+            {%- if count >= 3 -%}{%- break -%}{%- endif -%}
+            {%- liquid
+              assign post_words = post.content | strip_html | split: ' ' | size
+              assign post_read = post_words | divided_by: 200 | at_least: 1
+              assign cat = post.tags.first | default: 'Training'
+              assign count = count | plus: 1
+            -%}
+            <article class="volt-jcard" data-stagger-item>
+              <a href="{{ post.url }}" class="volt-jcard__media">
+                {%- if post.image -%}{{ post.image | image_url: width: 700 | image_tag: loading: 'lazy', widths: '300, 500, 700', class: 'volt-jcard__img', alt: post.title | escape }}
+                {%- else -%}{{ 'image' | placeholder_svg_tag: 'volt-jcard__img' }}{%- endif -%}
+              </a>
+              <span class="volt-jcard__cat">{{ cat }}</span>
+              <div class="volt-jcard__meta">{{ post_read }} MIN READ{% for tag in post.tags limit: 2 %} &middot; {{ tag | upcase }}{% endfor %}</div>
+              <h3 class="volt-jcard__title"><a href="{{ post.url }}">{{ post.title }}</a></h3>
+              {%- if post.excerpt_or_content != blank -%}<p class="volt-jcard__excerpt">{{ post.excerpt_or_content | strip_html | truncatewords: 22 }}</p>{%- endif -%}
+            </article>
+          {%- endfor -%}
+        </div>
+      </div>
+    </section>
+  {%- endif -%}
+</article>
 
-    <div>
-      <label for="body">{{ 'blog.comment_form_body' | t }}</label>
-      <textarea name="comment[body]" id="body" required>{{ form.body }}</textarea>
-    </div>
+{% stylesheet %}
+  .volt-article { display: block; }
+  .volt-article__head { max-width: 760px; margin-inline: auto; padding: clamp(56px, 8vw, 96px) 28px clamp(28px, 4vw, 44px); text-align: center; }
+  .volt-article__pill { display: inline-block; font-family: var(--font-mono); font-size: 9px; letter-spacing: .14em; text-transform: uppercase; background: var(--color-acid); color: var(--on-acid); padding: 5px 9px; border-radius: 0; margin-bottom: 20px; }
+  .volt-article__title { font-family: var(--font-display); font-weight: 800; font-size: clamp(32px, 4vw, 56px); line-height: 1.02; letter-spacing: -.02em; margin: 0; }
+  .volt-article__meta { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 10px; margin-top: 22px; font-family: var(--font-mono); font-size: 11px; letter-spacing: .06em; text-transform: uppercase; color: var(--color-mid); }
+  .volt-article__dot { color: var(--color-border); }
 
-    <input type="submit" value="{{ 'blog.comment_form_submit' | t }}">
-  {% endform %}
-{% endif %}
+  .volt-article__feature { width: 100%; max-width: var(--page-width); margin-inline: auto; padding-inline: 28px; overflow: hidden; }
+  .volt-article__img { width: 100%; height: auto; display: block; aspect-ratio: 16 / 9; object-fit: cover; background: var(--color-surface); border-radius: 0; }
+
+  .volt-article__body { max-width: 680px; margin-inline: auto; padding: clamp(40px, 6vw, 72px) 28px; }
+  .volt-article__body .rte { font-family: var(--font-body); font-weight: 300; font-size: 16px; line-height: 1.8; color: var(--color-ink); }
+
+  .volt-article__tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 48px; padding-top: 32px; border-top: 1px solid var(--color-border); }
+  .volt-article__tag { font-family: var(--font-mono); font-size: 10px; letter-spacing: .1em; text-transform: uppercase; color: var(--color-ink); border: 1px solid var(--color-border); padding: 6px 11px; border-radius: 0; transition: border-color var(--dur-med) var(--ease), color var(--dur-med) var(--ease); }
+  .volt-article__tag:hover { border-color: var(--color-ink); }
+
+  .volt-article__author { display: flex; flex-direction: column; gap: 4px; margin-top: 40px; padding: 24px 28px; }
+  .volt-article__author-label { font-family: var(--font-mono); font-size: 10px; letter-spacing: .14em; text-transform: uppercase; color: var(--color-mid); }
+  .volt-article__author-name { font-family: var(--font-display); font-weight: 700; font-size: 20px; line-height: 1.1; }
+  .volt-article__author-role { font-family: var(--font-mono); font-size: 11px; letter-spacing: .04em; color: var(--color-mid); }
+
+  .volt-article__comments { background: var(--color-surface); border-top: 1px solid var(--color-border); }
+  .volt-article__comments-inner { max-width: 680px; margin-inline: auto; padding: clamp(48px, 6vw, 88px) 28px; }
+  .volt-article__comments-title { font-family: var(--font-display); font-weight: 700; font-size: clamp(24px, 2.6vw, 34px); line-height: 1.05; letter-spacing: -.01em; margin: 0 0 32px; }
+  .volt-comments { display: flex; flex-direction: column; gap: 24px; margin: 0 0 48px; }
+  .volt-comment { border: 1px solid var(--color-border); background: var(--color-bg); padding: 20px 24px; border-radius: 0; }
+  .volt-comment__head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 12px; margin-bottom: 10px; }
+  .volt-comment__author { font-family: var(--font-display); font-weight: 700; font-size: 15px; }
+  .volt-comment__date { font-family: var(--font-mono); font-size: 10px; letter-spacing: .06em; text-transform: uppercase; color: var(--color-mid); }
+  .volt-comment__body { font-family: var(--font-body); font-weight: 300; font-size: 15px; line-height: 1.7; color: var(--color-ink); }
+
+  .volt-form__title { font-family: var(--font-display); font-weight: 700; font-size: 20px; line-height: 1.1; margin: 0 0 20px; }
+  .volt-form__success { font-family: var(--font-mono); font-size: 11px; letter-spacing: .06em; text-transform: uppercase; color: var(--color-ink); border-left: 2px solid var(--color-acid); padding-left: 12px; margin-bottom: 20px; }
+  .volt-form__grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+  .volt-form__field { display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px; }
+  .volt-form__label { font-family: var(--font-mono); font-size: 10px; letter-spacing: .12em; text-transform: uppercase; color: var(--color-mid); }
+  .volt-form__field textarea.input { resize: vertical; min-height: 120px; }
+
+  .volt-related { background: var(--color-surface); border-top: 1px solid var(--color-border); }
+  .volt-related__inner { max-width: var(--page-width); margin-inline: auto; padding: 84px 28px; }
+  .volt-related__head { display: flex; align-items: flex-end; justify-content: space-between; flex-wrap: wrap; gap: 16px; margin-bottom: 40px; }
+  .volt-related__title { font-family: var(--font-display); font-weight: 700; font-size: clamp(30px, 3vw, 46px); line-height: 1.02; letter-spacing: -.01em; margin: 0; }
+  .volt-related__all { font-family: var(--font-mono); font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: var(--color-ink); border-bottom: 2px solid var(--color-acid); padding-bottom: 3px; }
+  .volt-related__grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px; }
+
+  .volt-jcard { display: flex; flex-direction: column; }
+  .volt-jcard__media { display: block; aspect-ratio: 16 / 9; background: var(--color-bg); overflow: hidden; }
+  .volt-jcard__img { width: 100%; height: 100%; object-fit: cover; }
+  .volt-jcard__cat { align-self: flex-start; font-family: var(--font-mono); font-size: 9px; letter-spacing: .12em; text-transform: uppercase; background: var(--color-acid); color: var(--color-ink); padding: 4px 8px; margin: 16px 0 12px; }
+  .volt-jcard__meta { font-family: var(--font-mono); font-size: 10px; letter-spacing: .06em; color: var(--color-mid); }
+  .volt-jcard__title { font-family: var(--font-display); font-weight: 700; font-size: 20px; line-height: 1.12; margin: 10px 0 8px; }
+  .volt-jcard__title a { color: var(--color-ink); }
+  .volt-jcard__title a:hover { color: var(--color-mid); }
+  .volt-jcard__excerpt { font-size: 14px; line-height: 1.6; color: var(--color-mid); margin: 0; }
+
+  @media (max-width: 860px) {
+    .volt-related__grid { grid-template-columns: 1fr; gap: 32px; }
+    .volt-form__grid { grid-template-columns: 1fr; }
+  }
+{% endstylesheet %}
 
 {% schema %}
 {
-  "name": "t:general.article",
-  "settings": []
+  "name": "t:sections.main_article.name",
+  "tag": "section",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "show_related",
+      "label": "t:sections.main_article.show_related",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "author_role",
+      "label": "t:sections.main_article.author_role",
+      "default": "VOLT Editorial"
+    }
+  ]
 }
 {% endschema %}

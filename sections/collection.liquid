@@ -1,47 +1,464 @@
 {% comment %}
-  This section is used in the collection template to render collection page
-  listing all products within a collection.
-
-  https://shopify.dev/docs/storefronts/themes/architecture/templates/collection
+  VOLT — Collection (main)
+  OS 2.0 collection page: optional sticky filter sidebar + product area.
+  Standard Shopify faceted filtering (server-rendered GET form, no AJAX).
+  Reuses snippets/product-card.liquid. Section type stays "collection".
 {% endcomment %}
 
-<h1>{{ collection.title }}</h1>
+{%- liquid
+  assign cols = section.settings.columns_desktop | default: '4' | times: 1
+  assign per_page = section.settings.per_page | default: 12
+  assign show_sidebar = section.settings.show_filter_sidebar
+  assign has_active = false
+  for f in collection.filters
+    if f.active_values.size > 0
+      assign has_active = true
+    endif
+    if f.type == 'price_range' and f.min_value.value != nil or f.max_value.value != nil
+      assign has_active = true
+    endif
+  endfor
+-%}
 
-<div class="collection-products">
-  {% paginate collection.products by 20 %}
-    {% for product in collection.products %}
-      <div class="collection-product">
-        {% if product.featured_image %}
-          {% render 'image',
-            class: 'collection-product__image',
-            image: product.featured_image,
-            url: product.url,
-            width: 400,
-            height: 400,
-            crop: 'center'
-          %}
-        {% endif %}
-        <div class="collection-product__content">
-          <p>{{ product.title | escape | link_to: product.url }}</p>
-          <p>{{ product.price | money }}</p>
-        </div>
+<section class="volt-coll" data-animate>
+  {%- if section.settings.show_collection_banner and collection.image -%}
+    <div class="volt-coll__banner">
+      {{ collection.image | image_url: width: 2400 | image_tag: loading: 'eager', widths: '800, 1200, 1600, 2000, 2400', sizes: '100vw', class: 'volt-coll__bannerimg', alt: collection.title | escape }}
+      <div class="volt-coll__bannerveil" style="opacity: {{ section.settings.banner_opacity | divided_by: 100.0 }}"></div>
+      <div class="volt-coll__bannerinner">
+        <h1 class="volt-coll__title volt-coll__title--over">{{ collection.title }}</h1>
+        {%- if collection.description != blank -%}
+          <div class="volt-coll__desc volt-coll__desc--over">{{ collection.description }}</div>
+        {%- endif -%}
       </div>
-    {% endfor %}
+    </div>
+  {%- else -%}
+    <div class="volt-coll__head">
+      <h1 class="volt-coll__title">{{ collection.title }}</h1>
+      {%- if collection.description != blank -%}
+        <div class="volt-coll__desc">{{ collection.description }}</div>
+      {%- endif -%}
+    </div>
+  {%- endif -%}
 
-    {{ paginate | default_pagination }}
-  {% endpaginate %}
-</div>
+  {%- paginate collection.products by per_page -%}
+    <div class="volt-coll__layout{% unless show_sidebar %} volt-coll__layout--nofilter{% endunless %}">
+
+      {%- if show_sidebar -%}
+        <aside class="volt-coll__sidebar" aria-label="{{ section.settings.filters_title | escape }}">
+          <details class="volt-coll__filters" open>
+            <summary class="volt-coll__filterstrigger">
+              <span>{{ section.settings.filters_title }}</span>
+              <span class="volt-coll__chev" aria-hidden="true">+</span>
+            </summary>
+
+            <form class="volt-coll__form" id="VoltFacetForm">
+              {%- if collection.current_type != blank -%}<input type="hidden" name="q" value="{{ collection.current_type }}">{%- endif -%}
+              {%- if collection.current_vendor != blank -%}<input type="hidden" name="q" value="{{ collection.current_vendor }}">{%- endif -%}
+              {%- comment -%} Preserve sort while filtering {%- endcomment -%}
+              {%- if collection.sort_by != blank -%}<input type="hidden" name="sort_by" value="{{ collection.sort_by }}">{%- endif -%}
+
+              {%- for filter in collection.filters -%}
+                <div class="volt-coll__group">
+                  <div class="volt-coll__grouplabel">{{ filter.label | escape }}</div>
+
+                  {%- case filter.type -%}
+                    {%- when 'price_range' -%}
+                      <div class="volt-coll__price">
+                        <label class="volt-coll__pricefield">
+                          <span class="volt-coll__pricecur">{{ cart.currency.symbol }}</span>
+                          <input
+                            class="volt-coll__priceinput"
+                            type="number"
+                            inputmode="decimal"
+                            name="{{ filter.min_value.param_name }}"
+                            value="{{ filter.min_value.value }}"
+                            placeholder="{{ section.settings.price_min_label | escape }}"
+                            min="0"
+                            max="{{ filter.range_max | money_without_currency | replace: ',', '' }}">
+                        </label>
+                        <span class="volt-coll__pricesep" aria-hidden="true">—</span>
+                        <label class="volt-coll__pricefield">
+                          <span class="volt-coll__pricecur">{{ cart.currency.symbol }}</span>
+                          <input
+                            class="volt-coll__priceinput"
+                            type="number"
+                            inputmode="decimal"
+                            name="{{ filter.max_value.param_name }}"
+                            value="{{ filter.max_value.value }}"
+                            placeholder="{{ section.settings.price_max_label | escape }}"
+                            min="0"
+                            max="{{ filter.range_max | money_without_currency | replace: ',', '' }}">
+                        </label>
+                      </div>
+
+                    {%- else -%}
+                      <ul class="volt-coll__values">
+                        {%- for value in filter.values -%}
+                          <li class="volt-coll__value{% if value.count == 0 and value.active == false %} volt-coll__value--off{% endif %}">
+                            <label class="volt-coll__check">
+                              <input
+                                type="checkbox"
+                                class="volt-coll__checkbox"
+                                name="{{ value.param_name }}"
+                                value="{{ value.value }}"
+                                {% if value.active %}checked{% endif %}
+                                {% if value.count == 0 and value.active == false %}disabled{% endif %}>
+                              <span class="volt-coll__checkbox-box" aria-hidden="true"></span>
+                              <span class="volt-coll__checklabel">{{ value.label | escape }}</span>
+                              <span class="volt-coll__checkcount">{{ value.count }}</span>
+                            </label>
+                          </li>
+                        {%- endfor -%}
+                      </ul>
+                  {%- endcase -%}
+                </div>
+              {%- endfor -%}
+
+              <div class="volt-coll__formactions">
+                <button type="submit" class="btn btn--acid btn--full volt-coll__apply">{{ section.settings.apply_label }}</button>
+                {%- if has_active -%}
+                  <a href="{{ collection.url }}" class="volt-coll__clear">{{ section.settings.clear_label }}</a>
+                {%- endif -%}
+              </div>
+            </form>
+          </details>
+        </aside>
+      {%- endif -%}
+
+      <div class="volt-coll__main">
+        <div class="volt-coll__bar">
+          <span class="volt-coll__count">{{ collection.products_count }} {{ section.settings.results_label }}</span>
+
+          {%- if collection.sort_options.size > 0 -%}
+            {%- assign sort_by = collection.sort_by | default: collection.default_sort_by -%}
+            <form class="volt-coll__sort" id="VoltSortForm">
+              {%- comment -%} Preserve active facets when sorting {%- endcomment -%}
+              {%- for filter in collection.filters -%}
+                {%- for v in filter.active_values -%}
+                  <input type="hidden" name="{{ v.param_name }}" value="{{ v.value }}">
+                {%- endfor -%}
+                {%- if filter.type == 'price_range' -%}
+                  {%- if filter.min_value.value -%}<input type="hidden" name="{{ filter.min_value.param_name }}" value="{{ filter.min_value.value }}">{%- endif -%}
+                  {%- if filter.max_value.value -%}<input type="hidden" name="{{ filter.max_value.param_name }}" value="{{ filter.max_value.value }}">{%- endif -%}
+                {%- endif -%}
+              {%- endfor -%}
+              <label class="volt-coll__sortlabel" for="VoltSortSelect">{{ section.settings.sort_label }}</label>
+              <div class="volt-coll__selectwrap">
+                <select name="sort_by" id="VoltSortSelect" class="volt-coll__select" onchange="this.form.submit()">
+                  {%- for option in collection.sort_options -%}
+                    <option value="{{ option.value }}"{% if option.value == sort_by %} selected{% endif %}>{{ option.name | escape }}</option>
+                  {%- endfor -%}
+                </select>
+                <span class="volt-coll__selectchev" aria-hidden="true">▾</span>
+              </div>
+            </form>
+          {%- endif -%}
+        </div>
+
+        {%- if has_active -%}
+          <div class="volt-coll__active">
+            {%- for filter in collection.filters -%}
+              {%- for value in filter.active_values -%}
+                <a href="{{ value.url_to_remove }}" class="volt-coll__pill">
+                  <span>{{ value.label | escape }}</span>
+                  <span class="volt-coll__pillx" aria-hidden="true">×</span>
+                </a>
+              {%- endfor -%}
+              {%- if filter.type == 'price_range' -%}
+                {%- if filter.min_value.value or filter.max_value.value -%}
+                  <a href="{{ filter.url_to_remove }}" class="volt-coll__pill">
+                    <span>
+                      {%- if filter.min_value.value -%}{{ filter.min_value.value | money }}{%- else -%}{{ filter.range_min | money }}{%- endif -%}
+                      &ndash;
+                      {%- if filter.max_value.value -%}{{ filter.max_value.value | money }}{%- else -%}{{ filter.range_max | money }}{%- endif -%}
+                    </span>
+                    <span class="volt-coll__pillx" aria-hidden="true">×</span>
+                  </a>
+                {%- endif -%}
+              {%- endif -%}
+            {%- endfor -%}
+            <a href="{{ collection.url }}" class="volt-coll__clearall">{{ section.settings.clear_label }}</a>
+          </div>
+        {%- endif -%}
+
+        {%- if collection.products.size > 0 -%}
+          <div class="volt-coll__grid" style="--cols: {{ cols }}" data-stagger-group data-stagger-dir="up">
+            {%- for product in collection.products -%}
+              {% render 'product-card', card_product: product %}
+            {%- endfor -%}
+          </div>
+
+          {%- if paginate.pages > 1 -%}
+            <nav class="volt-coll__pagination" role="navigation" aria-label="{{ section.settings.pagination_label | escape }}">
+              {%- if paginate.previous -%}
+                <a href="{{ paginate.previous.url }}" class="volt-coll__page volt-coll__page--arrow" rel="prev">&larr;</a>
+              {%- else -%}
+                <span class="volt-coll__page volt-coll__page--arrow volt-coll__page--off">&larr;</span>
+              {%- endif -%}
+
+              {%- for part in paginate.parts -%}
+                {%- if part.is_link -%}
+                  <a href="{{ part.url }}" class="volt-coll__page">{{ part.title }}</a>
+                {%- elsif part.title == paginate.current_page -%}
+                  <span class="volt-coll__page volt-coll__page--current" aria-current="page">{{ part.title }}</span>
+                {%- else -%}
+                  <span class="volt-coll__page volt-coll__page--gap">{{ part.title }}</span>
+                {%- endif -%}
+              {%- endfor -%}
+
+              {%- if paginate.next -%}
+                <a href="{{ paginate.next.url }}" class="volt-coll__page volt-coll__page--arrow" rel="next">&rarr;</a>
+              {%- else -%}
+                <span class="volt-coll__page volt-coll__page--arrow volt-coll__page--off">&rarr;</span>
+              {%- endif -%}
+            </nav>
+          {%- endif -%}
+        {%- else -%}
+          <div class="volt-coll__empty">
+            <p class="volt-coll__emptytitle">{{ section.settings.empty_title }}</p>
+            {%- if has_active -%}
+              <a href="{{ collection.url }}" class="btn btn--outline">{{ section.settings.clear_label }}</a>
+            {%- endif -%}
+          </div>
+        {%- endif -%}
+      </div>
+    </div>
+
+    {%- if show_sidebar -%}
+      <a href="#VoltFacetForm" class="volt-coll__mobtrigger">{{ section.settings.mobile_filter_label }}</a>
+    {%- endif -%}
+  {%- endpaginate -%}
+</section>
 
 {% stylesheet %}
-  .collection-products {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(500px, 1fr));
+  .volt-coll { background: var(--color-bg); color: var(--color-ink); }
+
+  /* ---------- banner ---------- */
+  .volt-coll__banner { position: relative; width: 100%; min-height: clamp(220px, 32vw, 420px); display: flex; align-items: flex-end; overflow: hidden; }
+  .volt-coll__bannerimg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+  .volt-coll__bannerveil { position: absolute; inset: 0; background: var(--color-ink); }
+  .volt-coll__bannerinner { position: relative; z-index: 1; max-width: var(--page-width); width: 100%; margin-inline: auto; padding: 0 28px 44px; }
+  .volt-coll__title--over { color: var(--color-bg); }
+  .volt-coll__desc--over { color: var(--color-bg); opacity: .9; }
+
+  /* ---------- head (no banner) ---------- */
+  .volt-coll__head { max-width: var(--page-width); margin-inline: auto; padding: clamp(40px, 5vw, 72px) 28px clamp(20px, 2vw, 32px); }
+  .volt-coll__title { font-family: var(--font-display); font-weight: 800; font-size: clamp(36px, 5vw, 64px); line-height: 0.95; letter-spacing: -0.02em; margin: 0; }
+  .volt-coll__desc { font-family: var(--font-body); font-size: 15px; line-height: 1.6; color: var(--color-mid); margin-top: 14px; max-width: 60ch; }
+
+  /* ---------- layout ---------- */
+  .volt-coll__layout { max-width: var(--page-width); margin-inline: auto; padding: clamp(20px, 3vw, 36px) 28px clamp(64px, 8vw, 100px); display: grid; grid-template-columns: 240px 1fr; gap: clamp(24px, 3vw, 48px); align-items: start; }
+  .volt-coll__layout--nofilter { grid-template-columns: 1fr; }
+
+  /* ---------- sidebar ---------- */
+  .volt-coll__sidebar { position: sticky; top: var(--header-height); }
+  .volt-coll__filters { border-top: 1px solid var(--color-ink); }
+  .volt-coll__filterstrigger { display: flex; align-items: center; justify-content: space-between; font-family: var(--font-mono); font-size: 11px; letter-spacing: .16em; text-transform: uppercase; color: var(--color-ink); padding: 16px 0; cursor: pointer; list-style: none; }
+  .volt-coll__filterstrigger::-webkit-details-marker { display: none; }
+  .volt-coll__chev { font-family: var(--font-display); font-size: 18px; line-height: 1; transition: transform var(--dur-med) var(--ease); }
+  .volt-coll__filters[open] .volt-coll__chev { transform: rotate(45deg); }
+
+  .volt-coll__group { padding: 18px 0; border-top: 1px solid var(--color-border); }
+  .volt-coll__group:first-of-type { border-top: 0; }
+  .volt-coll__grouplabel { font-family: var(--font-mono); font-size: 10px; letter-spacing: .14em; text-transform: uppercase; color: var(--color-mid); margin-bottom: 12px; }
+
+  .volt-coll__values { display: flex; flex-direction: column; gap: 9px; }
+  .volt-coll__check { display: flex; align-items: center; gap: 10px; cursor: pointer; font-size: 13px; line-height: 1.2; }
+  .volt-coll__checkbox { position: absolute; opacity: 0; width: 1px; height: 1px; }
+  .volt-coll__checkbox-box { flex: 0 0 auto; width: 16px; height: 16px; border: 1px solid var(--color-border); background: var(--color-bg); display: inline-flex; align-items: center; justify-content: center; transition: border-color var(--dur-fast) var(--ease), background var(--dur-fast) var(--ease); }
+  .volt-coll__checkbox-box::after { content: ""; width: 8px; height: 8px; background: var(--color-acid); transform: scale(0); transition: transform var(--dur-fast) var(--ease); }
+  .volt-coll__checkbox:checked + .volt-coll__checkbox-box { border-color: var(--color-ink); }
+  .volt-coll__checkbox:checked + .volt-coll__checkbox-box::after { transform: scale(1); }
+  .volt-coll__checkbox:focus-visible + .volt-coll__checkbox-box { outline: 2px solid var(--color-acid); outline-offset: 2px; }
+  .volt-coll__checklabel { color: var(--color-ink); }
+  .volt-coll__checkcount { margin-left: auto; font-family: var(--font-mono); font-size: 10px; color: var(--color-mid); }
+  .volt-coll__value--off { opacity: .4; }
+  .volt-coll__value--off .volt-coll__check { cursor: not-allowed; }
+
+  .volt-coll__price { display: flex; align-items: center; gap: 8px; }
+  .volt-coll__pricefield { display: flex; align-items: center; gap: 4px; border: 1px solid var(--color-border); background: var(--color-bg); padding: 8px 10px; flex: 1; min-width: 0; }
+  .volt-coll__pricefield:focus-within { border-color: var(--color-ink); }
+  .volt-coll__pricecur { font-family: var(--font-mono); font-size: 11px; color: var(--color-mid); }
+  .volt-coll__priceinput { width: 100%; border: 0; background: none; font-family: var(--font-mono); font-size: 13px; padding: 0; min-width: 0; }
+  .volt-coll__priceinput:focus { outline: none; }
+  .volt-coll__pricesep { color: var(--color-mid); }
+
+  .volt-coll__formactions { display: flex; flex-direction: column; gap: 12px; padding-top: 20px; border-top: 1px solid var(--color-border); margin-top: 4px; }
+  .volt-coll__clear, .volt-coll__clearall { font-family: var(--font-mono); font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--color-mid); text-align: center; }
+  .volt-coll__clear:hover, .volt-coll__clearall:hover { color: var(--color-ink); }
+
+  /* ---------- main / bar ---------- */
+  .volt-coll__bar { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px; padding-bottom: 18px; margin-bottom: 22px; border-bottom: 1px solid var(--color-border); }
+  .volt-coll__count { font-family: var(--font-mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--color-mid); }
+  .volt-coll__sort { display: flex; align-items: center; gap: 10px; }
+  .volt-coll__sortlabel { font-family: var(--font-mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--color-mid); }
+  .volt-coll__selectwrap { position: relative; }
+  .volt-coll__select { appearance: none; -webkit-appearance: none; background: var(--color-bg); color: var(--color-ink); border: 1px solid var(--color-border); border-radius: 0; font-family: var(--font-mono); font-size: 12px; letter-spacing: .04em; padding: 10px 34px 10px 14px; cursor: pointer; }
+  .volt-coll__select:focus { outline: none; border-color: var(--color-ink); }
+  .volt-coll__selectchev { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); pointer-events: none; font-size: 11px; color: var(--color-mid); }
+
+  /* ---------- active pills ---------- */
+  .volt-coll__active { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-bottom: 24px; }
+  .volt-coll__pill { display: inline-flex; align-items: center; gap: 8px; font-family: var(--font-mono); font-size: 10px; letter-spacing: .08em; text-transform: uppercase; padding: 7px 12px; border: 1px solid var(--color-ink); background: var(--color-bg); color: var(--color-ink); border-radius: 100px; transition: background var(--dur-fast) var(--ease), color var(--dur-fast) var(--ease); }
+  .volt-coll__pill:hover { background: var(--color-ink); color: var(--color-bg); }
+  .volt-coll__pillx { font-size: 13px; line-height: 1; }
+  .volt-coll__clearall { padding: 7px 4px; }
+
+  /* ---------- grid ---------- */
+  .volt-coll__grid { display: grid; grid-template-columns: repeat(var(--cols), 1fr); gap: 1px; background: var(--color-border); border: 1px solid var(--color-border); }
+  @media (max-width: 980px) { .volt-coll__grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 520px) { .volt-coll__grid { grid-template-columns: 1fr; } }
+
+  /* ---------- empty ---------- */
+  .volt-coll__empty { padding: clamp(48px, 8vw, 96px) 0; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 20px; }
+  .volt-coll__emptytitle { font-family: var(--font-display); font-weight: 700; font-size: clamp(20px, 2.4vw, 28px); }
+
+  /* ---------- pagination ---------- */
+  .volt-coll__pagination { display: flex; align-items: center; justify-content: center; gap: 4px; flex-wrap: wrap; margin-top: clamp(40px, 5vw, 64px); }
+  .volt-coll__page { min-width: 42px; height: 42px; display: inline-flex; align-items: center; justify-content: center; font-family: var(--font-mono); font-size: 12px; letter-spacing: .04em; color: var(--color-ink); border: 1px solid var(--color-border); padding: 0 6px; transition: background var(--dur-fast) var(--ease), color var(--dur-fast) var(--ease), border-color var(--dur-fast) var(--ease); }
+  .volt-coll__page:hover { border-color: var(--color-ink); }
+  .volt-coll__page--current { background: var(--color-ink); color: var(--color-bg); border-color: var(--color-ink); }
+  .volt-coll__page--gap { border-color: transparent; color: var(--color-mid); }
+  .volt-coll__page--off { color: var(--color-mid); border-color: var(--color-border); opacity: .4; cursor: default; }
+
+  /* ---------- mobile filter trigger ---------- */
+  .volt-coll__mobtrigger { display: none; }
+
+  @media (max-width: 768px) {
+    .volt-coll__layout { grid-template-columns: 1fr; }
+    .volt-coll__sidebar { position: static; top: auto; margin-bottom: 8px; }
+    .volt-coll__filters { border-top: 1px solid var(--color-ink); border-bottom: 1px solid var(--color-border); }
+    .volt-coll__mobtrigger { display: flex; align-items: center; justify-content: center; position: sticky; bottom: 16px; z-index: var(--z-drawer); margin: 0 auto; width: max-content; font-family: var(--font-mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; background: var(--color-ink); color: var(--color-bg); padding: 14px 26px; box-shadow: 0 12px 30px rgba(13,12,11,0.22); }
+    .volt-coll__mobtrigger:hover { background: var(--color-acid); color: var(--on-acid); }
+  }
+
+  @media (min-width: 769px) {
+    /* keep sidebar facets always visible on desktop even though it is a <details> */
+    .volt-coll__filters { border-bottom: 0; }
   }
 {% endstylesheet %}
 
 {% schema %}
 {
-  "name": "t:general.collection",
-  "settings": []
+  "name": "t:sections.main_collection.name",
+  "tag": "section",
+  "class": "shopify-section--main-collection",
+  "settings": [
+    {
+      "type": "header",
+      "content": "t:sections.main_collection.layout_header"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_filter_sidebar",
+      "label": "t:sections.main_collection.show_filter_sidebar",
+      "info": "t:sections.main_collection.show_filter_sidebar_info",
+      "default": true
+    },
+    {
+      "type": "select",
+      "id": "columns_desktop",
+      "label": "t:sections.main_collection.columns_desktop",
+      "default": "4",
+      "options": [
+        { "value": "3", "label": "t:sections.main_collection.columns_3" },
+        { "value": "4", "label": "t:sections.main_collection.columns_4" }
+      ]
+    },
+    {
+      "type": "range",
+      "id": "per_page",
+      "label": "t:sections.main_collection.per_page",
+      "min": 8,
+      "max": 24,
+      "step": 4,
+      "default": 12
+    },
+    {
+      "type": "header",
+      "content": "t:sections.main_collection.banner_header"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_collection_banner",
+      "label": "t:sections.main_collection.show_collection_banner",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "banner_opacity",
+      "label": "t:sections.main_collection.banner_opacity",
+      "min": 0,
+      "max": 80,
+      "step": 10,
+      "unit": "%",
+      "default": 40
+    },
+    {
+      "type": "header",
+      "content": "t:sections.main_collection.labels_header"
+    },
+    {
+      "type": "text",
+      "id": "filters_title",
+      "label": "t:sections.main_collection.filters_title",
+      "default": "Filter"
+    },
+    {
+      "type": "text",
+      "id": "sort_label",
+      "label": "t:sections.main_collection.sort_label",
+      "default": "Sort"
+    },
+    {
+      "type": "text",
+      "id": "results_label",
+      "label": "t:sections.main_collection.results_label",
+      "default": "results"
+    },
+    {
+      "type": "text",
+      "id": "apply_label",
+      "label": "t:sections.main_collection.apply_label",
+      "default": "Apply filters"
+    },
+    {
+      "type": "text",
+      "id": "clear_label",
+      "label": "t:sections.main_collection.clear_label",
+      "default": "Clear all"
+    },
+    {
+      "type": "text",
+      "id": "mobile_filter_label",
+      "label": "t:sections.main_collection.mobile_filter_label",
+      "default": "Filter & sort"
+    },
+    {
+      "type": "text",
+      "id": "empty_title",
+      "label": "t:sections.main_collection.empty_title",
+      "default": "No products match these filters."
+    },
+    {
+      "type": "text",
+      "id": "price_min_label",
+      "label": "t:sections.main_collection.price_min_label",
+      "default": "Min"
+    },
+    {
+      "type": "text",
+      "id": "price_max_label",
+      "label": "t:sections.main_collection.price_max_label",
+      "default": "Max"
+    },
+    {
+      "type": "text",
+      "id": "pagination_label",
+      "label": "t:sections.main_collection.pagination_label",
+      "default": "Pagination"
+    }
+  ]
 }
 {% endschema %}

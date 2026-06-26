@@ -1,0 +1,17 @@
+{%- comment -%}
+  Records the current product handle in localStorage so the Recently viewed
+  section can render it later. Render once inside the product sections.
+{%- endcomment -%}
+{%- if product != blank -%}
+  <script>
+    (function () {
+      try {
+        var KEY = 'volt-recently-viewed';
+        var handle = {{ product.handle | json }};
+        var views = JSON.parse(localStorage.getItem(KEY) || '[]');
+        views = [handle].concat(views.filter(function (h) { return h !== handle; })).slice(0, 12);
+        localStorage.setItem(KEY, JSON.stringify(views));
+      } catch (e) {}
+    })();
+  </script>
+{%- endif -%}

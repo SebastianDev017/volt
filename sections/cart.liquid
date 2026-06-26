@@ -1,37 +1,277 @@
 {% comment %}
-  This section is used in the cart template to render /cart page with an
-  overview of the items in customer's cart.
-
-  https://shopify.dev/docs/storefronts/themes/architecture/templates/cart
+  VOLT — main cart (/cart). Two-column: items (left) + summary (right).
+  Template passes empty settings, so every setting defines a default.
 {% endcomment %}
 
-<h1>{{ 'cart.title' | t }}</h1>
+{%- liquid
+  assign threshold_cents = section.settings.free_shipping_threshold | times: 100
+  assign ship_pct = 0
+  assign ship_remaining = 0
+  if threshold_cents > 0
+    assign ship_pct = cart.total_price | times: 100 | divided_by: threshold_cents
+    if ship_pct > 100
+      assign ship_pct = 100
+    endif
+    assign ship_remaining = threshold_cents | minus: cart.total_price
+    if ship_remaining < 0
+      assign ship_remaining = 0
+    endif
+  endif
+-%}
 
-<form action="{{ routes.cart_url }}" method="post">
-  <table>
-    {% for item in cart.items %}
-      <tr>
-        <td>
-          {% render 'image', image: item.image, url: item.url %}
-        </td>
-        <td>
-          <p>{{ item.product.title }}</p>
-          {{ 'cart.remove' | t | link_to: item.url_to_remove }}
-        </td>
-        <td>
-          <input type="text" name="updates[]" value="{{ item.quantity }}">
-          <input type="submit" value="{{ 'cart.update' | t }}">
-        </td>
-      </tr>
-    {% endfor %}
-  </table>
+<section class="volt-cart" data-animate>
+  {%- if cart.item_count == 0 -%}
+    <div class="volt-cart__empty">
+      <h1 class="volt-cart__emptytitle">Your bag is empty</h1>
+      <p class="volt-cart__emptysub">Nothing here yet — load up on fuel and gear.</p>
+      <a class="btn btn--acid" href="{{ routes.all_products_collection_url | default: routes.root_url }}">Start shopping</a>
+    </div>
+  {%- else -%}
+    <div class="volt-cart__grid">
+      {%- comment -%} ITEMS {%- endcomment -%}
+      <div class="volt-cart__items">
+        <div class="volt-cart__head">
+          <h1 class="volt-cart__title">Your bag</h1>
+          <span class="volt-cart__count">{{ cart.item_count }}</span>
+        </div>
 
-  <input type="submit" name="checkout" value="{{ 'cart.checkout' | t }}">
-</form>
+        {%- form 'cart', cart, id: 'cart-form', class: 'volt-cart__form' -%}
+          <ul class="volt-cart__list" data-stagger-group>
+            {%- for item in cart.items -%}
+              <li class="volt-cart__line" data-stagger-item>
+                <a class="volt-cart__media" href="{{ item.url }}" tabindex="-1" aria-hidden="true">
+                  {%- if item.image -%}
+                    {{ item.image | image_url: width: 192 | image_tag: loading: 'lazy', width: 96, height: 96, widths: '96, 192', class: 'volt-cart__img', alt: item.title | escape }}
+                  {%- else -%}
+                    {{ 'product-1' | placeholder_svg_tag: 'volt-cart__img' }}
+                  {%- endif -%}
+                </a>
+
+                <div class="volt-cart__info">
+                  <a class="volt-cart__name" href="{{ item.url }}">{{ item.product.title }}</a>
+                  {%- unless item.product.has_only_default_variant -%}
+                    <div class="volt-cart__variant">{{ item.variant.title }}</div>
+                  {%- endunless -%}
+                  {%- if item.properties != blank -%}
+                    {%- for prop in item.properties -%}
+                      {%- unless prop.last == blank or prop.first contains '_' -%}
+                        <div class="volt-cart__variant">{{ prop.first }}: {{ prop.last }}</div>
+                      {%- endunless -%}
+                    {%- endfor -%}
+                  {%- endif -%}
+
+                  <div class="volt-cart__qty">
+                    <quantity-input class="volt-cart__stepper">
+                      <button type="button" name="minus" data-qty-dec aria-label="Decrease quantity">&minus;</button>
+                      <input
+                        type="number"
+                        name="updates[]"
+                        value="{{ item.quantity }}"
+                        min="0"
+                        inputmode="numeric"
+                        data-qty-input
+                        aria-label="Quantity for {{ item.product.title | escape }}"
+                        form="cart-form">
+                      <button type="button" name="plus" data-qty-inc aria-label="Increase quantity">+</button>
+                    </quantity-input>
+                  </div>
+                </div>
+
+                <div class="volt-cart__pricecol">
+                  <span class="volt-cart__lineprice">{{ item.final_line_price | money }}</span>
+                  {%- if item.quantity > 1 -%}
+                    <span class="volt-cart__unit">{{ item.final_price | money }} each</span>
+                  {%- endif -%}
+                  <a class="volt-cart__remove" href="{{ item.url_to_remove }}" aria-label="Remove {{ item.product.title | escape }}">&times;</a>
+                </div>
+              </li>
+            {%- endfor -%}
+          </ul>
+
+          <details class="volt-cart__note">
+            <summary>Add order note</summary>
+            <textarea
+              class="volt-cart__noteinput"
+              name="note"
+              form="cart-form"
+              rows="3"
+              placeholder="Special instructions for your order">{{ cart.note }}</textarea>
+          </details>
+
+          <noscript>
+            <button type="submit" name="update" class="btn btn--ghost">Update bag</button>
+          </noscript>
+        {%- endform -%}
+
+        <a class="btn btn--ghost volt-cart__continue volt-cart__continue--mobile" href="{{ routes.all_products_collection_url | default: routes.root_url }}">Continue shopping</a>
+      </div>
+
+      {%- comment -%} SUMMARY {%- endcomment -%}
+      <aside class="volt-cart__summary">
+        <div class="volt-cart__summaryinner">
+          <div class="volt-cart__summarylabel">Order summary</div>
+
+          <div class="volt-cart__subtotalrow">
+            <span>Subtotal</span>
+            <span class="volt-cart__subtotal">{{ cart.total_price | money }}</span>
+          </div>
+          <p class="volt-cart__taxnote">Taxes and shipping calculated at checkout.</p>
+
+          {%- if section.settings.show_free_shipping_bar and threshold_cents > 0 -%}
+            <div class="volt-cart__ship">
+              {%- if cart.total_price >= threshold_cents -%}
+                <p class="volt-cart__shiptext volt-cart__shiptext--won">You've unlocked free shipping</p>
+              {%- else -%}
+                <p class="volt-cart__shiptext">Add {{ ship_remaining | money }} for free shipping</p>
+              {%- endif -%}
+              <div class="volt-cart__shiptrack">
+                <span class="volt-cart__shipfill" style="width: {{ ship_pct }}%;"></span>
+              </div>
+            </div>
+          {%- endif -%}
+
+          <button type="submit" name="checkout" form="cart-form" class="btn btn--acid btn--full volt-cart__checkout">
+            Checkout &middot; {{ cart.total_price | money }}
+          </button>
+
+          <a class="btn btn--ghost btn--full volt-cart__continue" href="{{ routes.all_products_collection_url | default: routes.root_url }}">Continue shopping</a>
+
+          <ul class="volt-cart__trust">
+            <li>Secure checkout</li>
+            <li>Free shipping ${{ section.settings.free_shipping_threshold }}+</li>
+            <li>30-day returns</li>
+            <li>Tracked delivery</li>
+          </ul>
+        </div>
+      </aside>
+    </div>
+  {%- endif -%}
+</section>
+
+{% stylesheet %}
+  .volt-cart { max-width: var(--page-width); margin-inline: auto; padding: 28px 28px 80px; }
+
+  .volt-cart__empty { text-align: center; padding: clamp(64px, 14vw, 160px) 0; display: flex; flex-direction: column; align-items: center; gap: 16px; }
+  .volt-cart__emptytitle { font-family: var(--font-display); font-weight: 800; font-size: clamp(32px, 4vw, 56px); line-height: 0.98; letter-spacing: -0.01em; }
+  .volt-cart__emptysub { font-family: var(--font-body); color: var(--color-mid); max-width: 42ch; }
+  .volt-cart__empty .btn { margin-top: 8px; }
+
+  .volt-cart__grid { display: grid; grid-template-columns: 65% 35%; gap: clamp(28px, 4vw, 56px); align-items: start; }
+
+  .volt-cart__head { display: flex; align-items: baseline; gap: 14px; padding-bottom: 22px; border-bottom: 1px solid var(--color-border); }
+  .volt-cart__title { font-family: var(--font-display); font-weight: 800; font-size: clamp(28px, 3vw, 42px); line-height: 1; letter-spacing: -0.01em; }
+  .volt-cart__count { font-family: var(--font-mono); font-size: 13px; color: var(--color-mid); }
+
+  .volt-cart__form { margin: 0; }
+  .volt-cart__list { margin: 0; }
+  .volt-cart__line { display: grid; grid-template-columns: 96px 1fr auto; gap: 20px; align-items: start; padding: 24px 0; border-bottom: 1px solid var(--color-border); }
+
+  .volt-cart__media { display: block; width: 96px; height: 96px; background: var(--color-surface); border: 1px solid var(--color-border); overflow: hidden; }
+  .volt-cart__img { width: 96px; height: 96px; object-fit: cover; }
+
+  .volt-cart__info { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+  .volt-cart__name { font-family: var(--font-display); font-weight: 700; font-size: 16px; line-height: 1.2; }
+  .volt-cart__name:hover { color: var(--color-mid); }
+  .volt-cart__variant { font-family: var(--font-body); font-size: 13px; color: var(--color-mid); }
+
+  .volt-cart__qty { margin-top: 8px; }
+  .volt-cart__stepper { display: inline-flex; align-items: center; border: 1px solid var(--color-ink); }
+  .volt-cart__stepper button { width: 38px; height: 40px; display: grid; place-items: center; font-size: 16px; color: var(--color-ink); }
+  .volt-cart__stepper button:hover { background: var(--color-ink-06); }
+  .volt-cart__stepper input { width: 40px; height: 40px; text-align: center; border: 0; background: none; font-family: var(--font-mono); font-size: 14px; color: var(--color-ink); -moz-appearance: textfield; }
+  .volt-cart__stepper input::-webkit-outer-spin-button, .volt-cart__stepper input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+
+  .volt-cart__pricecol { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; text-align: right; }
+  .volt-cart__lineprice { font-family: var(--font-display); font-weight: 500; font-size: 16px; }
+  .volt-cart__unit { font-family: var(--font-mono); font-size: 11px; color: var(--color-mid); }
+  .volt-cart__remove { display: inline-block; margin-top: 6px; font-size: 20px; line-height: 1; color: var(--color-mid); transition: color var(--dur-fast) var(--ease); }
+  .volt-cart__remove:hover { color: var(--color-danger); }
+
+  .volt-cart__note { margin-top: 24px; }
+  .volt-cart__note summary { cursor: pointer; font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--color-ink); list-style: none; padding: 4px 0; }
+  .volt-cart__note summary::-webkit-details-marker { display: none; }
+  .volt-cart__note summary:hover { color: var(--color-mid); }
+  .volt-cart__noteinput { width: 100%; margin-top: 10px; background: var(--color-bg); color: var(--color-ink); border: 1px solid var(--color-border); border-radius: 0; padding: 14px 16px; font-family: var(--font-body); font-size: 14px; resize: vertical; }
+  .volt-cart__noteinput:focus { outline: none; border-color: var(--color-ink); }
+
+  .volt-cart__continue--mobile { display: none; margin-top: 24px; }
+
+  .volt-cart__summary { position: sticky; top: var(--header-height); }
+  .volt-cart__summaryinner { border: 1px solid var(--color-border); background: var(--color-surface); padding: clamp(24px, 3vw, 32px); }
+  .volt-cart__summarylabel { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--color-mid); padding-bottom: 20px; border-bottom: 1px solid var(--color-border); }
+
+  .volt-cart__subtotalrow { display: flex; align-items: baseline; justify-content: space-between; margin-top: 20px; font-family: var(--font-display); font-weight: 700; }
+  .volt-cart__subtotalrow > span:first-child { font-size: 15px; }
+  .volt-cart__subtotal { font-size: 24px; font-weight: 800; }
+  .volt-cart__taxnote { font-family: var(--font-body); font-size: 13px; color: var(--color-mid); margin-top: 6px; }
+
+  .volt-cart__ship { margin-top: 22px; }
+  .volt-cart__shiptext { font-family: var(--font-body); font-size: 13px; color: var(--color-ink); margin-bottom: 10px; }
+  .volt-cart__shiptext--won { color: var(--color-acid); font-weight: 700; }
+  .volt-cart__shiptrack { height: 6px; background: var(--color-bg); border: 1px solid var(--color-border); overflow: hidden; }
+  .volt-cart__shipfill { display: block; height: 100%; background: var(--color-acid); transition: width var(--dur-slow) var(--ease); }
+
+  .volt-cart__checkout { margin-top: 24px; }
+  .volt-cart__continue { margin-top: 12px; }
+
+  .volt-cart__trust { display: flex; flex-wrap: wrap; gap: 8px 16px; margin-top: 22px; padding-top: 20px; border-top: 1px solid var(--color-border); }
+  .volt-cart__trust li { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--color-mid); }
+
+  @media (max-width: 860px) {
+    .volt-cart__grid { grid-template-columns: 1fr; gap: 36px; }
+    .volt-cart__summary { position: static; }
+    .volt-cart__continue { display: none; }
+    .volt-cart__continue--mobile { display: inline-flex; }
+  }
+{% endstylesheet %}
+
+<script>
+  if (!customElements.get('quantity-input')) {
+    customElements.define('quantity-input', class extends HTMLElement {
+      connectedCallback() {
+        var input = this.querySelector('[data-qty-input]');
+        var dec = this.querySelector('[data-qty-dec]');
+        var inc = this.querySelector('[data-qty-inc]');
+        if (!input) return;
+        var form = input.form;
+        var commit = function () { if (form && form.requestSubmit) { form.requestSubmit(); } else if (form) { form.submit(); } };
+        if (dec) dec.addEventListener('click', function () {
+          var n = parseInt(input.value, 10) || 0;
+          input.value = Math.max(0, n - 1);
+          commit();
+        });
+        if (inc) inc.addEventListener('click', function () {
+          var n = parseInt(input.value, 10) || 0;
+          input.value = n + 1;
+          commit();
+        });
+        input.addEventListener('change', commit);
+      }
+    });
+  }
+</script>
 
 {% schema %}
 {
-  "name": "t:general.cart",
-  "settings": []
+  "name": "t:sections.main_cart.name",
+  "tag": "section",
+  "settings": [
+    {
+      "type": "range",
+      "id": "free_shipping_threshold",
+      "min": 0,
+      "max": 200,
+      "step": 5,
+      "unit": "$",
+      "label": "t:sections.main_cart.free_shipping_threshold",
+      "default": 75
+    },
+    {
+      "type": "checkbox",
+      "id": "show_free_shipping_bar",
+      "label": "t:sections.main_cart.show_free_shipping_bar",
+      "default": true
+    }
+  ]
 }
 {% endschema %}

@@ -1,23 +1,112 @@
 {% comment %}
-  This section is used in the 404 template to render page shown when customers
-  enter an invalid store URL.
+  VOLT — 404 (not found) section.
+  Rendered by templates/404.json (type "404"). The template passes empty
+  settings, so every setting below MUST define a default.
 
   https://shopify.dev/docs/storefronts/themes/architecture/templates/404
 {% endcomment %}
 
-<h1>{{ '404.title' | t }}</h1>
+<section class="volt-404" data-animate>
+  <div class="volt-404__inner">
+    <h1 class="volt-404__code"
+        data-split="chars"
+        data-anim-trigger="load"
+        aria-label="{{ section.settings.heading_404 }}">{{ section.settings.heading_404 }}</h1>
 
-<p>
-  {{ '404.not_found' | t }}
-</p>
+    <svg class="volt-404__underline" viewBox="0 0 320 24" fill="none" aria-hidden="true" focusable="false">
+      <path d="M6 16 C 70 4, 130 4, 160 12 C 196 21, 256 21, 314 8"
+            stroke="var(--color-acid)" stroke-width="3" stroke-linecap="round" data-draw></path>
+    </svg>
 
-<a href="{{ routes.all_products_collection_url }}">
-  {{ '404.back_to_shopping' | t }}
-</a>
+    {%- if section.settings.eyebrow != blank -%}
+      <p class="volt-404__eyebrow">{{ section.settings.eyebrow }}</p>
+    {%- endif -%}
+
+    {%- if section.settings.body != blank -%}
+      <p class="volt-404__body">{{ section.settings.body }}</p>
+    {%- endif -%}
+
+    <div class="volt-404__actions">
+      <a href="{{ routes.root_url }}" class="btn btn--acid" data-magnetic>{{ section.settings.cta1_label }}</a>
+      {%- if section.settings.cta2_label != blank -%}
+        <a href="{{ section.settings.cta2_url }}" class="btn btn--outline" data-magnetic>{{ section.settings.cta2_label }}</a>
+      {%- endif -%}
+    </div>
+  </div>
+</section>
+
+{% stylesheet %}
+  .volt-404 { background: var(--color-bg); color: var(--color-ink); }
+  .volt-404__inner {
+    min-height: 80svh;
+    max-width: var(--page-width);
+    margin-inline: auto;
+    padding: clamp(64px, 10vw, 120px) var(--container-padding);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    gap: 18px;
+  }
+  .volt-404__code {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: clamp(80px, 14vw, 160px);
+    line-height: 0.9;
+    letter-spacing: -0.03em;
+    color: var(--color-acid);
+    margin: 0;
+  }
+  .volt-404__underline {
+    width: clamp(180px, 28vw, 320px);
+    height: auto;
+    margin-top: -6px;
+    overflow: visible;
+  }
+  .volt-404__eyebrow {
+    font-family: var(--font-body);
+    font-weight: 500;
+    font-size: 11px;
+    line-height: 1.2;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--color-mid);
+    margin: 8px 0 0;
+  }
+  .volt-404__body {
+    font-family: var(--font-body);
+    font-weight: 300;
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--color-mid);
+    max-width: 360px;
+    margin: 0 auto;
+  }
+  .volt-404__actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 14px;
+    margin-top: 14px;
+  }
+  @media (max-width: 480px) {
+    .volt-404__actions { flex-direction: column; align-items: stretch; width: 100%; max-width: 320px; }
+  }
+{% endstylesheet %}
 
 {% schema %}
 {
-  "name": "t:general.404",
-  "settings": []
+  "name": "t:sections.not_found_page.name",
+  "tag": "section",
+  "settings": [
+    { "type": "text", "id": "heading_404", "label": "t:sections.not_found_page.heading_404", "default": "404" },
+    { "type": "text", "id": "eyebrow", "label": "t:sections.not_found_page.eyebrow", "default": "Page not found" },
+    { "type": "textarea", "id": "body", "label": "t:sections.not_found_page.body", "default": "The page you're looking for doesn't exist or has been moved." },
+    { "type": "header", "content": "t:sections.not_found_page.actions_header" },
+    { "type": "text", "id": "cta1_label", "label": "t:sections.not_found_page.cta1_label", "info": "t:sections.not_found_page.cta1_info", "default": "Go to homepage" },
+    { "type": "text", "id": "cta2_label", "label": "t:sections.not_found_page.cta2_label", "default": "Start your protocol" },
+    { "type": "url", "id": "cta2_url", "label": "t:sections.not_found_page.cta2_url" }
+  ]
 }
 {% endschema %}

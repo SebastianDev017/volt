@@ -8,6 +8,13 @@
     <script>document.documentElement.classList.add('js');</script>
 
     {%- if settings.use_gsap != false -%}
+      {%- # theme-check-disable RemoteAsset -%}
+      <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
+      <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+      {%- # theme-check-enable RemoteAsset -%}
+    {%- endif -%}
+
+    {%- if settings.use_gsap != false -%}
       {%- comment -%} GSAP motion config + anti-FOUC class (added before paint) {%- endcomment -%}
       <script>
         (function () {
@@ -83,10 +90,13 @@
     {%- if settings.use_scroll_smoother -%}</div></div>{%- endif -%}
 
     {% render 'quick-view' %}
+    {% render 'recently-viewed-tracker' %}
 
     {%- if settings.use_gsap != false -%}
       {%- comment -%} GSAP 3.13 — standard (free) license incl. all plugins. Loaded from CDN by design choice (off the Theme-Store remote-asset path). {%- endcomment -%}
+      {%- comment -%} CDN GSAP + engine deferred & gated by use_gsap; both checks suppressed by the deliberate CDN choice. {%- endcomment -%}
       {%- # theme-check-disable RemoteAsset -%}
+      {%- # theme-check-disable AssetSizeJavaScript -%}
       <script src="https://cdn.jsdelivr.net/npm/gsap@3.13/dist/gsap.min.js" defer></script>
       <script src="https://cdn.jsdelivr.net/npm/gsap@3.13/dist/ScrollTrigger.min.js" defer></script>
       <script src="https://cdn.jsdelivr.net/npm/gsap@3.13/dist/SplitText.min.js" defer></script>
@@ -96,11 +106,9 @@
       {%- if settings.use_scroll_smoother -%}
         <script src="https://cdn.jsdelivr.net/npm/gsap@3.13/dist/ScrollSmoother.min.js" defer></script>
       {%- endif -%}
-      {%- # theme-check-enable RemoteAsset -%}
-      {%- # theme-check-disable AssetSizeJavaScript -%}
-      {%- comment -%} Animation engine; deferred + gated by use_gsap, intentionally above the lean-asset budget. {%- endcomment -%}
       <script src="{{ 'volt-animations.js' | asset_url }}" defer></script>
       {%- # theme-check-enable AssetSizeJavaScript -%}
+      {%- # theme-check-enable RemoteAsset -%}
     {%- endif -%}
   </body>
 </html>

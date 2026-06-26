@@ -27,7 +27,8 @@
     "related": {
       "type": "product-grid",
       "settings": { "eyebrow": "// Add-ons", "heading": "Round out the protocol.", "columns": 4 }
-    }
+    },
+    "recently_viewed": { "type": "recently-viewed", "settings": {} }
   },
-  "order": ["bundle_main", "bundle_statement", "related"]
+  "order": ["bundle_main", "bundle_statement", "related", "recently_viewed"]
 }
