@@ -116,6 +116,29 @@
   }
   customElements.define('scroll-top-button', ScrollTopButton);
 
+  /* ---------- CountdownTimer (global: announcement bar, membership tiers) ---------- */
+  class VoltCountdown extends HTMLElement {
+    connectedCallback() {
+      this.display = this.querySelector('[data-cd-display]');
+      this.end = new Date(this.getAttribute('data-end')).getTime();
+      if (!this.display || isNaN(this.end)) return;
+      this.tick = this.tick.bind(this);
+      this.tick();
+      this.timer = setInterval(this.tick, 1000);
+    }
+    disconnectedCallback() { clearInterval(this.timer); }
+    p(n) { return String(n).padStart(2, '0'); }
+    tick() {
+      let s = Math.floor((this.end - Date.now()) / 1000);
+      if (s <= 0) { this.display.textContent = '00:00:00'; clearInterval(this.timer); return; }
+      const d = Math.floor(s / 86400); s -= d * 86400;
+      const h = Math.floor(s / 3600); s -= h * 3600;
+      const m = Math.floor(s / 60); s -= m * 60;
+      this.display.textContent = (d > 0 ? d + 'd ' : '') + this.p(h) + ':' + this.p(m) + ':' + this.p(s);
+    }
+  }
+  if (!customElements.get('countdown-timer')) customElements.define('countdown-timer', VoltCountdown);
+
   /* ---------- Smooth scroll (Lenis, if present & enabled) ---------- */
   if (Volt.settings.smoothScroll && !RM && window.Lenis) {
     const lenis = new window.Lenis({ duration: 1.1, easing: (t) => 1 - Math.pow(1 - t, 3) });

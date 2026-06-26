@@ -162,7 +162,9 @@
           "menu": "Menu",
           "menu_info": "Pick a link list to display in this column."
         }
-      }
+      },
+      "copyright": "Copyright line",
+      "presets_line": "Presets line"
     },
     "editorial_statement": {
       "name": "Editorial statement",

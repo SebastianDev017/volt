@@ -1,221 +1,61 @@
 {%- liquid
-  assign has_cta = false
-  if section.settings.cta_text != blank and section.settings.cta_url != blank
-    assign has_cta = true
-  endif
-  assign has_countdown = false
-  if section.settings.show_countdown and section.settings.countdown_end_date != blank
-    assign has_countdown = true
-  endif
+  assign bg = section.settings.bg_color | default: '#D4FF00'
+  assign tc = section.settings.text_color | default: '#0D0C0B'
 -%}
-
 <style>
-  #shopify-section-{{ section.id }} .volt-announce{
-    background: {{ section.settings.bg_color }};
-    color: {{ section.settings.text_color }};
-  }
-  #shopify-section-{{ section.id }} .volt-announce__close:hover{
-    background: {{ section.settings.text_color }};
-    color: {{ section.settings.bg_color }};
-  }
+  #shopify-section-{{ section.id }} .volt-announce { --abg: {{ bg }}; --atext: {{ tc }}; }
 </style>
-
-<announcement-bar class="volt-announce-wrap">
-  <div class="volt-announce" role="region" aria-label="{{ 'sections.announcement_bar.aria_label' | t }}">
-    <div class="volt-announce__inner">
-      {%- if has_countdown -%}
-        <span
-          class="volt-announce__countdown data"
-          data-deadline="{{ section.settings.countdown_end_date }}"
-          aria-hidden="true"
-        >--:--:--:--</span>
-      {%- endif -%}
-
-      {%- if section.settings.message != blank -%}
-        <span class="volt-announce__msg label">{{ section.settings.message }}</span>
-      {%- endif -%}
-
-      {%- if has_cta -%}
-        <a class="volt-announce__cta link-arrow" href="{{ section.settings.cta_url }}">
-          {{ section.settings.cta_text }}
-          <span aria-hidden="true">&rarr;</span>
-        </a>
-      {%- endif -%}
-    </div>
-
-    <button
-      type="button"
-      class="volt-announce__close"
-      data-announce-close
-      aria-label="{{ 'sections.announcement_bar.dismiss' | t }}"
-    >
-      <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
-        <path d="M1 1L11 11M11 1L1 11" stroke="currentColor" stroke-width="1.5"/>
-      </svg>
-    </button>
+<volt-announce class="volt-announce">
+  <div class="volt-announce__inner">
+    {%- if section.settings.message != blank -%}<span class="volt-announce__msg">{{ section.settings.message }}</span>{%- endif -%}
+    {%- if section.settings.show_countdown and section.settings.countdown_end_date != blank -%}
+      <countdown-timer class="volt-announce__cd" data-end="{{ section.settings.countdown_end_date }}"><span data-cd-display>--:--:--</span></countdown-timer>
+    {%- endif -%}
+    {%- if section.settings.cta_text != blank and section.settings.cta_url != blank -%}
+      <a class="volt-announce__cta" href="{{ section.settings.cta_url }}">{{ section.settings.cta_text }}</a>
+    {%- endif -%}
   </div>
-</announcement-bar>
+  <button class="volt-announce__x" data-announce-dismiss aria-label="{{ 'sections.announcement_bar.dismiss' | t: default: 'Dismiss' }}">&#10005;</button>
+</volt-announce>
 
 {% stylesheet %}
-  .volt-announce-wrap{ display: block; }
-  .volt-announce-wrap[hidden]{ display: none; }
-  .volt-announce{
-    position: relative;
-    min-height: 38px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 8px clamp(40px, 6vw, 64px) 8px var(--container-padding);
-  }
-  .volt-announce__inner{
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: clamp(10px, 2vw, 20px);
-    flex-wrap: wrap;
-    text-align: center;
-  }
-  .volt-announce__countdown{
-    font-weight: 400;
-    letter-spacing: 0.08em;
-    opacity: 0.85;
-  }
-  .volt-announce__msg{
-    font-size: 10px;
-    letter-spacing: 0.16em;
-  }
-  .volt-announce__cta{
-    color: inherit;
-    font-size: 10px;
-  }
-  .volt-announce__cta:hover{ gap: 11px; }
-  .volt-announce__close{
-    position: absolute;
-    right: max(12px, calc(var(--container-padding) - 24px));
-    top: 50%;
-    transform: translateY(-50%);
-    width: 24px;
-    height: 24px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    color: inherit;
-    border-radius: 0;
-    transition: background var(--dur-fast) var(--ease), color var(--dur-fast) var(--ease);
-  }
+  .volt-announce { display: block; position: relative; background: var(--abg); color: var(--atext); }
+  .volt-announce[hidden] { display: none; }
+  .volt-announce__inner { min-height: 38px; display: flex; align-items: center; justify-content: center; gap: 16px; flex-wrap: wrap; padding: 6px 44px; font-family: var(--font-mono); font-size: 11px; font-weight: 500; letter-spacing: .14em; text-transform: uppercase; }
+  .volt-announce__cd [data-cd-display] { background: var(--color-ink); color: var(--color-acid); padding: 3px 8px; }
+  .volt-announce__cta { color: inherit; text-decoration: underline; text-underline-offset: 3px; }
+  .volt-announce__x { position: absolute; right: 14px; top: 50%; transform: translateY(-50%); background: none; border: 0; color: inherit; font-size: 14px; line-height: 1; padding: 4px; cursor: pointer; opacity: .65; }
+  .volt-announce__x:hover { opacity: 1; }
 {% endstylesheet %}
+
+<script>
+  if (!customElements.get('volt-announce')) {
+    customElements.define('volt-announce', class extends HTMLElement {
+      connectedCallback() {
+        try { if (localStorage.getItem('volt-announce-dismissed') === '1') this.hidden = true; } catch (e) {}
+        var b = this.querySelector('[data-announce-dismiss]');
+        if (b) b.addEventListener('click', () => { this.hidden = true; try { localStorage.setItem('volt-announce-dismissed', '1'); } catch (e) {} });
+      }
+    });
+  }
+</script>
 
 {% schema %}
 {
   "name": "t:sections.announcement_bar.name",
-  "tag": "section",
-  "class": "volt-announce-section",
   "settings": [
-    {
-      "type": "text",
-      "id": "message",
-      "label": "t:sections.announcement_bar.message",
-      "default": "Founding member rates close soon — lock in $39/mo for life"
-    },
-    {
-      "type": "text",
-      "id": "cta_text",
-      "label": "t:sections.announcement_bar.cta_text",
-      "default": "Start your protocol"
-    },
-    {
-      "type": "url",
-      "id": "cta_url",
-      "label": "t:sections.announcement_bar.cta_url"
-    },
-    {
-      "type": "header",
-      "content": "t:sections.announcement_bar.countdown_header"
-    },
-    {
-      "type": "checkbox",
-      "id": "show_countdown",
-      "label": "t:sections.announcement_bar.show_countdown",
-      "default": false
-    },
-    {
-      "type": "text",
-      "id": "countdown_end_date",
-      "label": "t:sections.announcement_bar.countdown_end_date",
-      "info": "t:sections.announcement_bar.countdown_end_date_info",
-      "default": "2026-12-31"
-    },
-    {
-      "type": "header",
-      "content": "t:sections.announcement_bar.appearance_header"
-    },
-    {
-      "type": "color",
-      "id": "bg_color",
-      "label": "t:sections.announcement_bar.bg_color",
-      "default": "#D4FF00"
-    },
-    {
-      "type": "color",
-      "id": "text_color",
-      "label": "t:sections.announcement_bar.text_color",
-      "default": "#0D0C0B"
-    }
+    { "type": "text", "id": "message", "label": "t:sections.announcement_bar.message", "default": "Founding member rate — ends in" },
+    { "type": "header", "content": "t:sections.announcement_bar.countdown_header" },
+    { "type": "checkbox", "id": "show_countdown", "label": "t:sections.announcement_bar.show_countdown", "default": true },
+    { "type": "text", "id": "countdown_end_date", "label": "t:sections.announcement_bar.countdown_end_date", "info": "t:sections.announcement_bar.countdown_end_date_info", "default": "2026-12-31T23:59:59" },
+    { "type": "text", "id": "cta_text", "label": "t:sections.announcement_bar.cta_text" },
+    { "type": "url", "id": "cta_url", "label": "t:sections.announcement_bar.cta_url" },
+    { "type": "header", "content": "t:sections.announcement_bar.appearance_header" },
+    { "type": "color", "id": "bg_color", "label": "t:sections.announcement_bar.bg_color", "default": "#D4FF00" },
+    { "type": "color", "id": "text_color", "label": "t:sections.announcement_bar.text_color", "default": "#0D0C0B" }
   ],
   "presets": [
     { "name": "t:sections.announcement_bar.name" }
   ]
 }
 {% endschema %}
-
-<script>
-  if (!customElements.get('announcement-bar')) {
-    class AnnouncementBar extends HTMLElement {
-      connectedCallback() {
-        this.key = 'volt-announcement-dismissed';
-        try {
-          if (localStorage.getItem(this.key) === '1') {
-            this.hidden = true;
-            return;
-          }
-        } catch (e) {}
-
-        const closeBtn = this.querySelector('[data-announce-close]');
-        if (closeBtn) {
-          closeBtn.addEventListener('click', () => {
-            this.hidden = true;
-            try { localStorage.setItem(this.key, '1'); } catch (e) {}
-          });
-        }
-
-        this.cd = this.querySelector('.volt-announce__countdown');
-        if (this.cd && this.cd.dataset.deadline) {
-          this.deadline = new Date(this.cd.dataset.deadline + 'T23:59:59').getTime();
-          if (!isNaN(this.deadline)) {
-            this.tick();
-            this.timer = setInterval(() => this.tick(), 1000);
-          }
-        }
-      }
-
-      disconnectedCallback() {
-        if (this.timer) clearInterval(this.timer);
-      }
-
-      tick() {
-        let diff = Math.floor((this.deadline - Date.now()) / 1000);
-        if (diff <= 0) {
-          this.cd.textContent = '00:00:00:00';
-          clearInterval(this.timer);
-          return;
-        }
-        const d = Math.floor(diff / 86400); diff -= d * 86400;
-        const h = Math.floor(diff / 3600); diff -= h * 3600;
-        const m = Math.floor(diff / 60); const s = diff - m * 60;
-        const p = (n) => String(n).padStart(2, '0');
-        this.cd.textContent = p(d) + ':' + p(h) + ':' + p(m) + ':' + p(s);
-      }
-    }
-    customElements.define('announcement-bar', AnnouncementBar);
-  }
-</script>

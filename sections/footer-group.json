@@ -1,48 +1,42 @@
-/*
- * ------------------------------------------------------------
- * IMPORTANT: The contents of this file are auto-generated.
- *
- * This file may be updated by the Shopify admin theme editor
- * or related systems. Please exercise caution as any changes
- * made to this file may be overwritten.
- * ------------------------------------------------------------
- */
 {
   "type": "footer",
-  "name": "t:sections.footer_main.name",
+  "name": "t:general.footer",
   "sections": {
     "footer": {
       "type": "footer",
+      "settings": {},
       "blocks": {
         "brand": {
-          "type": "brand"
-        },
-        "menu_explore": {
-          "type": "menu",
+          "type": "brand",
           "settings": {
-            "title": "Explore"
+            "tagline": "Membership-first training. Track your strain, protect your recovery, gear the protocol."
           }
         },
-        "menu_support": {
+        "train": {
+          "type": "menu",
+          "settings": {
+            "title": "Train"
+          }
+        },
+        "gear": {
+          "type": "menu",
+          "settings": {
+            "title": "Gear"
+          }
+        },
+        "support": {
           "type": "menu",
           "settings": {
             "title": "Support"
-          }
-        },
-        "menu_company": {
-          "type": "menu",
-          "settings": {
-            "title": "Company"
           }
         }
       },
       "block_order": [
         "brand",
-        "menu_explore",
-        "menu_support",
-        "menu_company"
-      ],
-      "settings": {}
+        "train",
+        "gear",
+        "support"
+      ]
     }
   },
   "order": [

@@ -1,268 +1,104 @@
 {%- liquid
   assign wordmark = settings.footer_wordmark_text | default: shop.name
 -%}
-
-<footer class="volt-footer" data-animate>
-  <span class="volt-footer__ghost" aria-hidden="true">{{ wordmark }}</span>
-
-  <div class="section-inner volt-footer__inner">
+<footer class="volt-footer">
+  <div class="volt-footer__wordmark" aria-hidden="true">{{ wordmark }}</div>
+  <div class="volt-footer__inner">
     <div class="volt-footer__cols">
       {%- for block in section.blocks -%}
         {%- case block.type -%}
           {%- when 'brand' -%}
-            <div class="volt-footer__col volt-footer__brand" {{ block.shopify_attributes }} data-animate>
-              <a href="{{ routes.root_url }}" class="volt-footer__wordmark">{{ wordmark }}</a>
-              {%- if block.settings.tagline != blank -%}
-                <p class="body volt-footer__tagline">{{ block.settings.tagline }}</p>
+            <div class="volt-footer__brand" {{ block.shopify_attributes }}>
+              <div class="volt-footer__logo">{{ wordmark }}</div>
+              {%- if block.settings.tagline != blank -%}<p class="volt-footer__tagline">{{ block.settings.tagline }}</p>{%- endif -%}
+              {%- assign has_social = false -%}
+              {%- if block.settings.instagram != blank or block.settings.youtube != blank or block.settings.tiktok != blank or block.settings.strava != blank -%}{%- assign has_social = true -%}{%- endif -%}
+              {%- if has_social -%}
+                <div class="volt-footer__social">
+                  {%- if block.settings.instagram != blank -%}<a href="{{ block.settings.instagram }}" aria-label="Instagram">Instagram</a>{%- endif -%}
+                  {%- if block.settings.youtube != blank -%}<a href="{{ block.settings.youtube }}" aria-label="YouTube">YouTube</a>{%- endif -%}
+                  {%- if block.settings.tiktok != blank -%}<a href="{{ block.settings.tiktok }}" aria-label="TikTok">TikTok</a>{%- endif -%}
+                  {%- if block.settings.strava != blank -%}<a href="{{ block.settings.strava }}" aria-label="Strava">Strava</a>{%- endif -%}
+                </div>
               {%- endif -%}
-              <ul class="volt-footer__social">
-                {%- if block.settings.social_instagram != blank -%}
-                  <li>
-                    <a href="{{ block.settings.social_instagram }}" class="volt-footer__social-link" aria-label="Instagram">
-                      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4"/><circle cx="12" cy="12" r="4"/><circle cx="17.3" cy="6.7" r="1"/></svg>
-                    </a>
-                  </li>
-                {%- endif -%}
-                {%- if block.settings.social_youtube != blank -%}
-                  <li>
-                    <a href="{{ block.settings.social_youtube }}" class="volt-footer__social-link" aria-label="YouTube">
-                      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><rect x="2.5" y="5.5" width="19" height="13" rx="3.5"/><path d="M10.5 9.3 15 12l-4.5 2.7Z"/></svg>
-                    </a>
-                  </li>
-                {%- endif -%}
-                {%- if block.settings.social_tiktok != blank -%}
-                  <li>
-                    <a href="{{ block.settings.social_tiktok }}" class="volt-footer__social-link" aria-label="TikTok">
-                      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M14 4v9.5a3.5 3.5 0 1 1-3.5-3.5"/><path d="M14 4a4.5 4.5 0 0 0 4.5 4.5"/></svg>
-                    </a>
-                  </li>
-                {%- endif -%}
-                {%- if block.settings.social_strava != blank -%}
-                  <li>
-                    <a href="{{ block.settings.social_strava }}" class="volt-footer__social-link" aria-label="Strava">
-                      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" aria-hidden="true"><path d="M9.5 4 4 15h3.4L9.5 10.7 11.6 15H15Z"/><path d="M14.6 15 16.7 20 18.8 15h-2.1"/></svg>
-                    </a>
-                  </li>
-                {%- endif -%}
-              </ul>
             </div>
-
           {%- when 'menu' -%}
-            <nav class="volt-footer__col volt-footer__menu" {{ block.shopify_attributes }} data-animate aria-label="{{ block.settings.title | escape }}">
-              {%- if block.settings.title != blank -%}
-                <h2 class="label volt-footer__menu-title">{{ block.settings.title }}</h2>
-              {%- endif -%}
+            <div class="volt-footer__col" {{ block.shopify_attributes }}>
+              {%- if block.settings.title != blank -%}<div class="volt-footer__heading">{{ block.settings.title }}</div>{%- endif -%}
               {%- if block.settings.menu != blank -%}
-                <ul class="volt-footer__menu-list">
-                  {%- for link in block.settings.menu.links -%}
-                    <li><a href="{{ link.url }}" class="volt-footer__menu-link">{{ link.title }}</a></li>
-                  {%- endfor -%}
+                <ul class="volt-footer__list">
+                  {%- for l in linklists[block.settings.menu].links -%}<li><a href="{{ l.url }}">{{ l.title }}</a></li>{%- endfor -%}
                 </ul>
               {%- endif -%}
-            </nav>
+            </div>
         {%- endcase -%}
       {%- endfor -%}
     </div>
 
-    <div class="volt-footer__bar">
-      <p class="data volt-footer__copy">
-        &copy; {{ 'now' | date: '%Y' }} {{ shop.name }}. {{ 'sections.footer_main.rights' | t }}
-      </p>
+    <div class="volt-footer__trust">
+      <span><i>&#9670;</i>{{ 'sections.footer_main.trust_secure' | t: default: 'Secure Checkout' }}</span>
+      <span><i>&#9670;</i>{{ 'sections.footer_main.trust_shipping' | t: default: 'Free Shipping $75+' }}</span>
+      <span><i>&#9670;</i>{{ 'sections.footer_main.trust_returns' | t: default: '30-Day Returns' }}</span>
+      <span><i>&#9670;</i>{{ 'sections.footer_main.trust_nsf' | t: default: 'NSF Certified' }}</span>
+    </div>
 
-      <ul class="volt-footer__trust">
-        <li class="volt-footer__trust-item">
-          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="10" width="14" height="10" rx="1"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>
-          <span class="data">{{ 'sections.footer_main.trust_secure' | t }}</span>
-        </li>
-        <li class="volt-footer__trust-item">
-          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 7h11v8H3Z"/><path d="M14 10h4l3 3v2h-7Z"/><circle cx="7" cy="17" r="1.6"/><circle cx="17.5" cy="17" r="1.6"/></svg>
-          <span class="data">{{ 'sections.footer_main.trust_shipping' | t }}</span>
-        </li>
-        <li class="volt-footer__trust-item">
-          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 11a8 8 0 1 1-2.3-5.7"/><path d="M20 4v4h-4"/></svg>
-          <span class="data">{{ 'sections.footer_main.trust_returns' | t }}</span>
-        </li>
-        <li class="volt-footer__trust-item">
-          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 5 6v5c0 4.4 3 7.6 7 9 4-1.4 7-4.6 7-9V6Z"/><path d="m9 12 2 2 4-4"/></svg>
-          <span class="data">{{ 'sections.footer_main.trust_nsf' | t }}</span>
-        </li>
-      </ul>
+    <div class="volt-footer__bottom">
+      <span>&copy; {{ 'now' | date: '%Y' }} {{ section.settings.copyright }}</span>
+      {%- if section.settings.presets_line != blank -%}<span>{{ section.settings.presets_line }}</span>{%- endif -%}
     </div>
   </div>
 </footer>
 
 {% stylesheet %}
-  .volt-footer{
-    position: relative;
-    overflow: hidden;
-    background: var(--color-ink);
-    color: var(--color-bg);
-    padding-block: clamp(56px, 7vw, 96px) 28px;
-  }
-  .volt-footer__ghost{
-    position: absolute;
-    left: 50%;
-    bottom: -0.16em;
-    transform: translateX(-50%);
-    width: 100%;
-    text-align: center;
-    font-family: var(--font-display);
-    font-weight: 800;
-    font-size: clamp(96px, 14vw, 196px);
-    line-height: 0.8;
-    letter-spacing: -0.03em;
-    color: var(--color-bg);
-    opacity: var(--wordmark-opacity);
-    pointer-events: none;
-    white-space: nowrap;
-    text-transform: uppercase;
-  }
-  .volt-footer__inner{ position: relative; z-index: 1; }
-  .volt-footer__cols{
-    display: grid;
-    grid-template-columns: 1.4fr repeat(3, 1fr);
-    gap: clamp(28px, 4vw, 56px);
-    padding-bottom: clamp(40px, 5vw, 72px);
-  }
-  .volt-footer__wordmark{
-    display: inline-block;
-    font-family: var(--font-display);
-    font-weight: 800;
-    font-style: italic;
-    font-size: clamp(28px, 3vw, 40px);
-    letter-spacing: -0.02em;
-    line-height: 1;
-    color: var(--color-bg);
-  }
-  .volt-footer__tagline{
-    margin-top: 16px;
-    max-width: 34ch;
-    color: var(--color-mid);
-  }
-  .volt-footer__social{
-    display: flex;
-    gap: 12px;
-    margin-top: 24px;
-  }
-  .volt-footer__social-link{
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 38px;
-    height: 38px;
-    border: 1px solid var(--color-border);
-    color: var(--color-bg);
-    transition: background var(--dur-med) var(--ease), color var(--dur-med) var(--ease), border-color var(--dur-med) var(--ease);
-  }
-  .volt-footer__social-link:hover{
-    background: var(--color-acid);
-    color: var(--on-acid);
-    border-color: var(--color-acid);
-  }
-  .volt-footer__menu-title{
-    color: var(--color-mid);
-    margin-bottom: 18px;
-  }
-  .volt-footer__menu-list{ display: grid; gap: 11px; }
-  .volt-footer__menu-link{
-    font-size: 14px;
-    color: var(--color-bg);
-    transition: color var(--dur-fast) var(--ease);
-  }
-  .volt-footer__menu-link:hover{ color: var(--color-acid); }
-  .volt-footer__bar{
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 20px 32px;
-    flex-wrap: wrap;
-    padding-top: 24px;
-    border-top: 1px solid var(--color-border);
-  }
-  .volt-footer__copy{ color: var(--color-mid); }
-  .volt-footer__trust{
-    display: flex;
-    flex-wrap: wrap;
-    gap: 14px 24px;
-    align-items: center;
-  }
-  .volt-footer__trust-item{
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    color: var(--color-mid);
-  }
-  .volt-footer__trust-item svg{ color: var(--color-bg); }
-  @media (max-width: 990px){
-    .volt-footer__cols{ grid-template-columns: 1fr 1fr; }
-    .volt-footer__brand{ grid-column: 1 / -1; }
-  }
-  @media (max-width: 600px){
-    .volt-footer__cols{ grid-template-columns: 1fr; }
-    .volt-footer__brand{ grid-column: auto; }
-    .volt-footer__bar{ flex-direction: column; align-items: flex-start; }
-  }
+  .volt-footer { background: var(--color-ink); color: var(--color-bg); position: relative; overflow: hidden; }
+  .volt-footer__wordmark { position: absolute; left: 0; right: 0; bottom: -2.2vw; font-family: var(--font-display); font-weight: 800; font-size: 23vw; line-height: .7; letter-spacing: -.03em; color: var(--color-bg); opacity: var(--wordmark-opacity); text-align: center; pointer-events: none; user-select: none; }
+  .volt-footer__inner { max-width: var(--page-width); margin-inline: auto; padding: 72px 28px 0; position: relative; }
+  .volt-footer__cols { display: grid; grid-template-columns: 1.6fr 1fr 1fr 1fr; gap: 40px; }
+  .volt-footer__logo { font-family: var(--font-display); font-weight: 800; font-size: 28px; letter-spacing: -.02em; }
+  .volt-footer__tagline { font-size: 14px; line-height: 1.6; color: rgba(240,238,234,.6); max-width: 34ch; margin: 18px 0 0; }
+  .volt-footer__social { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 18px; }
+  .volt-footer__social a { font-family: var(--font-mono); font-size: 11px; letter-spacing: .06em; color: rgba(240,238,234,.7); text-decoration: none; }
+  .volt-footer__social a:hover { color: var(--color-acid); }
+  .volt-footer__heading { font-family: var(--font-mono); font-size: 10px; letter-spacing: .16em; text-transform: uppercase; color: var(--color-acid); margin-bottom: 18px; }
+  .volt-footer__list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 12px; }
+  .volt-footer__list a { font-size: 14px; color: rgba(240,238,234,.75); text-decoration: none; }
+  .volt-footer__list a:hover { color: var(--color-bg); }
+  .volt-footer__trust { display: flex; flex-wrap: wrap; gap: 14px 28px; border-top: 1px solid rgba(240,238,234,.14); margin-top: 56px; padding: 22px 0; font-family: var(--font-mono); font-size: 10px; letter-spacing: .1em; text-transform: uppercase; color: rgba(240,238,234,.6); }
+  .volt-footer__trust span { display: flex; align-items: center; gap: 8px; }
+  .volt-footer__trust i { color: var(--color-acid); font-style: normal; }
+  .volt-footer__bottom { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px; padding: 18px 0 36px; font-family: var(--font-mono); font-size: 10px; letter-spacing: .06em; color: rgba(240,238,234,.4); }
+  @media (max-width: 860px) { .volt-footer__cols { grid-template-columns: 1fr 1fr; } }
+  @media (max-width: 480px) { .volt-footer__cols { grid-template-columns: 1fr; } }
 {% endstylesheet %}
 
 {% schema %}
 {
-  "name": "t:sections.footer_main.name",
-  "tag": "footer",
+  "name": "t:general.footer",
+  "settings": [
+    { "type": "text", "id": "copyright", "label": "t:sections.footer_main.copyright", "default": "VOLT Performance — a demo theme by Ruiz Digital" },
+    { "type": "text", "id": "presets_line", "label": "t:sections.footer_main.presets_line", "default": "Volt / Anthracite / Titanium" }
+  ],
   "blocks": [
     {
       "type": "brand",
       "name": "t:sections.footer_main.blocks.brand.name",
       "limit": 1,
       "settings": [
-        {
-          "type": "textarea",
-          "id": "tagline",
-          "label": "t:sections.footer_main.blocks.brand.tagline",
-          "default": "Train by the numbers. Recover by design. VOLT turns your body's data into a protocol you can actually follow."
-        },
-        {
-          "type": "header",
-          "content": "t:sections.footer_main.blocks.brand.social_header"
-        },
-        {
-          "type": "url",
-          "id": "social_instagram",
-          "label": "t:sections.footer_main.blocks.brand.instagram"
-        },
-        {
-          "type": "url",
-          "id": "social_youtube",
-          "label": "t:sections.footer_main.blocks.brand.youtube"
-        },
-        {
-          "type": "url",
-          "id": "social_tiktok",
-          "label": "t:sections.footer_main.blocks.brand.tiktok"
-        },
-        {
-          "type": "url",
-          "id": "social_strava",
-          "label": "t:sections.footer_main.blocks.brand.strava"
-        }
+        { "type": "textarea", "id": "tagline", "label": "t:sections.footer_main.blocks.brand.tagline", "default": "Membership-first training. Track your strain, protect your recovery, gear the protocol." },
+        { "type": "header", "content": "t:sections.footer_main.blocks.brand.social_header" },
+        { "type": "url", "id": "instagram", "label": "t:sections.footer_main.blocks.brand.instagram" },
+        { "type": "url", "id": "youtube", "label": "t:sections.footer_main.blocks.brand.youtube" },
+        { "type": "url", "id": "tiktok", "label": "t:sections.footer_main.blocks.brand.tiktok" },
+        { "type": "url", "id": "strava", "label": "t:sections.footer_main.blocks.brand.strava" }
       ]
     },
     {
       "type": "menu",
       "name": "t:sections.footer_main.blocks.menu.name",
-      "limit": 3,
+      "limit": 4,
       "settings": [
-        {
-          "type": "text",
-          "id": "title",
-          "label": "t:sections.footer_main.blocks.menu.title",
-          "default": "Explore"
-        },
-        {
-          "type": "link_list",
-          "id": "menu",
-          "label": "t:sections.footer_main.blocks.menu.menu",
-          "info": "t:sections.footer_main.blocks.menu.menu_info"
-        }
+        { "type": "text", "id": "title", "label": "t:sections.footer_main.blocks.menu.title", "default": "Train" },
+        { "type": "link_list", "id": "menu", "label": "t:sections.footer_main.blocks.menu.menu", "info": "t:sections.footer_main.blocks.menu.menu_info" }
       ]
     }
   ]
