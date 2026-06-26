@@ -1,74 +1,35 @@
-{%- liquid
-  assign speed = section.settings.speed | default: 'normal'
--%}
-<div class="volt-vitals" data-animate>
-  <volt-vitals-strip class="volt-vitals__strip" data-speed="{{ speed }}">
-    <div class="vitals-track" aria-hidden="false">
-      {%- for block in section.blocks -%}
-        {%- if block.settings.text != blank -%}
-          <span class="volt-vitals__item data" {{ block.shopify_attributes }}>{{ block.settings.text }}</span>
-          <span class="volt-vitals__sep" aria-hidden="true">&middot;</span>
-        {%- endif -%}
-      {%- endfor -%}
-      {%- comment -%} duplicate set for seamless 50% marquee loop {%- endcomment -%}
-      {%- for block in section.blocks -%}
-        {%- if block.settings.text != blank -%}
-          <span class="volt-vitals__item data" aria-hidden="true">{{ block.settings.text }}</span>
-          <span class="volt-vitals__sep" aria-hidden="true">&middot;</span>
-        {%- endif -%}
+<section class="volt-vitals" data-animate aria-label="{{ 'sections.vitals_strip.aria' | t: default: 'Member stats' }}">
+  <div class="volt-vitals__wrap">
+    <div class="volt-vitals__track">
+      {%- for n in (1..2) -%}
+        {%- for block in section.blocks -%}
+          <span class="volt-vitals__item" {{ block.shopify_attributes }}>{{ block.settings.text }}</span><span class="volt-vitals__sep" aria-hidden="true">/</span>
+        {%- endfor -%}
       {%- endfor -%}
     </div>
-  </volt-vitals-strip>
-</div>
+  </div>
+</section>
 
 {% stylesheet %}
-  .volt-vitals{ background: var(--color-ink); }
-  .volt-vitals__strip{ height: 48px; display: flex; align-items: center; }
-  .vitals-track{ height: 48px; }
-  .volt-vitals__item{
-    color: var(--color-acid);
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    line-height: 48px;
-    padding-inline: 18px;
-    white-space: nowrap;
-  }
-  .volt-vitals__sep{
-    color: var(--color-mid);
-    font-family: var(--font-mono);
-    font-size: 11px;
-    line-height: 48px;
-  }
+  .volt-vitals { background: var(--color-ink); }
+  .volt-vitals__wrap { overflow: hidden; white-space: nowrap; }
+  .volt-vitals__track { display: inline-flex; align-items: center; padding: 15px 0; animation: volt-marquee 30s linear infinite; }
+  .volt-vitals:hover .volt-vitals__track { animation-play-state: paused; }
+  .volt-vitals__item, .volt-vitals__sep { font-family: var(--font-mono); font-size: 13px; letter-spacing: .1em; color: var(--color-acid); padding-right: 32px; white-space: nowrap; }
+  .volt-vitals__sep { opacity: .4; }
+  @media (prefers-reduced-motion: reduce) { .volt-vitals__track { animation: none; white-space: normal; } }
 {% endstylesheet %}
 
 {% schema %}
 {
   "name": "t:sections.vitals_strip.name",
   "tag": "section",
-  "settings": [
-    {
-      "type": "select",
-      "id": "speed",
-      "label": "t:sections.vitals_strip.speed.label",
-      "options": [
-        { "value": "slow", "label": "t:sections.vitals_strip.speed.slow" },
-        { "value": "normal", "label": "t:sections.vitals_strip.speed.normal" },
-        { "value": "fast", "label": "t:sections.vitals_strip.speed.fast" }
-      ],
-      "default": "normal"
-    }
-  ],
   "blocks": [
     {
       "type": "stat",
       "name": "t:sections.vitals_strip.blocks.stat.name",
       "settings": [
-        {
-          "type": "text",
-          "id": "text",
-          "label": "t:sections.vitals_strip.blocks.stat.text.label",
-          "default": "2,400 MEMBERS"
-        }
+        { "type": "text", "id": "text", "label": "t:sections.vitals_strip.blocks.stat.text", "default": "2,400 MEMBERS" }
       ]
     }
   ],
@@ -80,8 +41,7 @@
         { "type": "stat", "settings": { "text": "847 CLASSES/MONTH" } },
         { "type": "stat", "settings": { "text": "94% RETENTION" } },
         { "type": "stat", "settings": { "text": "AVG FIRST PR: WEEK 6" } },
-        { "type": "stat", "settings": { "text": "HYROX CERTIFIED" } },
-        { "type": "stat", "settings": { "text": "NSF TESTED" } }
+        { "type": "stat", "settings": { "text": "+3.2T STRAIN AVG" } }
       ]
     }
   ]

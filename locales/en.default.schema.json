@@ -95,38 +95,31 @@
       "eyebrow": "Eyebrow",
       "heading": "Heading",
       "body": "Body text",
-      "show_countdown": "Show countdown on popular tier",
-      "countdown_end_date": "Countdown end date",
-      "countdown_end_date_info": "Format: 2026-12-31T23:59:59 (ISO date-time).",
-      "guarantee_text": "Guarantee text",
+      "countdown_end_date": "Founding-rate countdown end",
+      "countdown_end_date_info": "ISO date-time, e.g. 2025-12-31T23:59:59. Shows on the popular tier.",
+      "dashboard_link_label": "Footer link label",
+      "dashboard_link": "Footer link",
+      "most_popular": "Most popular",
+      "offer_ends": "Founding rate ends",
       "blocks": {
         "tier": {
           "name": "Tier",
           "tier_name": "Tier name",
-          "gauge_fill": "Gauge fill",
-          "price_monthly": "Monthly price",
-          "price_annual": "Annual price (per month)",
-          "billed_annual": "Annual savings line",
-          "cta_label": "Button label",
-          "cta_link": "Button link",
-          "is_popular": "Mark as most popular",
-          "accent": "Top accent color",
+          "tagline": "Tagline",
+          "gauge_value": "Gauge fill (%)",
+          "price": "Monthly price",
+          "yearly_line": "Annual line",
+          "popular": "Mark as most popular",
+          "accent": "Top accent",
           "accent_mid": "Neutral",
           "accent_acid": "Acid",
           "accent_ink": "Ink",
-          "features": "Features list"
+          "features_on": "Included features (one per line)",
+          "features_off": "Excluded features (one per line)",
+          "cta_label": "Button label",
+          "cta_link": "Button link"
         }
-      },
-      "billing_toggle_label": "Billing period",
-      "monthly": "Monthly",
-      "annually": "Annually",
-      "save_badge": "Save 25%",
-      "most_popular": "Most popular",
-      "offer_ends": "Founding rate ends in",
-      "intensity": "Intensity",
-      "per_mo": "/mo",
-      "billed_monthly": "Billed monthly, cancel anytime",
-      "access_dashboard": "Access your dashboard"
+      }
     },
     "header_main": {
       "logo": "Logo image",
@@ -294,18 +287,10 @@
     },
     "vitals_strip": {
       "name": "Vitals strip",
-      "speed": {
-        "label": "Scroll speed",
-        "slow": "Slow",
-        "normal": "Normal",
-        "fast": "Fast"
-      },
       "blocks": {
         "stat": {
           "name": "Stat",
-          "text": {
-            "label": "Stat text"
-          }
+          "text": "Text"
         }
       }
     },

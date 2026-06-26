@@ -58,8 +58,8 @@
       "monthly": "Monthly",
       "annually": "Annually",
       "save_badge": "Save 25%",
-      "most_popular": "Most popular",
-      "offer_ends": "Founding rate ends in",
+      "most_popular": "Most Popular",
+      "offer_ends": "Founding rate ends",
       "intensity": "Intensity",
       "per_mo": "/mo",
       "billed_monthly": "Billed monthly, cancel anytime",
@@ -121,6 +121,9 @@
     },
     "marquee": {
       "aria_label": "Scrolling highlights"
+    },
+    "vitals_strip": {
+      "aria": "Member stats"
     }
   }
 }
