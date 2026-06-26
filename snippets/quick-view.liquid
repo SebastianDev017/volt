@@ -74,9 +74,12 @@
         if (!wrap) return;
         var sold = body.dataset.soldLabel;
         var html = '';
-        product.options.forEach(function (name, i) {
-          var seen = {}, vals = [];
-          product.variants.forEach(function (v) { var val = v.options[i]; if (!seen[val]) { seen[val] = 1; vals.push(val); } });
+        product.options.forEach(function (opt, i) {
+          // /products/{handle}.js returns options as objects {name, values} (older API: plain strings)
+          var name = (typeof opt === 'string') ? opt : ((opt && opt.name) || '');
+          var vals;
+          if (opt && opt.values && opt.values.length) { vals = opt.values; }
+          else { var seen = {}; vals = []; product.variants.forEach(function (v) { var vv = v.options[i]; if (!seen[vv]) { seen[vv] = 1; vals.push(vv); } }); }
           var labelId = 'qv-opt-' + i;
           html += '<div class="volt-qv__opt" role="group" aria-labelledby="' + labelId + '"><span class="volt-qv__optlabel" id="' + labelId + '">' + esc(name) + '</span>';
           if (colorOption(name)) {
