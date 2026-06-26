@@ -1,0 +1,190 @@
+{%- liquid
+  assign p = product
+  assign v = p.selected_or_first_available_variant
+  assign tier = p.metafields.volt.tier | default: 'performance' | downcase
+  assign tier_label = tier | capitalize
+  if tier == 'starter'
+    assign gauge_default = 33
+  elsif tier == 'elite'
+    assign gauge_default = 100
+  else
+    assign gauge_default = 67
+  endif
+  assign gauge_value = section.settings.gauge_value | default: gauge_default
+  assign circ = 326.726
+  assign gfill = gauge_value | times: circ | divided_by: 100.0
+  assign goff = circ | minus: gfill
+  assign features = p.metafields.volt.features.value
+-%}
+<section class="volt-mp" data-animate>
+  <div class="volt-mp__inner">
+    <div class="volt-mp__grid">
+
+      {%- comment -%} LEFT — info {%- endcomment -%}
+      <div class="volt-mp__info">
+        <span class="volt-mp__badge volt-mp__badge--{{ tier }}">{{ tier_label }} Protocol</span>
+        <h1 class="volt-mp__title">{{ p.title }}</h1>
+        {%- if section.settings.subtitle != blank -%}<p class="volt-mp__sub">{{ section.settings.subtitle }}</p>{%- endif -%}
+
+        <div class="volt-mp__pricerow">
+          <span class="volt-mp__price">{{ p.price | money }}</span><span class="volt-mp__per">/mo</span>
+          {%- if p.compare_at_price > p.price -%}<span class="volt-mp__compare">{{ p.compare_at_price | money }}</span>{%- endif -%}
+        </div>
+
+        {%- form 'product', p, id: 'membership-form', class: 'volt-mp__form' -%}
+          <input type="hidden" name="id" value="{{ v.id }}">
+          {%- if p.selling_plan_groups.size > 0 -%}
+            <div class="volt-mp__plans">
+              <div class="volt-mp__planslabel">Billing</div>
+              <div class="volt-mp__planpills">
+                <label class="volt-mp__pill"><input type="radio" name="selling_plan" value="" checked><span>One-time</span></label>
+                {%- for group in p.selling_plan_groups -%}{%- for plan in group.selling_plans -%}
+                  <label class="volt-mp__pill"><input type="radio" name="selling_plan" value="{{ plan.id }}"><span>{{ plan.name }}</span></label>
+                {%- endfor -%}{%- endfor -%}
+              </div>
+            </div>
+          {%- endif -%}
+
+          <button type="submit" name="add" class="volt-mp__cta"{% unless p.available %} disabled{% endunless %}>
+            {%- if p.available -%}Start {{ tier_label }} Protocol{%- else -%}Sold out{%- endif -%}
+          </button>
+        {%- endform -%}
+
+        {%- if section.settings.guarantee != blank -%}<p class="volt-mp__guarantee">{{ section.settings.guarantee }}</p>{%- endif -%}
+        {%- if section.settings.social_proof != blank -%}<p class="volt-mp__social">{{ section.settings.social_proof }}</p>{%- endif -%}
+
+        <div class="volt-mp__unlock">
+          <div class="volt-mp__unlocklabel">What's included</div>
+          <ul class="volt-mp__feats">
+            {%- if features != blank and features.size > 0 -%}
+              {%- for f in features -%}<li><span>✓</span>{{ f }}</li>{%- endfor -%}
+            {%- elsif section.settings.features != blank -%}
+              {%- assign lines = section.settings.features | newline_to_br | split: '<br />' -%}
+              {%- for f in lines -%}{%- assign t = f | strip -%}{%- if t != blank -%}<li><span>✓</span>{{ t }}</li>{%- endif -%}{%- endfor -%}
+            {%- endif -%}
+          </ul>
+        </div>
+
+        {%- assign faqs = section.blocks | where: 'type', 'faq' -%}
+        {%- if faqs.size > 0 -%}
+          <div class="volt-mp__faq">
+            {%- for block in faqs -%}
+              <details class="volt-mp__faqitem" {{ block.shopify_attributes }}>
+                <summary>{{ block.settings.question }}<span>+</span></summary>
+                <div class="rte volt-mp__faqbody">{{ block.settings.answer }}</div>
+              </details>
+            {%- endfor -%}
+          </div>
+        {%- endif -%}
+      </div>
+
+      {%- comment -%} RIGHT — visual {%- endcomment -%}
+      <div class="volt-mp__visual" aria-hidden="true">
+        <div class="volt-mp__dial">
+          <svg viewBox="0 0 120 120"><circle cx="60" cy="60" r="52" fill="none" stroke="rgba(13,12,11,.12)" stroke-width="9"/><circle cx="60" cy="60" r="52" fill="none" stroke="var(--color-acid)" stroke-width="9" stroke-linecap="round" stroke-dasharray="{{ circ }}" stroke-dashoffset="{{ goff }}" transform="rotate(-90 60 60)"/></svg>
+          <div class="volt-mp__dialval">{{ gauge_value }}<span>%</span></div>
+        </div>
+        <div class="volt-mp__tiername">{{ tier_label }} intensity</div>
+
+        <div class="volt-mp__preview">
+          <div class="volt-mp__previewhead">Preview member dashboard</div>
+          <div class="volt-mp__minimetrics">
+            <div><span class="k">Recovery</span><span class="v">87%</span></div>
+            <div><span class="k">Strain</span><span class="v">14.2</span></div>
+            <div><span class="k">Streak</span><span class="v">14d</span></div>
+          </div>
+          <div class="volt-mp__bars">
+            <i style="height:48%"></i><i style="height:66%"></i><i style="height:54%"></i><i style="height:80%"></i><i style="height:62%"></i><i style="height:92%"></i><i style="height:74%"></i><i style="height:100%"></i>
+          </div>
+        </div>
+
+        <div class="volt-mp__trust">
+          <span><i>◆</i> NSF Certified</span><span><i>◆</i> Shopify Secure</span><span><i>◆</i> Cancel anytime</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+{% stylesheet %}
+  .volt-mp__inner { max-width: var(--page-width); margin-inline: auto; padding: 48px 28px 70px; }
+  .volt-mp__grid { display: grid; grid-template-columns: 60fr 40fr; gap: 48px; align-items: start; }
+  .volt-mp__badge { display: inline-block; font-family: var(--font-mono); font-size: 10px; letter-spacing: .14em; text-transform: uppercase; padding: 5px 10px; }
+  .volt-mp__badge--starter { background: var(--color-mid); color: var(--color-bg); }
+  .volt-mp__badge--performance { background: var(--color-acid); color: var(--color-ink); }
+  .volt-mp__badge--elite { background: var(--color-ink); color: var(--color-bg); }
+  .volt-mp__title { font-family: var(--font-display); font-weight: 800; font-size: clamp(32px, 4vw, 52px); line-height: 1.02; letter-spacing: -.01em; margin: 14px 0 0; }
+  .volt-mp__sub { font-size: 15px; line-height: 1.6; color: var(--color-mid); margin: 12px 0 0; max-width: 46ch; }
+  .volt-mp__pricerow { display: flex; align-items: baseline; gap: 10px; margin: 24px 0 0; }
+  .volt-mp__price { font-family: var(--font-display); font-weight: 800; font-size: 44px; line-height: 1; }
+  .volt-mp__per { font-family: var(--font-mono); font-size: 13px; color: var(--color-mid); }
+  .volt-mp__compare { font-family: var(--font-mono); font-size: 14px; color: var(--color-mid); text-decoration: line-through; }
+  .volt-mp__form { margin: 24px 0 0; }
+  .volt-mp__planslabel { font-family: var(--font-mono); font-size: 10px; letter-spacing: .14em; text-transform: uppercase; color: var(--color-mid); margin-bottom: 10px; }
+  .volt-mp__planpills { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; }
+  .volt-mp__pill { cursor: pointer; }
+  .volt-mp__pill input { position: absolute; opacity: 0; }
+  .volt-mp__pill span { display: inline-block; font-family: var(--font-mono); font-size: 11px; letter-spacing: .06em; text-transform: uppercase; border: 1px solid var(--color-border); background: var(--color-bg); color: var(--color-ink); padding: 11px 16px; }
+  .volt-mp__pill:has(input:checked) span { background: var(--color-acid); border-color: var(--color-acid); color: var(--color-ink); }
+  .volt-mp__cta { width: 100%; background: var(--color-acid); border: 0; color: var(--color-ink); font-family: var(--font-body); font-weight: 500; font-size: 14px; letter-spacing: .05em; text-transform: uppercase; padding: 17px; cursor: pointer; }
+  .volt-mp__cta[disabled] { background: var(--color-border); color: var(--color-mid); }
+  .volt-mp__guarantee { font-family: var(--font-mono); font-size: 11px; color: var(--color-mid); text-align: center; margin: 14px 0 0; }
+  .volt-mp__social { font-family: var(--font-display); font-style: italic; font-size: 14px; color: var(--color-mid); margin: 16px 0 0; }
+  .volt-mp__unlock { margin-top: 32px; border-top: 1px solid var(--color-border); padding-top: 28px; }
+  .volt-mp__unlocklabel { font-family: var(--font-mono); font-size: 10px; letter-spacing: .16em; text-transform: uppercase; color: var(--color-mid); margin-bottom: 16px; }
+  .volt-mp__feats { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 13px; }
+  .volt-mp__feats li { display: flex; align-items: flex-start; gap: 11px; font-size: 14px; }
+  .volt-mp__feats span { color: var(--color-acid); font-size: 14px; }
+  .volt-mp__faq { margin-top: 28px; }
+  .volt-mp__faqitem { border-bottom: 1px solid var(--color-border); }
+  .volt-mp__faqitem:first-child { border-top: 1px solid var(--color-border); }
+  .volt-mp__faqitem summary { display: flex; align-items: center; justify-content: space-between; gap: 16px; cursor: pointer; padding: 16px 2px; font-family: var(--font-display); font-weight: 700; font-size: 15px; list-style: none; }
+  .volt-mp__faqitem summary::-webkit-details-marker { display: none; }
+  .volt-mp__faqitem summary span { color: var(--color-acid); font-size: 18px; transition: transform var(--dur-fast) var(--ease); }
+  .volt-mp__faqitem[open] summary span { transform: rotate(45deg); }
+  .volt-mp__faqbody { font-size: 14px; line-height: 1.65; color: var(--color-mid); padding: 0 2px 18px; }
+
+  .volt-mp__visual { background: var(--color-surface); border: 1px solid var(--color-border); padding: 40px 32px; display: flex; flex-direction: column; align-items: center; position: sticky; top: 80px; }
+  .volt-mp__dial { position: relative; width: 120px; height: 120px; }
+  .volt-mp__dial svg { width: 120px; height: 120px; }
+  .volt-mp__dialval { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-weight: 800; font-size: 30px; }
+  .volt-mp__dialval span { font-size: 14px; color: var(--color-mid); }
+  .volt-mp__tiername { font-family: var(--font-mono); font-size: 10px; letter-spacing: .14em; text-transform: uppercase; color: var(--color-acid); margin-top: 12px; }
+  .volt-mp__preview { width: 100%; background: var(--color-ink); color: var(--color-bg); padding: 20px; margin-top: 28px; }
+  .volt-mp__previewhead { font-family: var(--font-mono); font-size: 9px; letter-spacing: .16em; text-transform: uppercase; color: rgba(240,238,234,.5); font-style: italic; }
+  .volt-mp__minimetrics { display: flex; justify-content: space-between; gap: 10px; margin-top: 16px; }
+  .volt-mp__minimetrics .k { display: block; font-family: var(--font-mono); font-size: 8px; letter-spacing: .12em; text-transform: uppercase; color: rgba(240,238,234,.45); }
+  .volt-mp__minimetrics .v { display: block; font-family: var(--font-mono); font-size: 16px; color: var(--color-bg); margin-top: 3px; }
+  .volt-mp__bars { display: flex; align-items: flex-end; gap: 4px; height: 36px; margin-top: 16px; }
+  .volt-mp__bars i { flex: 1; background: var(--color-acid); opacity: .7; }
+  .volt-mp__bars i:last-child { opacity: 1; }
+  .volt-mp__trust { display: flex; flex-direction: column; gap: 8px; margin-top: 24px; font-family: var(--font-mono); font-size: 10px; letter-spacing: .08em; text-transform: uppercase; color: var(--color-mid); }
+  .volt-mp__trust i { color: var(--color-acid); font-style: normal; }
+
+  @media (max-width: 860px) { .volt-mp__grid { grid-template-columns: 1fr; gap: 28px; } .volt-mp__visual { position: static; order: -1; } }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:sections.main_product_membership.name",
+  "tag": "section",
+  "settings": [
+    { "type": "textarea", "id": "subtitle", "label": "t:sections.main_product_membership.subtitle", "default": "Everything you need to train by the numbers — dashboard, classes, and member pricing." },
+    { "type": "range", "id": "gauge_value", "min": 0, "max": 100, "step": 1, "unit": "%", "label": "t:sections.main_product_membership.gauge_value", "default": 67 },
+    { "type": "textarea", "id": "features", "label": "t:sections.main_product_membership.features", "info": "t:sections.main_product_membership.features_info", "default": "Unlimited classes\nApp + dashboard access\nMember pricing on all gear\nStrain & recovery tracking\nMonthly coach check-in" },
+    { "type": "text", "id": "guarantee", "label": "t:sections.main_product_membership.guarantee", "default": "30-day guarantee · Cancel anytime · No contracts" },
+    { "type": "text", "id": "social_proof", "label": "t:sections.main_product_membership.social_proof", "default": "Join 2,400+ members training smarter." }
+  ],
+  "blocks": [
+    {
+      "type": "faq",
+      "name": "t:sections.main_product_membership.blocks.faq.name",
+      "settings": [
+        { "type": "text", "id": "question", "label": "t:sections.main_product_membership.blocks.faq.question", "default": "Can I cancel anytime?" },
+        { "type": "richtext", "id": "answer", "label": "t:sections.main_product_membership.blocks.faq.answer", "default": "<p>Yes — memberships are month-to-month. Cancel from your dashboard anytime, no fees.</p>" }
+      ]
+    }
+  ]
+}
+{% endschema %}

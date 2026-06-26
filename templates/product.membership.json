@@ -1,0 +1,25 @@
+{
+  "sections": {
+    "main": {
+      "type": "main-product-membership",
+      "blocks": {
+        "q1": { "type": "faq", "settings": { "question": "Can I cancel anytime?", "answer": "<p>Yes — memberships are month-to-month. Cancel from your dashboard anytime, no fees.</p>" } },
+        "q2": { "type": "faq", "settings": { "question": "What's included in the app?", "answer": "<p>Live recovery and strain scoring, class booking, program tracking, and member-only pricing.</p>" } },
+        "q3": { "type": "faq", "settings": { "question": "Do you offer annual billing?", "answer": "<p>Yes — choose the annual plan at checkout and save 25% versus monthly.</p>" } }
+      },
+      "block_order": ["q1", "q2", "q3"],
+      "settings": {}
+    },
+    "proof": {
+      "type": "before-after",
+      "blocks": {
+        "s1": { "type": "stat", "settings": { "value": "−14", "unit": "kg", "label": "Bodyweight" } },
+        "s2": { "type": "stat", "settings": { "value": "+8", "unit": "", "label": "Personal records" } },
+        "s3": { "type": "stat", "settings": { "value": "+22", "unit": "", "label": "Recovery pts" } }
+      },
+      "block_order": ["s1", "s2", "s3"],
+      "settings": {}
+    }
+  },
+  "order": ["main", "proof"]
+}
