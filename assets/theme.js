@@ -139,6 +139,26 @@
   }
   if (!customElements.get('countdown-timer')) customElements.define('countdown-timer', VoltCountdown);
 
+  /* ---------- Card colour swatches (hover swaps card image) ---------- */
+  document.addEventListener('mouseover', (e) => {
+    const sw = e.target.closest ? e.target.closest('.volt-card__swatch[data-swatch-img]') : null;
+    if (!sw) return;
+    const card = sw.closest('.volt-card');
+    const img = card && card.querySelector('.volt-card__img');
+    if (!img) return;
+    if (!img.dataset.origSrc) img.dataset.origSrc = img.currentSrc || img.src;
+    img.src = sw.dataset.swatchImg;
+    card.querySelectorAll('.volt-card__swatch').forEach((s) => s.classList.remove('is-active'));
+    sw.classList.add('is-active');
+  });
+  document.addEventListener('mouseout', (e) => {
+    const card = e.target.closest ? e.target.closest('.volt-card') : null;
+    if (!card || card.contains(e.relatedTarget)) return;
+    const img = card.querySelector('.volt-card__img');
+    if (img && img.dataset.origSrc) img.src = img.dataset.origSrc;
+    card.querySelectorAll('.volt-card__swatch.is-active').forEach((s) => s.classList.remove('is-active'));
+  });
+
   /* ---------- Smooth scroll (Lenis, if present & enabled) ---------- */
   if (Volt.settings.smoothScroll && !RM && window.Lenis) {
     const lenis = new window.Lenis({ duration: 1.1, easing: (t) => 1 - Math.pow(1 - t, 3) });

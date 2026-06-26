@@ -84,6 +84,19 @@
       },
       {
         "type": "color",
+        "id": "color_acid_accessible",
+        "default": "#6B9100",
+        "label": "t:settings.colors.acid_accessible",
+        "info": "t:settings.colors.acid_accessible_info"
+      },
+      {
+        "type": "color",
+        "id": "color_acid_mid",
+        "default": "#9DC700",
+        "label": "t:settings.colors.acid_mid"
+      },
+      {
+        "type": "color",
         "id": "color_mid",
         "default": "#8A8784",
         "label": "t:settings.colors.mid"

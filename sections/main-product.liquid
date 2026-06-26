@@ -12,6 +12,12 @@
     endif
   endfor
 -%}
+{%- assign rating_drop = p.metafields.reviews.rating.value -%}
+{%- if rating_drop != blank and rating_drop.rating != blank -%}
+  <script type="application/ld+json">
+    {"@context":"https://schema.org/","@type":"Product","name":{{ p.title | json }},"aggregateRating":{"@type":"AggregateRating","ratingValue":"{{ rating_drop.rating }}","reviewCount":"{{ p.metafields.reviews.rating_count.value | default: 0 }}","bestRating":"{{ rating_drop.scale_max | default: 5 }}","worstRating":"1"}}
+  </script>
+{%- endif -%}
 <section class="volt-pdp" data-animate>
   <div class="volt-pdp__crumbs">
     <a href="{{ routes.root_url }}">Shop</a><span>/</span>
@@ -55,8 +61,8 @@
         <h1 class="volt-pdp__title">{{ p.title }}</h1>
         {%- if p.vendor != blank -%}<div class="volt-pdp__sub">{{ p.vendor }}</div>{%- endif -%}
 
-        {%- if section.settings.show_rating and section.settings.rating != blank -%}
-          <div class="volt-pdp__rating"><span class="volt-pdp__stars">★★★★★</span><span>{{ section.settings.rating }}</span>{%- if section.settings.review_count != blank -%}<span class="volt-pdp__revcount">· {{ section.settings.review_count }} reviews</span>{%- endif -%}</div>
+        {%- if section.settings.show_rating -%}
+          <div class="volt-pdp__rating">{% render 'product-rating', product: p, show_empty: true %}</div>
         {%- endif -%}
 
         <div class="volt-pdp__pricerow">
@@ -212,6 +218,13 @@
     {%- assign rec = section.settings.recommendations_collection -%}
     {%- if rec == blank -%}{%- assign rec = p.collections.first -%}{%- endif -%}
     {%- if rec != blank and rec.products.size > 1 -%}
+      {%- assign app_blocks = section.blocks | where: 'type', '@app' -%}
+      {%- if app_blocks.size > 0 -%}
+        <div id="reviews-section" class="volt-pdp__reviews">
+          {%- for block in app_blocks -%}{% render block %}{%- endfor -%}
+        </div>
+      {%- endif -%}
+
       <div class="volt-pdp__recs">
         <div class="volt-pdp__receyebrow">{{ section.settings.recommendations_eyebrow }}</div>
         <h2 class="volt-pdp__rectitle">{{ section.settings.recommendations_heading }}</h2>
@@ -341,6 +354,7 @@
   .volt-pdp__faqitem[open] .volt-pdp__faqicon { transform: rotate(45deg); }
   .volt-pdp__faqbody { font-size: 14px; line-height: 1.65; color: var(--color-mid); padding: 0 4px 22px; max-width: 64ch; }
 
+  .volt-pdp__reviews { margin-top: 72px; scroll-margin-top: calc(var(--header-height) + 24px); }
   .volt-pdp__recs { margin-top: 72px; }
   .volt-pdp__receyebrow { font-family: var(--font-mono); font-size: 11px; letter-spacing: .18em; text-transform: uppercase; color: var(--color-mid); }
   .volt-pdp__rectitle { font-family: var(--font-display); font-weight: 700; font-size: clamp(26px, 2.6vw, 38px); margin: 12px 0 28px; }
@@ -482,7 +496,8 @@
         { "type": "text", "id": "heading", "label": "t:sections.main_product.blocks.size_chart.heading", "default": "Size guide" },
         { "type": "richtext", "id": "size_data", "label": "t:sections.main_product.blocks.size_chart.size_data", "info": "t:sections.main_product.blocks.size_chart.size_data_info" }
       ]
-    }
+    },
+    { "type": "@app" }
   ]
 }
 {% endschema %}

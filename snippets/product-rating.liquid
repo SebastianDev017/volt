@@ -1,0 +1,44 @@
+{% doc %}
+  Star rating from the STANDARD Shopify reviews metafields
+  (reviews.rating + reviews.rating_count) — populated automatically by
+  Judge.me / Okendo / Shopify Product Reviews / Stamped / Fera / etc.
+  No custom merchant config. Renders nothing unless a rating exists, or a
+  muted empty state when `show_empty` is passed true.
+
+  @param {product} product - the product
+  @param {boolean} [show_empty] - render an empty placeholder when no rating
+{% enddoc %}
+{%- liquid
+  assign rating_meta = product.metafields.reviews.rating.value
+  assign rating_count = product.metafields.reviews.rating_count.value
+  assign show_empty = show_empty | default: false
+-%}
+{%- capture star -%}<svg class="rating-star" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 1l1.76 5.2H15.24l-4.5 3.12L12.5 14.52 8 11.4 3.5 14.52 5.26 9.32 0.76 6.2H6.24z"/></svg>{%- endcapture -%}
+{%- if rating_meta != blank and rating_meta.rating != blank -%}
+  {%- assign rf = rating_meta.rating | plus: 0.0 -%}
+  {%- assign rmax = rating_meta.scale_max | default: 5 | plus: 0.0 -%}
+  {%- assign rr = rf | round: 1 -%}
+  {%- assign pct = rf | divided_by: rmax | times: 100.0 -%}
+  <div class="product-rating" itemscope itemtype="https://schema.org/AggregateRating">
+    <meta itemprop="ratingValue" content="{{ rr }}">
+    <meta itemprop="reviewCount" content="{{ rating_count | default: 0 }}">
+    <meta itemprop="bestRating" content="{{ rmax | round }}">
+    <meta itemprop="worstRating" content="1">
+    <span class="rating-stars" role="img" aria-label="{{ rr }} / {{ rmax | round }}">
+      <span class="rating-stars__row rating-stars__base">{{ star }}{{ star }}{{ star }}{{ star }}{{ star }}</span>
+      <span class="rating-stars__row rating-stars__fill" style="width: {{ pct }}%;">{{ star }}{{ star }}{{ star }}{{ star }}{{ star }}</span>
+    </span>
+    {%- if rating_count and rating_count > 0 -%}
+      <a href="#reviews-section" class="rating-count">{{ rr }}<span class="rating-count__n"> &middot; {{ rating_count }}</span></a>
+    {%- else -%}
+      <span class="rating-count">{{ rr }}</span>
+    {%- endif -%}
+  </div>
+{%- elsif show_empty -%}
+  <div class="product-rating product-rating--empty">
+    <span class="rating-stars" role="img" aria-label="{{ 'products.no_reviews' | t }}">
+      <span class="rating-stars__row rating-stars__base">{{ star }}{{ star }}{{ star }}{{ star }}{{ star }}</span>
+    </span>
+    <span class="rating-count rating-count--empty">{{ 'products.no_reviews' | t }}</span>
+  </div>
+{%- endif -%}

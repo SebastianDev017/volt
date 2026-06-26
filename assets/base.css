@@ -10,6 +10,8 @@
   --color-surface: #E8E5E0;
   --color-ink: #0D0C0B;
   --color-acid: #D4FF00;
+  --color-acid-accessible: #6B9100; /* dark lime — acid TEXT on light backgrounds (WCAG AA) */
+  --color-acid-mid: #9DC700;
   --color-mid: #8A8784;
   --color-border: #D0CDC8;
   --color-danger: #E84040;
@@ -86,7 +88,12 @@ ul, ol{ list-style: none; padding: 0; }
 .h1{ font-size: calc(clamp(40px, 4vw, 64px) * var(--heading-scale)); line-height: 0.95; letter-spacing: -0.015em; }
 .h2{ font-size: calc(clamp(28px, 2.8vw, 44px) * var(--heading-scale)); line-height: 1.02; }
 .h3{ font-size: calc(clamp(20px, 2vw, 28px) * var(--heading-scale)); line-height: 1.08; font-weight: var(--font-display-weight-2); }
-.acid{ color: var(--color-acid); }
+.acid{ color: var(--color-acid-accessible); }
+.acid-text{ color: var(--color-acid-accessible); }
+/* Dark sections (ink backgrounds) sit inside the light preset — acid TEXT there
+   should use the full bright acid, so they opt back in via a local token. */
+.volt-hero__panel, .volt-ba, .volt-tier--popular, .volt-mp__preview, .volt-mp__visual,
+.volt-diag, .volt-loader, .volt-grid__promo--ink, [data-scheme="ink"]{ --color-acid-accessible: var(--color-acid); }
 
 .body-lg{ font-size: calc(17px * var(--body-scale)); line-height: 1.6; }
 .body{ font-size: calc(15px * var(--body-scale)); line-height: 1.65; }
@@ -112,7 +119,7 @@ ul, ol{ list-style: none; padding: 0; }
   font-size: 11px;
   letter-spacing: 0.16em;
   text-transform: uppercase;
-  color: var(--color-acid);
+  color: var(--color-acid-accessible);
 }
 
 /* ---------- layout ---------- */
@@ -175,6 +182,18 @@ ul, ol{ list-style: none; padding: 0; }
 
 /* ---------- card primitive ---------- */
 .card{ background: var(--color-surface); border: 1px solid var(--color-border); border-radius: 0; }
+
+/* ---------- product rating (reviews.* metafields) ---------- */
+.product-rating{ display: inline-flex; align-items: center; gap: 8px; }
+.rating-stars{ position: relative; display: inline-flex; line-height: 0; }
+.rating-stars__row{ display: inline-flex; gap: 1px; white-space: nowrap; }
+.rating-stars__fill{ position: absolute; inset: 0; overflow: hidden; }
+.rating-star{ width: 14px; height: 14px; flex: 0 0 auto; display: block; }
+.rating-stars__base .rating-star{ fill: var(--color-border); }
+.rating-stars__fill .rating-star{ fill: var(--color-acid-accessible); }
+.rating-count{ font-family: var(--font-mono); font-size: 11px; color: var(--color-mid); text-decoration: none; transition: color var(--dur-fast) var(--ease); }
+a.rating-count:hover{ color: var(--color-ink); }
+.rating-count__n{ color: var(--color-mid); }
 
 /* ---------- rich text (rte) ---------- */
 .rte > :first-child{ margin-top: 0; }

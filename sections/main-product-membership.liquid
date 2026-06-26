@@ -29,6 +29,7 @@
           <span class="volt-mp__price">{{ p.price | money }}</span><span class="volt-mp__per">/mo</span>
           {%- if p.compare_at_price > p.price -%}<span class="volt-mp__compare">{{ p.compare_at_price | money }}</span>{%- endif -%}
         </div>
+        {% render 'product-rating', product: p, show_empty: true %}
 
         {%- form 'product', p, id: 'membership-form', class: 'volt-mp__form' -%}
           <input type="hidden" name="id" value="{{ v.id }}">
