@@ -358,6 +358,19 @@
           "answer": "Answer"
         }
       }
+    },
+    "main_product_bundle": {
+      "name": "Bundle product",
+      "note": "Reads volt.bundle_items (list of products), volt.bundle_discount (integer %), and volt.bundle_label from the product metafields.",
+      "social_proof": "Social proof",
+      "blocks": {
+        "benefit": {
+          "name": "Benefit",
+          "icon": "Icon (emoji)",
+          "heading": "Heading",
+          "description": "Description"
+        }
+      }
     }
   },
   "settings": {

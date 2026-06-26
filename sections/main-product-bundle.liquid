@@ -1,0 +1,181 @@
+{%- liquid
+  assign p = product
+  assign items = p.metafields.volt.bundle_items.value
+  assign discount = p.metafields.volt.bundle_discount
+  assign label = p.metafields.volt.bundle_label | default: 'Bundle Deal'
+  assign individual = 0
+  if items
+    for it in items
+      assign individual = individual | plus: it.price
+    endfor
+  endif
+  assign savings = individual | minus: p.price
+-%}
+<section class="volt-bundle" data-animate>
+  <div class="volt-bundle__inner">
+    <div class="volt-bundle__head">
+      <span class="volt-bundle__badge">{{ label }}</span>
+      <h1 class="volt-bundle__title">{{ p.title }}</h1>
+      {%- if discount != blank -%}
+        <div class="volt-bundle__savecallout">Save {{ discount }}% vs buying individually</div>
+      {%- elsif savings > 0 -%}
+        <div class="volt-bundle__savecallout">Save {{ savings | money }} vs buying individually</div>
+      {%- endif -%}
+      {%- if section.settings.social_proof != blank -%}<p class="volt-bundle__social">{{ section.settings.social_proof }}</p>{%- endif -%}
+    </div>
+
+    {%- if items and items.size > 0 -%}
+      <form data-bundle-form data-bundle-handle="{{ p.handle }}" class="volt-bundle__form">
+        <div class="volt-bundle__grid">
+          {%- for it in items -%}
+            {%- assign iv = it.selected_or_first_available_variant -%}
+            <div class="volt-bundle__item">
+              <a href="{{ it.url }}" class="volt-bundle__itemimg">
+                {%- if it.featured_image -%}{{ it.featured_image | image_url: width: 400 | image_tag: loading: 'lazy', widths: '200, 300, 400', alt: it.title | escape }}
+                {%- else -%}{{ 'product-1' | placeholder_svg_tag: '' }}{%- endif -%}
+                <span class="volt-bundle__included">Included</span>
+              </a>
+              <div class="volt-bundle__itembody">
+                <div class="volt-bundle__itemname">{{ it.title }}</div>
+                {%- if it.variants.size > 1 -%}
+                  <label class="volt-bundle__choose" for="bi-{{ forloop.index }}">Choose your option</label>
+                  <select id="bi-{{ forloop.index }}" class="volt-bundle__select" data-bundle-item data-quantity="1">
+                    {%- for variant in it.variants -%}{%- if variant.available -%}<option value="{{ variant.id }}">{{ variant.title }}</option>{%- endif -%}{%- endfor -%}
+                  </select>
+                {%- else -%}
+                  <input type="hidden" data-bundle-item data-quantity="1" value="{{ iv.id }}">
+                {%- endif -%}
+                <div class="volt-bundle__itemprice"><s>{{ it.price | money }}</s><span>Included in bundle</span></div>
+              </div>
+            </div>
+          {%- endfor -%}
+        </div>
+
+        <div class="volt-bundle__pricing">
+          <div class="volt-bundle__pricecol">
+            {%- if individual > 0 -%}<div class="volt-bundle__indiv">Individual value <s>{{ individual | money }}</s></div>{%- endif -%}
+            <div class="volt-bundle__price">{{ p.price | money }}</div>
+            {%- if savings > 0 -%}<span class="volt-bundle__savepill">You save {% if discount != blank %}{{ discount }}% — {% endif %}{{ savings | money }}</span>{%- endif -%}
+          </div>
+          <button type="submit" data-bundle-submit class="volt-bundle__add">Add protocol to bag</button>
+        </div>
+
+        <div class="volt-bundle__callouts">
+          <span><i>&#9670;</i> Free shipping</span><span><i>&#9670;</i> Ships in 2&ndash;3 days</span><span><i>&#9670;</i> 30-day guarantee</span>
+        </div>
+      </form>
+    {%- else -%}
+      <p class="volt-bundle__empty">Add products to this bundle via the <strong>volt.bundle_items</strong> metafield (list of product references).</p>
+    {%- endif -%}
+
+    {%- assign benefits = section.blocks | where: 'type', 'bundle_benefit' -%}
+    {%- if benefits.size > 0 -%}
+      <div class="volt-bundle__why">
+        <div class="volt-bundle__whyeyebrow">// Why this bundle</div>
+        <div class="volt-bundle__whygrid">
+          {%- for block in benefits -%}
+            <div class="volt-bundle__benefit" {{ block.shopify_attributes }}>
+              {%- if block.settings.icon != blank -%}<span class="volt-bundle__benefiticon">{{ block.settings.icon }}</span>{%- endif -%}
+              <h3 class="volt-bundle__benefitheading">{{ block.settings.heading }}</h3>
+              {%- if block.settings.description != blank -%}<p class="volt-bundle__benefitdesc">{{ block.settings.description }}</p>{%- endif -%}
+            </div>
+          {%- endfor -%}
+        </div>
+      </div>
+    {%- endif -%}
+  </div>
+</section>
+
+{% stylesheet %}
+  .volt-bundle__inner { max-width: var(--page-width); margin-inline: auto; padding: 40px 28px 70px; }
+  .volt-bundle__head { text-align: center; max-width: 720px; margin: 0 auto 40px; }
+  .volt-bundle__badge { display: inline-block; font-family: var(--font-mono); font-size: 10px; letter-spacing: .14em; text-transform: uppercase; background: var(--color-acid); color: var(--color-ink); padding: 5px 10px; }
+  .volt-bundle__title { font-family: var(--font-display); font-weight: 800; font-size: clamp(32px, 4vw, 52px); line-height: 1.02; letter-spacing: -.01em; margin: 16px 0 0; }
+  .volt-bundle__savecallout { font-family: var(--font-mono); font-size: 13px; letter-spacing: .04em; color: var(--color-acid); margin-top: 14px; }
+  .volt-bundle__social { font-family: var(--font-display); font-style: italic; color: var(--color-mid); margin: 8px 0 0; }
+  .volt-bundle__grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--color-border); border: 1px solid var(--color-border); }
+  .volt-bundle__item { background: var(--color-bg); display: flex; flex-direction: column; }
+  .volt-bundle__itemimg { position: relative; display: block; aspect-ratio: 1/1; background: var(--color-surface); overflow: hidden; }
+  .volt-bundle__itemimg img { width: 100%; height: 100%; object-fit: cover; }
+  .volt-bundle__included { position: absolute; top: 0; left: 0; font-family: var(--font-mono); font-size: 9px; letter-spacing: .12em; text-transform: uppercase; background: var(--color-success); color: #06210F; padding: 5px 9px; }
+  .volt-bundle__itembody { padding: 16px; display: flex; flex-direction: column; gap: 8px; flex: 1; }
+  .volt-bundle__itemname { font-family: var(--font-display); font-weight: 700; font-size: 16px; }
+  .volt-bundle__choose { font-family: var(--font-mono); font-size: 10px; letter-spacing: .06em; color: var(--color-mid); }
+  .volt-bundle__select { width: 100%; background: var(--color-bg); border: 1px solid var(--color-border); border-radius: 0; padding: 10px 12px; font-family: var(--font-body); font-size: 13px; }
+  .volt-bundle__itemprice { margin-top: auto; font-family: var(--font-mono); font-size: 12px; }
+  .volt-bundle__itemprice s { color: var(--color-mid); }
+  .volt-bundle__itemprice span { display: block; color: var(--color-acid); font-style: italic; margin-top: 4px; }
+  .volt-bundle__pricing { display: flex; align-items: center; justify-content: space-between; gap: 24px; flex-wrap: wrap; border: 1px solid var(--color-border); border-top: 0; padding: 24px 28px; }
+  .volt-bundle__indiv { font-family: var(--font-mono); font-size: 12px; color: var(--color-mid); }
+  .volt-bundle__indiv s { margin-left: 6px; }
+  .volt-bundle__price { font-family: var(--font-display); font-weight: 800; font-size: clamp(36px, 4vw, 56px); line-height: 1; margin: 4px 0; }
+  .volt-bundle__savepill { display: inline-block; font-family: var(--font-mono); font-size: 12px; background: var(--color-acid); color: var(--color-ink); padding: 6px 12px; }
+  .volt-bundle__add { background: var(--color-acid); border: 0; color: var(--color-ink); font-family: var(--font-body); font-weight: 500; font-size: 14px; letter-spacing: .05em; text-transform: uppercase; padding: 18px 32px; cursor: pointer; }
+  .volt-bundle__callouts { display: flex; justify-content: center; gap: 24px; flex-wrap: wrap; margin-top: 18px; font-family: var(--font-mono); font-size: 10px; letter-spacing: .08em; text-transform: uppercase; color: var(--color-mid); }
+  .volt-bundle__callouts i { color: var(--color-acid); font-style: normal; }
+  .volt-bundle__empty { text-align: center; color: var(--color-mid); padding: 40px 0; }
+  .volt-bundle__why { margin-top: 64px; }
+  .volt-bundle__whyeyebrow { font-family: var(--font-mono); font-size: 11px; letter-spacing: .18em; text-transform: uppercase; color: var(--color-mid); margin-bottom: 24px; }
+  .volt-bundle__whygrid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+  .volt-bundle__benefiticon { font-size: 26px; }
+  .volt-bundle__benefitheading { font-family: var(--font-display); font-weight: 700; font-size: 18px; margin: 12px 0 6px; }
+  .volt-bundle__benefitdesc { font-size: 14px; line-height: 1.6; color: var(--color-mid); margin: 0; }
+  @media (max-width: 860px) { .volt-bundle__grid, .volt-bundle__whygrid { grid-template-columns: 1fr; } .volt-bundle__pricing { flex-direction: column; align-items: stretch; } .volt-bundle__add { width: 100%; } }
+{% endstylesheet %}
+
+<script>
+  (function () {
+    function init(form) {
+      var button = form.querySelector('[data-bundle-submit]');
+      form.addEventListener('submit', function (e) {
+        e.preventDefault();
+        if (!button) return;
+        button.disabled = true; var original = button.textContent; button.textContent = 'Adding...';
+        var items = [];
+        form.querySelectorAll('[data-bundle-item]').forEach(function (el) {
+          if (!el.value) return;
+          items.push({ id: parseInt(el.value, 10), quantity: parseInt(el.dataset.quantity || '1', 10), properties: { _bundle: form.dataset.bundleHandle, _bundle_item: 'true' } });
+        });
+        if (!items.length) { button.disabled = false; button.textContent = original; return; }
+        fetch('/cart/add.js', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ items: items }) })
+          .then(function (r) { if (!r.ok) throw new Error('add failed'); return r.json(); })
+          .then(function () { return fetch('/cart.js'); })
+          .then(function (r) { return r.json(); })
+          .then(function (cart) {
+            document.querySelectorAll('[data-cart-count]').forEach(function (n) { n.textContent = cart.item_count; });
+            document.dispatchEvent(new CustomEvent('volt:cart:open'));
+            document.dispatchEvent(new CustomEvent('cart:updated', { detail: { item_count: cart.item_count } }));
+            button.textContent = 'Added to bag ✓';
+            setTimeout(function () { button.disabled = false; button.textContent = original; }, 2500);
+          })
+          .catch(function () { button.textContent = 'Try again'; setTimeout(function () { button.disabled = false; button.textContent = original; }, 2500); });
+      });
+    }
+    document.querySelectorAll('[data-bundle-form]').forEach(init);
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "t:sections.main_product_bundle.name",
+  "tag": "section",
+  "settings": [
+    { "type": "paragraph", "content": "t:sections.main_product_bundle.note" },
+    { "type": "text", "id": "social_proof", "label": "t:sections.main_product_bundle.social_proof", "default": "Most popular protocol" }
+  ],
+  "blocks": [
+    {
+      "type": "bundle_benefit",
+      "name": "t:sections.main_product_bundle.blocks.benefit.name",
+      "settings": [
+        { "type": "text", "id": "icon", "label": "t:sections.main_product_bundle.blocks.benefit.icon", "default": "⚡" },
+        { "type": "text", "id": "heading", "label": "t:sections.main_product_bundle.blocks.benefit.heading", "default": "Engineered to stack" },
+        { "type": "textarea", "id": "description", "label": "t:sections.main_product_bundle.blocks.benefit.description", "default": "Each item is dosed to work with the others — no redundant ingredients, no wasted scoops." }
+      ]
+    }
+  ],
+  "presets": [
+    { "name": "t:sections.main_product_bundle.name" }
+  ]
+}
+{% endschema %}
