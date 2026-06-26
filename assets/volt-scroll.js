@@ -12,6 +12,7 @@
   if (!window.Lenis) return;
 
   var lenis = new window.Lenis({ lerp: 0.08, duration: 1.2, smoothWheel: true });
+  lenis.scrollTo(0, { immediate: true }); // pin to top before any ScrollTrigger setup (FIX 12)
 
   window.VoltLenis = lenis;
   window.Volt = window.Volt || {};

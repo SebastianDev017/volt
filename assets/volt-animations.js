@@ -71,7 +71,7 @@
     // refresh here runs AFTER Lenis init; refresh again on load once images/
     // fonts settle so trigger positions are correct (prevents mid-page landings).
     if (window.ScrollTrigger) {
-      ScrollTrigger.refresh();
+      requestAnimationFrame(function () { ScrollTrigger.refresh(); });
       window.addEventListener('load', function () { ScrollTrigger.refresh(); });
     }
   }
