@@ -1,0 +1,169 @@
+{
+  "404": {
+    "title": "404",
+    "not_found": "Página no encontrada.",
+    "back_to_shopping": "Volver a la tienda"
+  },
+  "general": {
+    "skip_to_content": "Saltar al contenido"
+  },
+  "blog": {
+    "article_comments": "Comentarios",
+    "article_metadata_html": "{{ date }} by {{ author }}",
+    "comment_form_body": "Comentario",
+    "comment_form_email": "Correo electrónico",
+    "comment_form_name": "Nombre",
+    "comment_form_submit": "Publicar",
+    "comment_form_title": "Añadir un comentario"
+  },
+  "cart": {
+    "checkout": "Pagar",
+    "title": "Carrito",
+    "update": "Actualizar",
+    "remove": "Eliminar"
+  },
+  "customers": {
+    "login": {
+      "email": "Correo electrónico",
+      "password": "Contraseña",
+      "submit": "Iniciar sesión",
+      "title": "Acceder"
+    }
+  },
+  "collections": {
+    "title": "Colecciones"
+  },
+  "gift_card": {
+    "add_to_apple_wallet": "Añadir a Apple Wallet",
+    "card": "Tarjeta de regalo",
+    "expired": "Esta tarjeta de regalo ha caducado",
+    "expires_on": "Caduca el {{ expires_on }}",
+    "use_at_checkout": "Usa esta tarjeta de regalo al pagar"
+  },
+  "password": {
+    "title": "Esta tienda es privada",
+    "password": "Contraseña",
+    "enter": "Entrar"
+  },
+  "search": {
+    "title": "Buscar",
+    "placeholder": "Busca artículos, páginas o productos",
+    "submit": "Buscar",
+    "no_results_html": "No se encontraron resultados para {{ terms }}",
+    "results_for_html": "{{ count }} resultados para {{ terms }}"
+  },
+  "sections": {
+    "membership_tiers": {
+      "billing_toggle_label": "Periodo de facturación",
+      "monthly": "Mensual",
+      "annually": "Anual",
+      "save_badge": "Ahorra 25%",
+      "most_popular": "Más popular",
+      "offer_ends": "La tarifa fundadora termina",
+      "intensity": "Intensidad",
+      "per_mo": "/mes",
+      "billed_monthly": "Facturación mensual, cancela cuando quieras",
+      "access_dashboard": "Accede a tu panel"
+    },
+    "footer_main": {
+      "rights": "Todos los derechos reservados.",
+      "trust_secure": "Pago seguro",
+      "trust_shipping": "Envío gratis +$75",
+      "trust_returns": "Devoluciones en 30 días",
+      "trust_nsf": "Certificado NSF"
+    },
+    "newsletter_diagnostic": {
+      "q1_title": "Objetivo principal",
+      "q1_a": "Ganar fuerza",
+      "q1_b": "Mejorar resistencia",
+      "q1_c": "Perder grasa",
+      "q1_d": "Salud general",
+      "q2_title": "Frecuencia de entrenamiento",
+      "q2_a": "1–2x por semana",
+      "q2_b": "3–4x por semana",
+      "q2_c": "5+ por semana",
+      "q2_d": "Aún no entreno",
+      "q3_title": "Mayor desafío",
+      "q3_a": "Mantener la motivación",
+      "q3_b": "Programación",
+      "q3_c": "Nutrición",
+      "q3_d": "Recuperación",
+      "q4_title": "Membresía de interés",
+      "q4_a": "Starter",
+      "q4_b": "Performance",
+      "q4_c": "Elite",
+      "cta": "Empezar mi protocolo",
+      "back": "Atrás",
+      "nl_success": "Ya estás dentro. Revisa tu correo para el primer envío.",
+      "nl_placeholder": "Correo electrónico",
+      "nl_submit": "Suscribirse"
+    },
+    "header_main": {
+      "skip_to_content": "Saltar al contenido",
+      "open_menu": "Abrir menú",
+      "close_menu": "Cerrar menú",
+      "primary_nav": "Principal",
+      "view_all": "Ver todo",
+      "search": "Buscar",
+      "account": "Cuenta",
+      "cart": "Carrito",
+      "promo_eyebrow": "Solo miembros",
+      "promo_title": "Entrena con datos, no con suposiciones.",
+      "promo_body": "Puntuación de recuperación, esfuerzo y sueño para tu forma real de moverte.",
+      "promo_cta": "Empieza tu protocolo"
+    },
+    "announcement_bar": {
+      "aria_label": "Anuncio",
+      "dismiss": "Cerrar anuncio"
+    },
+    "before_after": {
+      "range_label": "Arrastra para comparar antes y después"
+    },
+    "marquee": {
+      "aria_label": "Destacados"
+    },
+    "vitals_strip": {
+      "aria": "Estadísticas de miembros"
+    },
+    "promo_popup": {
+      "eyebrow": "Solo miembros",
+      "email_label": "Correo electrónico",
+      "email_placeholder": "Correo electrónico",
+      "email_submit": "Unirme",
+      "success": "Ya estás dentro. Revisa tu correo.",
+      "copy": "Copiar",
+      "copied": "Copiado ✓",
+      "close": "Cerrar"
+    },
+    "slideshow": {
+      "previous": "Diapositiva anterior",
+      "next": "Siguiente diapositiva",
+      "go_to": "Ir a la diapositiva"
+    },
+    "image_hotspot": {
+      "view_product": "Ver producto",
+      "learn_more": "Saber más",
+      "toggle_label": "Ver detalles"
+    }
+  },
+  "products": {
+    "membership": "Membresía",
+    "bundle": "Pack",
+    "save": "Ahorra",
+    "sold_out": "Agotado",
+    "only_left": "Solo quedan {{ count }}",
+    "member_off": "Miembro −20%",
+    "quick_add": "+ Añadir",
+    "from": "desde",
+    "per_mo": "/mes",
+    "join_now": "Únete ahora",
+    "get_bundle": "Llévate el pack",
+    "member": "miembro",
+    "quick_view": "Vista rápida",
+    "close": "Cerrar",
+    "loading": "Cargando…",
+    "zoom": "Ampliar imagen",
+    "add": "Añadir al carrito",
+    "view_details": "Ver todos los detalles"
+  }
+}
