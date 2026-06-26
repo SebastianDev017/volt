@@ -44,12 +44,27 @@ or any paid app. The theme has ZERO billing logic — only renders the UI widget
 Custom UI: "SUBSCRIBE & SAVE" toggle (acid when active), plan radios (acid border), savings pill "-25% ANNUAL",
 one-time option (ghost styling).
 
-## METAFIELDS
-- `product.metafields.volt.badge`    string: new/bestseller/limited/rare
-- `product.metafields.volt.category` string: strength/recovery/endurance/nutrition
-- `product.metafields.volt.specs`    JSON: {protein, carbs, fat, serving, cert}
-- `product.metafields.volt.protocol` rich_text: usage protocol
-- `product.metafields.volt.tier`     string: starter/performance/elite (membership)
+## METAFIELDS (namespace `volt`)
+Standard products (template suffix none):
+- `product.metafields.volt.badge`    single_line_text: new/bestseller/limited/rare → card + PDP badge
+- `product.metafields.volt.category` single_line_text: strength/recovery/endurance/nutrition → card/PDP category line
+- `product.metafields.volt.specs`    json: {protein, carbs, fat, serving, cert} → card spec line + PDP spec line
+- `product.metafields.volt.protocol` rich_text: usage/how-to-use protocol
+
+Membership products (template suffix `membership`):
+- `product.metafields.volt.tier`     single_line_text: starter/performance/elite → tier badge + gauge default (33/67/100)
+- `product.metafields.volt.features` json (list of strings): "What's included" unlock list (falls back to the section's features textarea)
+
+Bundle products (template suffix `bundle`):
+- `product.metafields.volt.bundle_items`    list.product_reference: the products in the bundle (grid + multi-add)
+- `product.metafields.volt.bundle_discount` number_integer: % saved vs individual (badge + savings pill; the actual discount is a Shopify automatic/cart discount the merchant configures — items add with `properties._bundle`)
+- `product.metafields.volt.bundle_label`    single_line_text: header badge text (default "Bundle Deal")
+
+Template detection: `snippets/product-card.liquid` branches on `product.template_suffix`
+(membership → "Membership" badge + "from $X/mo" + Join now; bundle → "Bundle · Save X%" + Get the bundle; else standard quick-add + member price).
+
+CUSTOMER (merchant sets via Shopify Flow or manually) — gates header tier badge + membership page:
+- `customer.tags`: `volt-member-starter` / `volt-member-performance` / `volt-member-elite`
 
 ## METAOBJECTS
 - NutritionFacts: serving_size, calories, protein, carbs, fat, fiber, key_vitamins (JSON), certifications (list)

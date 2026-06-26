@@ -1,5 +1,5 @@
 {% doc %}
-  Renders a VOLT product card (design-exact) for product grids.
+  Renders a VOLT product card with per-template behaviour (standard / membership / bundle).
   @param {product} card_product - The product to render. If blank, an onboarding placeholder is shown.
   @example
   {% render 'product-card', card_product: product %}
@@ -19,55 +19,72 @@
   </div>
 {%- else -%}
   {%- liquid
+    assign tpl = p.template_suffix
     assign v = p.selected_or_first_available_variant
     assign mprice = p.price | times: 0.8
     assign badge = p.metafields.volt.badge
     assign cat = p.metafields.volt.category
     assign sp = p.metafields.volt.specs.value
+    assign bundle_discount = p.metafields.volt.bundle_discount
   -%}
-  <div class="volt-card">
+  <div class="volt-card volt-card--{{ tpl | default: 'standard' }}">
     <div class="volt-card__media">
       <a href="{{ p.url }}" class="volt-card__imglink">
         {%- if p.featured_image -%}
           {{ p.featured_image | image_url: width: 600 | image_tag: loading: 'lazy', widths: '300, 400, 600', sizes: '(max-width: 860px) 50vw, 25vw', class: 'volt-card__img', alt: p.featured_image.alt | default: p.title | escape }}
-          {%- if settings.hover_swap and p.images[1] -%}
-            {{ p.images[1] | image_url: width: 600 | image_tag: loading: 'lazy', widths: '300, 400, 600', class: 'volt-card__img volt-card__img--2', alt: '' }}
-          {%- endif -%}
-        {%- else -%}
-          {{ 'product-1' | placeholder_svg_tag: 'volt-card__ph' }}
-        {%- endif -%}
+          {%- if settings.hover_swap and p.images[1] -%}{{ p.images[1] | image_url: width: 600 | image_tag: loading: 'lazy', widths: '300, 400, 600', class: 'volt-card__img volt-card__img--2', alt: '' }}{%- endif -%}
+        {%- else -%}{{ 'product-1' | placeholder_svg_tag: 'volt-card__ph' }}{%- endif -%}
       </a>
+
       <div class="volt-card__badges">
-        {%- if p.available == false -%}
-          <span class="volt-card__badge volt-card__badge--ink">Sold out</span>
+        {%- if tpl == 'membership' -%}
+          <span class="volt-card__badge volt-card__badge--acid">{{ 'products.membership' | t: default: 'Membership' }}</span>
+        {%- elsif tpl == 'bundle' -%}
+          <span class="volt-card__badge volt-card__badge--acid">{{ 'products.bundle' | t: default: 'Bundle' }}{% if bundle_discount != blank %} · {{ 'products.save' | t: default: 'Save' }} {{ bundle_discount }}%{% endif %}</span>
+        {%- elsif p.available == false -%}
+          <span class="volt-card__badge volt-card__badge--ink">{{ 'products.sold_out' | t: default: 'Sold out' }}</span>
         {%- elsif badge != blank -%}
           <span class="volt-card__badge volt-card__badge--ink">{{ badge }}</span>
         {%- endif -%}
         {%- if p.available and v.inventory_management != blank and v.inventory_quantity > 0 and v.inventory_quantity < settings.stock_threshold -%}
-          <span class="volt-card__badge volt-card__badge--danger">Only {{ v.inventory_quantity }} left</span>
+          <span class="volt-card__badge volt-card__badge--danger">{{ 'products.only_left' | t: count: v.inventory_quantity, default: 'Only X left' }}</span>
         {%- endif -%}
       </div>
-      {%- if show_member -%}<span class="volt-card__member">Member &minus;20%</span>{%- endif -%}
-      {%- if settings.quick_buy and p.available -%}
+
+      {%- if show_member and tpl == blank -%}<span class="volt-card__member">{{ 'products.member_off' | t: default: 'Member −20%' }}</span>{%- endif -%}
+
+      {%- if settings.quick_buy and p.available and tpl == blank -%}
         {%- form 'product', p, class: 'volt-card__qa' -%}
           <input type="hidden" name="id" value="{{ v.id }}">
-          <button type="submit" name="add" class="volt-card__qabtn">+ Quick Add</button>
+          <button type="submit" name="add" class="volt-card__qabtn">{{ 'products.quick_add' | t: default: '+ Quick Add' }}</button>
         {%- endform -%}
       {%- endif -%}
     </div>
+
     <div class="volt-card__body">
       {%- if cat != blank -%}<span class="volt-card__cat">{{ cat }}</span>{%- endif -%}
       <a href="{{ p.url }}" class="volt-card__title">{{ p.title }}</a>
-      {%- if settings.show_tasting_specs and sp != blank -%}
-        {%- capture specline -%}{%- if sp.protein != blank %}PRO {{ sp.protein }}{% endif %}{%- if sp.carbs != blank %} · CARBS {{ sp.carbs }}{% endif %}{%- if sp.serving != blank %} · {{ sp.serving }}{% endif %}{%- endcapture -%}
-        {%- assign specline = specline | strip -%}
-        {%- if specline != blank -%}<div class="volt-card__specs">{{ specline }}</div>{%- endif -%}
+
+      {%- if tpl == 'membership' -%}
+        <div class="volt-card__price">
+          <span class="volt-card__amount">{{ 'products.from' | t: default: 'from' }} {{ p.price | money }}</span><span class="volt-card__permo">{{ 'products.per_mo' | t: default: '/mo' }}</span>
+        </div>
+        <a href="{{ p.url }}" class="volt-card__tplcta">{{ 'products.join_now' | t: default: 'Join now' }} &rarr;</a>
+      {%- elsif tpl == 'bundle' -%}
+        <div class="volt-card__price"><span class="volt-card__amount">{{ p.price | money }}</span>{%- if p.compare_at_price > p.price -%}<span class="volt-card__compare">{{ p.compare_at_price | money }}</span>{%- endif -%}</div>
+        <a href="{{ p.url }}" class="volt-card__tplcta">{{ 'products.get_bundle' | t: default: 'Get the bundle' }} &rarr;</a>
+      {%- else -%}
+        {%- if settings.show_tasting_specs and sp != blank -%}
+          {%- capture specline -%}{%- if sp.protein != blank %}PRO {{ sp.protein }}{% endif %}{%- if sp.carbs != blank %} · CARBS {{ sp.carbs }}{% endif %}{%- if sp.serving != blank %} · {{ sp.serving }}{% endif %}{%- endcapture -%}
+          {%- assign specline = specline | strip -%}
+          {%- if specline != blank -%}<div class="volt-card__specs">{{ specline }}</div>{%- endif -%}
+        {%- endif -%}
+        <div class="volt-card__price">
+          <span class="volt-card__amount">{{ p.price | money }}</span>
+          {%- if p.compare_at_price > p.price -%}<span class="volt-card__compare">{{ p.compare_at_price | money }}</span>{%- endif -%}
+          {%- if show_member -%}<span class="volt-card__mp">{{ mprice | money }} {{ 'products.member' | t: default: 'member' }}</span>{%- endif -%}
+        </div>
       {%- endif -%}
-      <div class="volt-card__price">
-        <span class="volt-card__amount">{{ p.price | money }}</span>
-        {%- if p.compare_at_price > p.price -%}<span class="volt-card__compare">{{ p.compare_at_price | money }}</span>{%- endif -%}
-        {%- if show_member -%}<span class="volt-card__mp">{{ mprice | money }} member</span>{%- endif -%}
-      </div>
     </div>
   </div>
 {%- endif -%}
@@ -84,6 +101,7 @@
   .volt-card__badges { position: absolute; top: 0; left: 0; display: flex; flex-direction: column; z-index: 2; }
   .volt-card__badge { font-family: var(--font-mono); font-size: 9px; letter-spacing: .12em; text-transform: uppercase; padding: 5px 9px; }
   .volt-card__badge--ink { background: var(--color-ink); color: var(--color-bg); }
+  .volt-card__badge--acid { background: var(--color-acid); color: var(--color-ink); }
   .volt-card__badge--danger { background: var(--color-danger); color: #fff; }
   .volt-card__member { position: absolute; top: 0; right: 0; z-index: 2; font-family: var(--font-mono); font-size: 9px; letter-spacing: .1em; text-transform: uppercase; background: var(--color-acid); color: var(--color-ink); padding: 5px 9px; }
   .volt-card__qa { position: absolute; left: 0; right: 0; bottom: 0; z-index: 2; transform: translateY(101%); transition: transform .35s var(--ease); }
@@ -97,6 +115,9 @@
   .volt-card__specs { font-family: var(--font-mono); font-size: 10px; letter-spacing: .04em; color: var(--color-mid); margin-top: auto; }
   .volt-card__price { display: flex; align-items: baseline; gap: 8px; margin-top: 4px; flex-wrap: wrap; }
   .volt-card__amount { font-family: var(--font-display); font-weight: 700; font-size: 18px; color: var(--color-ink); }
+  .volt-card__permo { font-family: var(--font-mono); font-size: 11px; color: var(--color-mid); }
   .volt-card__compare { font-family: var(--font-mono); font-size: 12px; color: var(--color-mid); text-decoration: line-through; }
   .volt-card__mp { font-family: var(--font-mono); font-size: 11px; color: var(--color-ink); background: var(--color-acid); padding: 2px 6px; margin-left: auto; }
+  .volt-card__tplcta { font-family: var(--font-mono); font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--color-ink); text-decoration: none; border-bottom: 2px solid var(--color-acid); padding-bottom: 3px; align-self: flex-start; margin-top: 4px; }
+  .volt-card__tplcta:hover { color: var(--color-mid); }
 {% endstylesheet %}
