@@ -1,7 +1,6 @@
 {%- liquid
   assign p = product
   assign v = p.selected_or_first_available_variant
-  assign member = p.price | times: 0.8
   assign shipping_blocks = section.blocks | where: 'type', 'shipping_info'
   assign size_chart = section.blocks | where: 'type', 'size_chart' | first
   assign cat_tag = ''
@@ -30,7 +29,7 @@
           {%- if p.featured_image -%}
             {{ p.featured_image | image_url: width: 1000 | image_tag: loading: 'eager', widths: '500, 700, 1000', class: 'volt-pdp__mainimg', data-pdp-main: '', alt: p.featured_image.alt | default: p.title | escape }}
           {%- else -%}{{ 'product-1' | placeholder_svg_tag: 'volt-pdp__mainimg' }}{%- endif -%}
-          {%- if settings.show_member_price -%}<span class="volt-pdp__memberpill">Member &minus;20%</span>{%- endif -%}
+          {%- if settings.show_member_price and p.compare_at_price > p.price -%}{%- assign pdp_savepct = p.compare_at_price | minus: p.price | times: 100 | divided_by: p.compare_at_price -%}<span class="volt-pdp__memberpill">{{ 'products.member' | t: default: 'Member' }} &minus;{{ pdp_savepct }}%</span>{%- endif -%}
           {%- if section.settings.enable_zoom -%}<span class="volt-pdp__zoomhint" aria-hidden="true">⤢</span>{%- endif -%}
         </div>
         {%- if p.images.size > 1 -%}
@@ -62,7 +61,6 @@
 
         <div class="volt-pdp__pricerow">
           <span class="volt-pdp__price" data-pdp-price>{{ p.price | money }}</span>
-          {%- if settings.show_member_price -%}<span class="volt-pdp__mprice">{{ member | money }} member</span>{%- endif -%}
           {%- if p.compare_at_price > p.price -%}<span class="volt-pdp__compare" data-pdp-compare>{{ p.compare_at_price | money }}</span>{%- endif -%}
         </div>
 
