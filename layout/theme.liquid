@@ -106,6 +106,7 @@
     {%- if settings.use_scroll_smoother -%}</div></div>{%- endif -%}
 
     {% render 'quick-view' %}
+    {% render 'cart-drawer' %}
     {% render 'recently-viewed-tracker' %}
     {%- if template.name == 'index' and settings.sticky_cta_enable -%}{% render 'sticky-cta' %}{%- endif -%}
 

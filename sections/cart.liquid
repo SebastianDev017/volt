@@ -201,8 +201,12 @@
   .volt-cart__continue--mobile { display: none; margin-top: 24px; }
 
   .volt-cart__viewing { display: flex; align-items: center; gap: 9px; margin-top: 18px; font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--color-mid); }
-  .volt-cart__viewingdot { width: 7px; height: 7px; border-radius: 50%; background: var(--color-success); flex: none; animation: volt-viewpulse 2s ease-out infinite; }
-  @keyframes volt-viewpulse { 0% { box-shadow: 0 0 0 0 rgba(46,204,113,0.5); } 70% { box-shadow: 0 0 0 6px rgba(46,204,113,0); } 100% { box-shadow: 0 0 0 0 rgba(46,204,113,0); } }
+  .volt-cart__viewingdot { width: 7px; height: 7px; border-radius: 50%; background: var(--color-mid); flex: none; animation: volt-viewpulse 2s ease-out infinite; }
+  @keyframes volt-viewpulse { 0% { box-shadow: 0 0 0 0 rgba(138,135,132,0.5); } 70% { box-shadow: 0 0 0 6px rgba(138,135,132,0); } 100% { box-shadow: 0 0 0 0 rgba(138,135,132,0); } }
+
+  /* Gentle hover (FIX 13): ease IN with a small delay on cart interactive elements. */
+  .volt-cart__name, .volt-cart__stepper button, .volt-cart__remove, .volt-cart__note summary { transition: color var(--dur-fast) var(--ease), background var(--dur-fast) var(--ease); }
+  .volt-cart__name:hover, .volt-cart__stepper button:hover, .volt-cart__remove:hover, .volt-cart__note summary:hover, .volt-cart__checkout:hover, .volt-cart__continue:hover { transition-delay: .05s; }
 
   .volt-cart__summary { position: sticky; top: var(--header-height); }
   .volt-cart__summaryinner { border: 1px solid var(--color-border); background: var(--color-surface); padding: clamp(24px, 3vw, 32px); }

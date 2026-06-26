@@ -473,3 +473,40 @@ body.has-custom-cursor, body.has-custom-cursor *{ cursor: none; }
 .volt-sticky-cta__x{ color: var(--color-bg); opacity: .6; font-size: 18px; line-height: 1; padding: 6px; transition: opacity var(--dur-fast) var(--ease); }
 .volt-sticky-cta__x:hover{ opacity: 1; }
 @media (max-width: 600px){ .volt-sticky-cta{ gap: 10px; padding-left: 16px; } .volt-sticky-cta__text{ font-size: 10.5px; } .volt-sticky-cta__btn{ padding: 9px 12px; font-size: 11px; } }
+
+/* ---- Cart drawer (slide-in; opens on volt:cart:open / header cart click) ---- */
+.volt-cd{ position: fixed; inset: 0; z-index: var(--z-drawer); visibility: hidden; pointer-events: none; }
+.volt-cd.is-open{ visibility: visible; pointer-events: auto; }
+.volt-cd__backdrop{ position: absolute; inset: 0; background: rgba(13,12,11,.5); opacity: 0; transition: opacity var(--dur-med) var(--ease); }
+.volt-cd.is-open .volt-cd__backdrop{ opacity: 1; }
+.volt-cd__panel{ position: absolute; top: 0; right: 0; height: 100%; width: min(420px, 92vw); background: var(--color-bg); border-left: 1px solid var(--color-border); display: flex; flex-direction: column; transform: translateX(100%); transition: transform var(--dur-med) var(--ease); }
+.volt-cd.is-open .volt-cd__panel{ transform: none; }
+.volt-cd__head{ flex: 0 0 auto; display: flex; align-items: center; justify-content: space-between; padding: 20px 24px; border-bottom: 1px solid var(--color-border); }
+.volt-cd__title{ font-family: var(--font-display); font-weight: 800; font-size: 18px; display: flex; align-items: baseline; gap: 8px; }
+.volt-cd__count{ font-family: var(--font-mono); font-size: 12px; color: var(--color-mid); }
+.volt-cd__close{ width: 36px; height: 36px; display: grid; place-items: center; color: var(--color-ink); transition: color var(--dur-fast) var(--ease); }
+.volt-cd__close:hover{ color: var(--color-mid); transition-delay: .05s; }
+.volt-cd__close svg{ width: 20px; height: 20px; }
+.volt-cd__body{ flex: 1 1 auto; min-height: 0; overflow-y: auto; padding: 4px 24px; }
+.volt-cd__loading, .volt-cd__empty{ padding: 48px 0; text-align: center; font-family: var(--font-mono); font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: var(--color-mid); }
+.volt-cd__list{ margin: 0; }
+.volt-cd__line{ display: grid; grid-template-columns: 64px 1fr auto; gap: 14px; padding: 18px 0; border-bottom: 1px solid var(--color-border); }
+.volt-cd__media{ width: 64px; height: 64px; display: block; background: var(--color-surface); border: 1px solid var(--color-border); overflow: hidden; }
+.volt-cd__media img{ width: 100%; height: 100%; object-fit: cover; }
+.volt-cd__info{ display: flex; flex-direction: column; min-width: 0; }
+.volt-cd__name{ font-family: var(--font-display); font-weight: 700; font-size: 14px; line-height: 1.2; color: var(--color-ink); text-decoration: none; transition: color var(--dur-fast) var(--ease); }
+.volt-cd__name:hover{ color: var(--color-mid); transition-delay: .05s; }
+.volt-cd__variant{ font-family: var(--font-body); font-size: 12px; color: var(--color-mid); margin-top: 3px; }
+.volt-cd__qty{ display: inline-flex; align-items: center; border: 1px solid var(--color-ink); margin-top: 10px; align-self: flex-start; }
+.volt-cd__qty button{ width: 30px; height: 30px; display: grid; place-items: center; font-size: 15px; color: var(--color-ink); transition: background var(--dur-fast) var(--ease); }
+.volt-cd__qty button:hover{ background: var(--color-ink-06); transition-delay: .05s; }
+.volt-cd__qty span{ min-width: 32px; text-align: center; font-family: var(--font-mono); font-size: 13px; }
+.volt-cd__pricecol{ display: flex; flex-direction: column; align-items: flex-end; gap: 10px; }
+.volt-cd__price{ font-family: var(--font-display); font-weight: 500; font-size: 14px; }
+.volt-cd__remove{ color: var(--color-mid); font-size: 18px; line-height: 1; background: none; border: 0; cursor: pointer; transition: color var(--dur-fast) var(--ease); }
+.volt-cd__remove:hover{ color: var(--color-danger); transition-delay: .05s; }
+.volt-cd__foot{ flex: 0 0 auto; padding: 18px 24px 22px; border-top: 1px solid var(--color-border); display: flex; flex-direction: column; gap: 10px; }
+.volt-cd__subtotal{ display: flex; align-items: baseline; justify-content: space-between; font-family: var(--font-display); font-weight: 800; font-size: 18px; }
+.volt-cd__tax{ font-size: 12px; color: var(--color-mid); margin: 0 0 4px; }
+.volt-cd__viewcart{ margin-top: 0; }
+body.cart-open{ overflow: hidden; }

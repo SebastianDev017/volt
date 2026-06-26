@@ -1,0 +1,87 @@
+{%- comment -%}
+  VOLT — slide-in cart drawer. Rendered once in layout/theme.liquid.
+  Opens on the `volt:cart:open` event (fired after add-to-cart) and on header
+  cart-icon click; (re)renders from /cart.js. The header cart link still works
+  as a /cart fallback when JS is off.
+{%- endcomment -%}
+<cart-drawer class="volt-cd" data-cart-drawer aria-hidden="true">
+  <div class="volt-cd__backdrop" data-cd-backdrop></div>
+  <aside class="volt-cd__panel" role="dialog" aria-modal="true" aria-label="Your bag">
+    <div class="volt-cd__head">
+      <span class="volt-cd__title">Your bag <span class="volt-cd__count" data-cd-count>{{ cart.item_count }}</span></span>
+      <button type="button" class="volt-cd__close" data-cd-close aria-label="{{ 'products.close' | t: default: 'Close' }}">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+      </button>
+    </div>
+    <div class="volt-cd__body" data-cd-body><p class="volt-cd__loading">…</p></div>
+    <div class="volt-cd__foot" data-cd-foot hidden>
+      <div class="volt-cd__subtotal"><span>Subtotal</span><span data-cd-subtotal></span></div>
+      <p class="volt-cd__tax">Taxes &amp; shipping calculated at checkout.</p>
+      <a class="btn btn--acid btn--full" href="/checkout">Checkout</a>
+      <a class="btn btn--ghost btn--full volt-cd__viewcart" href="{{ routes.cart_url }}">View cart</a>
+    </div>
+  </aside>
+</cart-drawer>
+<script>
+  (function () {
+    if (!window.customElements || customElements.get('cart-drawer')) return;
+    customElements.define('cart-drawer', class extends HTMLElement {
+      connectedCallback() {
+        var self = this;
+        this.bodyEl = this.querySelector('[data-cd-body]');
+        this.footEl = this.querySelector('[data-cd-foot]');
+        this.subEl = this.querySelector('[data-cd-subtotal]');
+        this.querySelector('[data-cd-close]').addEventListener('click', function () { self.close(); });
+        this.querySelector('[data-cd-backdrop]').addEventListener('click', function () { self.close(); });
+        document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && self.classList.contains('is-open')) self.close(); });
+        document.addEventListener('volt:cart:open', function () { self.openWithRefresh(); });
+        document.addEventListener('cart:updated', function () { if (self.classList.contains('is-open')) self.fetchCart(); });
+        document.querySelectorAll('.volt-header__cart').forEach(function (a) { a.addEventListener('click', function (e) { e.preventDefault(); self.openWithRefresh(); }); });
+        this.bodyEl.addEventListener('click', function (e) { self.onBodyClick(e); });
+      }
+      esc(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+      money(c) { try { return new Intl.NumberFormat(document.documentElement.lang || 'en', { style: 'currency', currency: (window.Shopify && Shopify.currency && Shopify.currency.active) || 'USD' }).format(c / 100); } catch (e) { return '$' + (c / 100).toFixed(2); } }
+      lenis() { return window.VoltLenis || (window.Volt && window.Volt.lenis); }
+      openWithRefresh() { var self = this; this.fetchCart().then(function () { self.open(); }); }
+      open() { this.classList.add('is-open'); this.setAttribute('aria-hidden', 'false'); document.body.classList.add('cart-open'); var l = this.lenis(); if (l && l.stop) l.stop(); var c = this.querySelector('[data-cd-close]'); if (c) c.focus(); }
+      close() { this.classList.remove('is-open'); this.setAttribute('aria-hidden', 'true'); document.body.classList.remove('cart-open'); var l = this.lenis(); if (l && l.start) l.start(); }
+      fetchCart() { var self = this; return fetch('/cart.js', { headers: { 'Accept': 'application/json' } }).then(function (r) { return r.json(); }).then(function (c) { self.render(c); }).catch(function () {}); }
+      render(cart) {
+        var self = this;
+        document.querySelectorAll('[data-cart-count], [data-cd-count]').forEach(function (n) { n.textContent = cart.item_count; });
+        if (!cart.item_count) { this.bodyEl.innerHTML = '<p class="volt-cd__empty">Your bag is empty</p>'; this.footEl.hidden = true; return; }
+        this.bodyEl.innerHTML = '<ul class="volt-cd__list">' + cart.items.map(function (it) {
+          return '<li class="volt-cd__line" data-key="' + self.esc(it.key) + '">'
+            + '<a class="volt-cd__media" href="' + self.esc(it.url) + '" tabindex="-1" aria-hidden="true">' + (it.image ? '<img src="' + self.esc(it.image) + '" alt="" width="64" height="64" loading="lazy">' : '') + '</a>'
+            + '<div class="volt-cd__info"><a class="volt-cd__name" href="' + self.esc(it.url) + '">' + self.esc(it.product_title) + '</a>'
+            + (it.variant_title ? '<div class="volt-cd__variant">' + self.esc(it.variant_title) + '</div>' : '')
+            + '<div class="volt-cd__qty"><button type="button" data-cd-dec aria-label="Decrease quantity">&minus;</button><span>' + it.quantity + '</span><button type="button" data-cd-inc aria-label="Increase quantity">+</button></div></div>'
+            + '<div class="volt-cd__pricecol"><span class="volt-cd__price">' + self.money(it.final_line_price) + '</span><button type="button" class="volt-cd__remove" data-cd-remove aria-label="Remove">&times;</button></div>'
+            + '</li>';
+        }).join('') + '</ul>';
+        this.footEl.hidden = false;
+        this.subEl.textContent = this.money(cart.total_price);
+      }
+      onBodyClick(e) {
+        var line = e.target.closest ? e.target.closest('.volt-cd__line') : null;
+        if (!line) return;
+        var span = line.querySelector('.volt-cd__qty span');
+        var cur = parseInt(span ? span.textContent : '1', 10) || 1;
+        var to = null;
+        if (e.target.closest('[data-cd-inc]')) to = cur + 1;
+        else if (e.target.closest('[data-cd-dec]')) to = Math.max(0, cur - 1);
+        else if (e.target.closest('[data-cd-remove]')) to = 0;
+        if (to === null) return;
+        e.preventDefault();
+        this.change(line.dataset.key, to);
+      }
+      change(key, qty) {
+        var self = this;
+        fetch('/cart/change.js', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' }, body: JSON.stringify({ id: key, quantity: qty }) })
+          .then(function (r) { return r.json(); })
+          .then(function (cart) { self.render(cart); document.dispatchEvent(new CustomEvent('cart:updated', { detail: { item_count: cart.item_count } })); })
+          .catch(function () {});
+      }
+    });
+  })();
+</script>
