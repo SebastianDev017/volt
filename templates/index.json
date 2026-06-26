@@ -12,6 +12,13 @@
     "hero_diagnostic_1": {
       "type": "hero-diagnostic",
       "settings": {
+        "hero_layout": "full-image",
+        "hero_image": "shopify://shop_images/theme_cover_image.jpg",
+        "hero_image_position": "center",
+        "content_align": "left",
+        "overlay_opacity": 40,
+        "show_dashboard_panel": true,
+        "show_scroll_indicator": true,
         "eyebrow": "Member Protocol 2025",
         "heading_pre": "Train with",
         "heading_highlight": "data",
@@ -36,7 +43,13 @@
     },
     "hero_carousel_1b": {
       "type": "hero-carousel",
-      "settings": { "carousel_heading": "Explore the protocol", "carousel_collection": "hydrogen", "carousel_limit": 8, "view_all_label": "View all products" }
+      "settings": {
+        "carousel_heading": "Explore the protocol",
+        "carousel_collection": "hydrogen",
+        "carousel_limit": 8,
+        "view_all_url": "",
+        "view_all_label": "View all products"
+      }
     },
     "vitals_strip_2": {
       "type": "vitals-strip",
