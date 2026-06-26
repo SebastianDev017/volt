@@ -96,6 +96,14 @@
   /* Homepage: transparent header fixed over the hero (top:auto keeps it below the announcement bar); solid + blur once scrolled past 80px. */
   body.template-index .volt-header[data-sticky="true"] { position: fixed; left: 0; right: 0; background: transparent; border-bottom: 1px solid transparent; }
   body.template-index .volt-header[data-sticky="true"].is-stuck { top: 0; background: var(--color-bg); -webkit-backdrop-filter: blur(24px) saturate(160%); backdrop-filter: blur(24px) saturate(160%); border-bottom-color: var(--color-border); box-shadow: 0 2px 40px rgba(13,12,11,.06); }
+  /* Transparent-over-hero (homepage, pre-scroll): light nav/logo/icons for contrast on the dark image side; a subtle top gradient keeps them legible on the light side too. Reverts to ink once .is-stuck (solid) kicks in. */
+  body.template-index .volt-header[data-sticky="true"]:not(.is-stuck) .volt-nav__link,
+  body.template-index .volt-header[data-sticky="true"]:not(.is-stuck) .volt-header__logo,
+  body.template-index .volt-header[data-sticky="true"]:not(.is-stuck) .volt-header__icon,
+  body.template-index .volt-header[data-sticky="true"]:not(.is-stuck) .volt-header__account,
+  body.template-index .volt-header[data-sticky="true"]:not(.is-stuck) .volt-header__count,
+  body.template-index .volt-header[data-sticky="true"]:not(.is-stuck) .volt-header__burger { color: #FFFFFF; }
+  body.template-index .volt-header[data-sticky="true"]:not(.is-stuck)::after { content: ""; position: absolute; inset: 0; background: linear-gradient(to bottom, rgba(13,12,11,.18) 0%, transparent 100%); z-index: -1; pointer-events: none; }
   /* Merchant opt-out: non-sticky static header. */
   .volt-header[data-sticky="false"] { position: static; background: var(--color-bg); border-bottom: 1px solid var(--color-border); }
   .volt-header[data-nav-upper="false"] .volt-nav__link { text-transform: none; }
@@ -103,13 +111,13 @@
   .volt-header__cta:hover { filter: brightness(1.05); }
   .volt-header__progress { position: absolute; left: 0; bottom: 0; height: 2px; width: 0; background: var(--color-acid); transition: width .1s linear; }
   @media (max-width: 600px) { .volt-header__cta { display: none; } }
-  .volt-header__bar { max-width: var(--page-width); margin-inline: auto; height: var(--header-height); padding: 0 28px; display: flex; align-items: center; justify-content: space-between; gap: 24px; }
-  .volt-header__logo { font-family: var(--font-display); font-weight: 800; font-size: 24px; letter-spacing: -.02em; color: var(--color-ink); text-decoration: none; flex-shrink: 0; }
+  .volt-header__bar { max-width: var(--page-width); margin-inline: auto; height: calc(var(--header-height) - 4px); padding: 0 28px; display: flex; align-items: center; justify-content: space-between; gap: 24px; }
+  .volt-header__logo { font-family: var(--font-display); font-weight: 800; font-size: 20px; letter-spacing: -.02em; color: var(--color-ink); text-decoration: none; flex-shrink: 0; }
   .volt-header__logoimg { height: 26px; width: auto; }
 
   .volt-header__nav { display: flex; align-items: center; gap: 34px; }
   .volt-nav__item { position: static; }
-  .volt-nav__link { font-family: var(--font-body); font-size: 13px; font-weight: 500; letter-spacing: .04em; text-transform: uppercase; color: var(--color-ink); text-decoration: none; padding: 4px 0; position: relative; }
+  .volt-nav__link { font-family: var(--font-body); font-size: 10.5px; font-weight: 500; letter-spacing: .04em; text-transform: uppercase; color: var(--color-ink); text-decoration: none; padding: 4px 0; position: relative; }
   .volt-nav__link::after { content: ""; position: absolute; left: 0; right: 0; bottom: -2px; height: 2px; background: var(--color-acid); transform: scaleX(0); transform-origin: left; transition: transform var(--dur-fast) var(--ease); }
   .volt-nav__item:hover .volt-nav__link::after, .volt-nav__link:hover::after, .volt-nav__link:focus-visible::after { transform: scaleX(1); }
 
@@ -117,9 +125,9 @@
   .volt-nav__item:hover .volt-mega, .volt-nav__item:focus-within .volt-mega { opacity: 1; visibility: visible; transform: none; }
   .volt-mega__inner { max-width: var(--page-width); margin-inline: auto; padding: 40px 28px; display: grid; grid-template-columns: 1fr 1fr 1fr 1fr 1.2fr; gap: 32px; }
   .volt-mega__cols { grid-column: 1 / 5; display: grid; grid-template-columns: repeat(4, 1fr); gap: 32px; }
-  .volt-mega__heading { font-family: var(--font-display); font-weight: 700; font-size: 15px; color: var(--color-ink); text-decoration: none; display: block; margin-bottom: 14px; }
+  .volt-mega__heading { font-family: var(--font-display); font-weight: 700; font-size: 12px; color: var(--color-ink); text-decoration: none; display: block; margin-bottom: 14px; }
   .volt-mega__list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 9px; }
-  .volt-mega__list a { font-size: 13px; color: var(--color-mid); text-decoration: none; }
+  .volt-mega__list a { font-size: 10.5px; color: var(--color-mid); text-decoration: none; }
   .volt-mega__list a:hover { color: var(--color-ink); }
   .volt-mega__promo { display: flex; flex-direction: column; gap: 8px; background: var(--color-ink); color: var(--color-bg); padding: 24px; text-decoration: none; }
   .volt-mega__promoeyebrow { font-family: var(--font-mono); font-size: 9px; letter-spacing: .16em; text-transform: uppercase; color: var(--color-acid); }
@@ -141,8 +149,8 @@
   .volt-header.drawer-open::before { content: ""; position: fixed; inset: 0; background: rgba(13,12,11,.5); z-index: calc(var(--z-drawer) - 1); }
   .volt-drawer__head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; }
   .volt-drawer__nav { display: flex; flex-direction: column; }
-  .volt-drawer__link { font-family: var(--font-display); font-weight: 700; font-size: 22px; color: var(--color-ink); text-decoration: none; padding: 12px 0; border-bottom: 1px solid var(--color-border); }
-  .volt-drawer__sub { font-size: 14px; color: var(--color-mid); text-decoration: none; padding: 7px 0 7px 14px; }
+  .volt-drawer__link { font-family: var(--font-display); font-weight: 700; font-size: 18px; color: var(--color-ink); text-decoration: none; padding: 12px 0; border-bottom: 1px solid var(--color-border); }
+  .volt-drawer__sub { font-size: 11px; color: var(--color-mid); text-decoration: none; padding: 7px 0 7px 14px; }
 
   @media (max-width: 900px) {
     .volt-header__nav { display: none; }

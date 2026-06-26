@@ -126,7 +126,7 @@
   .hero-split__overlay { position: absolute; inset: 0; background: rgba(13, 12, 11, var(--overlay-opacity, 0)); }
 
   /* Content zone (~58vh) */
-  .hero-split__content { position: relative; z-index: 2; flex: 0 0 auto; min-height: 58vh; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: clamp(80px, 9vh, 120px) clamp(24px, 5vw, 80px) clamp(20px, 3vh, 36px); gap: 20px; }
+  .hero-split__content { position: relative; z-index: 2; flex: 0 0 auto; min-height: 58vh; width: 100%; max-width: var(--page-width, 1280px); margin: 0 auto; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: clamp(80px, 9vh, 120px) clamp(24px, 5vw, 80px) clamp(20px, 3vh, 36px); gap: 20px; }
 
   /* Eyebrow — duplicated, clipped per half (also reused for the slider label) */
   .hero-eyebrow-wrap { position: relative; width: 100%; display: flex; justify-content: center; margin-bottom: 2px; }
@@ -137,7 +137,7 @@
 
   /* Heading — the dual-colour crossover */
   .hero-heading-wrap { position: relative; width: 100%; }
-  .hero-h1 { font-family: var(--font-display); font-weight: var(--font-display-weight); font-size: clamp(40px, 6vw, 88px); line-height: .94; letter-spacing: -.025em; text-transform: uppercase; width: 100%; text-align: center; margin: 0; }
+  .hero-h1 { font-family: var(--font-display); font-weight: var(--font-display-weight); font-size: clamp(40px, 5.4vw, 78px); line-height: .94; letter-spacing: -.025em; text-transform: uppercase; width: 100%; text-align: center; margin: 0; }
   .hero-h1--ink { color: var(--color-ink); clip-path: inset(0 50% 0 0); }
   /* cream = the colour that contrasts the ink/image half — use --color-bg so it works in every preset */
   .hero-h1--cream { color: var(--color-bg); position: absolute; top: 0; left: 0; width: 100%; clip-path: inset(0 0 0 50%); }
@@ -159,7 +159,7 @@
   .hero-slider-zone { position: relative; z-index: 2; flex: 0 0 auto; height: 37vh; min-height: 268px; display: flex; flex-direction: column; justify-content: center; gap: 14px; padding-bottom: clamp(16px, 3vh, 32px); }
   .hero-slider__label-wrap { margin-bottom: 0; }
 
-  .hero-slider { position: relative; display: flex; align-items: center; gap: 8px; padding: 0 clamp(16px, 4vw, 48px); }
+  .hero-slider { position: relative; display: flex; align-items: center; gap: 8px; width: 100%; max-width: var(--page-width); margin: 0 auto; padding: 0 clamp(24px, 5vw, 80px); }
   .hero-slider__viewport { position: relative; flex: 1 1 auto; overflow-x: auto; overflow-y: hidden; scrollbar-width: none; }
   .hero-slider__viewport::-webkit-scrollbar { display: none; }
   .hero-slider__track { display: flex; gap: 16px; list-style: none; margin: 0; padding: 4px 0; width: max-content; }
