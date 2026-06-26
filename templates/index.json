@@ -27,7 +27,11 @@
         "week_label": "14 DAYS",
         "hrv": "68",
         "rhr": "52",
-        "sleep": "7.4"
+        "sleep": "7.4",
+        "enable_animations": true,
+        "heading_animation": "split-words",
+        "body_animation": "fade-up",
+        "section_delay": 0
       }
     },
     "vitals_strip_2": {
@@ -136,7 +140,11 @@
         "body": "Three tiers, one system. Every membership unlocks the dashboard, class booking, and member pricing on gear.",
         "countdown_end_date": "2026-12-31T23:59:59",
         "dashboard_link_label": "Already a member? Access your dashboard →",
-        "dashboard_link": ""
+        "dashboard_link": "",
+        "enable_animations": true,
+        "heading_animation": "split-words",
+        "cards_animation": "stagger-up",
+        "section_delay": 0
       }
     },
     "product_grid_4": {
@@ -144,10 +152,14 @@
       "settings": {
         "eyebrow": "// The Upsell",
         "heading": "Gear the protocol.",
-        "collection": "",
+        "collection": "automated-collection",
         "columns": 4,
         "filter_menu": "",
-        "show_view_all": true
+        "show_view_all": true,
+        "enable_animations": true,
+        "heading_animation": "split-words",
+        "cards_animation": "stagger-up",
+        "section_delay": 0
       }
     },
     "performance_stats_5": {
@@ -192,7 +204,10 @@
         "block_3",
         "block_4"
       ],
-      "settings": {}
+      "settings": {
+        "enable_animations": true,
+        "cards_animation": "stagger-up"
+      }
     },
     "before_after_6": {
       "type": "before-after",
@@ -235,7 +250,12 @@
         "quote": "<p>\"The dashboard changed everything. I stopped guessing and started reading my recovery. Eight PRs in six months — and I trained less than before.\"</p>",
         "author_name": "Marcus T.",
         "author_tier": "Performance",
-        "author_since": "Member since 2024"
+        "author_since": "Member since 2024",
+        "enable_animations": true,
+        "heading_animation": "split-words",
+        "image_animation": "clip-bottom",
+        "cards_animation": "stagger-scale",
+        "section_delay": 0
       }
     },
     "how_it_works_7": {
@@ -288,7 +308,11 @@
       ],
       "settings": {
         "eyebrow": "// Build Your Stack",
-        "heading": "The recovery protocol."
+        "heading": "The recovery protocol.",
+        "enable_animations": true,
+        "heading_animation": "split-words",
+        "cards_animation": "stagger-up",
+        "section_delay": 0
       }
     },
     "journal_8": {
@@ -297,7 +321,11 @@
         "eyebrow": "// Journal",
         "heading": "Read the protocol.",
         "blog": "",
-        "view_all_label": "All articles"
+        "view_all_label": "All articles",
+        "enable_animations": true,
+        "heading_animation": "split-words",
+        "cards_animation": "stagger-up",
+        "section_delay": 0
       }
     },
     "newsletter_diagnostic_9": {
@@ -311,7 +339,10 @@
         "tier_elite_handle": "elite",
         "newsletter_heading": "Or join the dispatch",
         "newsletter_body": "Weekly performance science, member protocols and early access to drops. No filler.",
-        "consent_text": "By subscribing you agree to receive marketing emails. Unsubscribe anytime."
+        "consent_text": "By subscribing you agree to receive marketing emails. Unsubscribe anytime.",
+        "enable_animations": true,
+        "heading_animation": "split-words",
+        "section_delay": 0
       }
     }
   },
