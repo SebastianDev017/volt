@@ -1,16 +1,23 @@
 {% comment %}
-  Global Quick View modal shell. Rendered once in layout/theme.liquid.
-  Populated on demand by the ProductQuickView controller in assets/theme.js
-  (fetches /products/{handle}.js when a [data-quick-view] trigger is clicked).
+  Global Quick View modal. Rendered once in layout/theme.liquid.
+  Centered two-column dialog (images | scrollable info), populated on demand by
+  the controller below which fetches /products/{handle}.js when a
+  [data-quick-view] trigger (with data-handle) is clicked.
 {% endcomment %}
 {%- if settings.quick_view -%}
-  <dialog id="volt-quick-view" class="volt-dialog volt-quick-view" aria-label="{{ 'products.quick_view' | t: default: 'Quick view' }}">
-    <button type="button" class="volt-dialog__close" data-qv-close aria-label="{{ 'products.close' | t: default: 'Close' }}">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 6l12 12M18 6L6 18"/></svg>
-    </button>
+  <dialog id="volt-quick-view" class="volt-quick-view" aria-label="{{ 'products.quick_view' | t: default: 'Quick view' }}">
+    <div class="volt-qv__head">
+      <span class="volt-qv__eyebrow">{{ 'products.quick_view' | t: default: 'Quick view' }}</span>
+      <button type="button" class="volt-qv__close" data-qv-close aria-label="{{ 'products.close' | t: default: 'Close' }}">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+      </button>
+    </div>
     <div class="volt-qv__body" data-qv-body
       data-add-label="{{ 'products.add' | t: default: 'Add to cart' }}"
       data-sold-label="{{ 'products.sold_out' | t: default: 'Sold out' }}"
+      data-unavail-label="{{ 'products.unavailable' | t: default: 'Unavailable' }}"
+      data-qty-label="{{ 'products.quantity' | t: default: 'Quantity' }}"
+      data-error-label="{{ 'products.error' | t: default: 'Could not load product' }}"
       data-view-label="{{ 'products.view_details' | t: default: 'View full details' }}">
       <div class="volt-qv__loading">{{ 'products.loading' | t: default: 'Loading…' }}</div>
     </div>
@@ -21,69 +28,197 @@
       var dlg = document.getElementById('volt-quick-view');
       if (!dlg || !dlg.showModal) return;
       var body = dlg.querySelector('[data-qv-body]');
+      var prefersReduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+      var hasGsap = function () { return !!window.gsap && !prefersReduced; };
+      var lenis = function () { return window.Volt && window.Volt.lenis; };
       var esc = function (s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); };
       var money = function (c) {
         try { return new Intl.NumberFormat(document.documentElement.lang || 'en', { style: 'currency', currency: (window.Shopify && Shopify.currency && Shopify.currency.active) || 'USD' }).format(c / 100); }
         catch (e) { return '$' + (c / 100).toFixed(2); }
       };
-      var product = null, variant = null;
-      function update() {
-        var sels = Array.prototype.map.call(body.querySelectorAll('[data-qv-opt]'), function (s) { return s.value; });
-        var m = product.variants.find(function (v) { return v.options.every(function (o, i) { return o === sels[i]; }); });
-        if (!m) return;
-        variant = m;
-        var pe = body.querySelector('[data-qv-price]'); if (pe) pe.textContent = money(m.price);
-        var ab = body.querySelector('[data-qv-add]'); if (ab) { ab.disabled = !m.available; ab.textContent = m.available ? ab.dataset.label : ab.dataset.sold; }
+      var ckey = function (s) { return String(s).toLowerCase().trim().replace(/\s+/g, '-').replace(/\//g, '-'); };
+      var colorOption = function (name) { var n = String(name).toLowerCase().trim(); return ['color', 'colour', 'farbe', 'couleur', 'colore', 'cor'].indexOf(n) !== -1 || n.indexOf('colo') === 0; };
+      var cssEsc = function (s) { return (window.CSS && CSS.escape) ? CSS.escape(s) : String(s).replace(/["\\]/g, '\\$&'); };
+
+      var product = null, variant = null, selected = [], closing = false;
+
+      function variantMatching(sel) {
+        return product.variants.find(function (v) { return v.options.every(function (o, i) { return o === sel[i]; }); }) || null;
       }
+      // a value is selectable if some available variant has it given the other current selections
+      function valueAvailable(optIndex, value) {
+        return product.variants.some(function (v) {
+          if (v.options[optIndex] !== value) return false;
+          for (var j = 0; j < product.options.length; j++) {
+            if (j !== optIndex && selected[j] != null && v.options[j] !== selected[j]) return false;
+          }
+          return v.available;
+        });
+      }
+      function variantImage(v) {
+        if (v && v.featured_image && v.featured_image.src) return v.featured_image.src;
+        return null;
+      }
+
+      function setMainImage(src) {
+        var main = body.querySelector('[data-qv-main]');
+        if (!main || !src) return;
+        if (main.src === src) return;
+        main.src = src;
+        if (hasGsap()) gsap.fromTo(main, { opacity: 0.6 }, { opacity: 1, duration: 0.25, ease: 'power2.out' });
+        body.querySelectorAll('[data-qv-thumb]').forEach(function (t) { t.classList.toggle('is-active', t.dataset.src === src); });
+      }
+
+      function renderOptions() {
+        var wrap = body.querySelector('[data-qv-options]');
+        if (!wrap) return;
+        var sold = body.dataset.soldLabel;
+        var html = '';
+        product.options.forEach(function (name, i) {
+          var seen = {}, vals = [];
+          product.variants.forEach(function (v) { var val = v.options[i]; if (!seen[val]) { seen[val] = 1; vals.push(val); } });
+          var labelId = 'qv-opt-' + i;
+          html += '<div class="volt-qv__opt" role="group" aria-labelledby="' + labelId + '"><span class="volt-qv__optlabel" id="' + labelId + '">' + esc(name) + '</span>';
+          if (colorOption(name)) {
+            html += '<div class="card-swatches">';
+            vals.forEach(function (val) {
+              var avail = valueAvailable(i, val);
+              var match = product.variants.find(function (v) { return v.options[i] === val && variantImage(v); });
+              var vimg = match ? variantImage(match) : null;
+              html += '<button type="button" class="card-swatch volt-qv__swatch' + (selected[i] === val ? ' is-active' : '') + (avail ? '' : ' is-soldout') + '"' +
+                ' aria-pressed="' + (selected[i] === val) + '" aria-label="' + esc(name) + ': ' + esc(val) + (avail ? '' : ' — ' + esc(sold)) + '" title="' + esc(val) + '"' +
+                (avail ? '' : ' disabled aria-disabled="true"') +
+                ' data-qv-opt="' + i + '" data-qv-val="' + esc(val) + '" data-swatch-color="' + esc(ckey(val)) + '"' +
+                (vimg ? ' data-swatch-image="' + esc(vimg) + '" style="background-image:url(\'' + esc(vimg) + '\')"' : '') + '></button>';
+            });
+            html += '</div>';
+          } else {
+            html += '<div class="volt-qv__sizes">';
+            vals.forEach(function (val) {
+              var avail = valueAvailable(i, val);
+              html += '<button type="button" class="volt-qv__size' + (selected[i] === val ? ' is-active' : '') + (avail ? '' : ' is-soldout') + '"' +
+                ' aria-pressed="' + (selected[i] === val) + '" aria-label="' + esc(name) + ': ' + esc(val) + (avail ? '' : ' — ' + esc(sold)) + '"' +
+                (avail ? '' : ' disabled aria-disabled="true"') +
+                ' data-qv-opt="' + i + '" data-qv-val="' + esc(val) + '">' + esc(val) + '</button>';
+            });
+            html += '</div>';
+          }
+          html += '</div>';
+        });
+        wrap.innerHTML = html;
+        wrap.querySelectorAll('[data-qv-opt]:not([disabled])').forEach(function (el) {
+          el.addEventListener('click', function () {
+            var oi = el.dataset.qvOpt, ov = el.dataset.qvVal;
+            selected[parseInt(oi, 10)] = ov;
+            updateVariant();
+            renderOptions();
+            var again = wrap.querySelector('[data-qv-opt="' + oi + '"][data-qv-val="' + cssEsc(ov) + '"]');
+            if (again) again.focus();
+          });
+        });
+      }
+
+      function updateVariant() {
+        variant = variantMatching(selected);
+        var pe = body.querySelector('[data-qv-price]'); if (pe) pe.innerHTML = variant ? money(variant.price) + (variant.compare_at_price > variant.price ? ' <s>' + money(variant.compare_at_price) + '</s>' : '') : '—';
+        var ab = body.querySelector('[data-qv-add]');
+        if (ab) {
+          var ok = variant && variant.available;
+          ab.disabled = !ok;
+          ab.textContent = variant ? (variant.available ? ab.dataset.label : ab.dataset.sold) : ab.dataset.unavail;
+        }
+        var vimg = variantImage(variant);
+        if (vimg) setMainImage(vimg);
+      }
+
       function add() {
-        if (!variant) return;
-        var ab = body.querySelector('[data-qv-add]'); if (ab) { ab.disabled = true; ab.textContent = '…'; }
-        fetch('/cart/add.js', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ items: [{ id: variant.id, quantity: 1 }] }) })
+        if (!variant || !variant.available) return;
+        var ab = body.querySelector('[data-qv-add]');
+        var qtyEl = body.querySelector('[data-qv-qty]');
+        var qty = qtyEl ? Math.max(1, parseInt(qtyEl.value, 10) || 1) : 1;
+        if (qtyEl) qtyEl.value = qty;
+        if (ab) { ab.disabled = true; ab.textContent = '…'; }
+        fetch('/cart/add.js', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ items: [{ id: variant.id, quantity: qty }] }) })
           .then(function (r) { if (!r.ok) throw 0; return fetch('/cart.js'); }).then(function (r) { return r.json(); }).then(function (cart) {
             document.querySelectorAll('[data-cart-count]').forEach(function (n) { n.textContent = cart.item_count; });
             document.dispatchEvent(new CustomEvent('volt:cart:open'));
             document.dispatchEvent(new CustomEvent('cart:updated', { detail: { item_count: cart.item_count } }));
             if (ab) ab.textContent = '✓';
-            setTimeout(function () { dlg.close(); }, 850);
+            setTimeout(close, 850);
           }).catch(function () { if (ab) { ab.disabled = false; ab.textContent = ab.dataset.label; } });
       }
+
       function render(p) {
         product = p;
         variant = p.variants.find(function (v) { return v.available; }) || p.variants[0];
-        var img = p.featured_image || (p.images && p.images[0]) || '';
-        var opts = '';
+        selected = variant ? variant.options.slice() : [];
         var single = p.variants.length === 1 && p.variants[0].title === 'Default Title';
-        if (!single) {
-          p.options.forEach(function (name, i) {
-            var seen = {}, vals = [];
-            p.variants.forEach(function (v) { var val = v.options[i]; if (!seen[val]) { seen[val] = 1; vals.push(val); } });
-            opts += '<label class="volt-qv__optlabel">' + esc(name) + '</label><select class="volt-qv__select" data-qv-opt="' + i + '">' +
-              vals.map(function (val) { return '<option>' + esc(val) + '</option>'; }).join('') + '</select>';
-          });
+        var images = (p.images && p.images.length ? p.images : (p.featured_image ? [p.featured_image] : []));
+        var mainSrc = variantImage(variant) || images[0] || '';
+        var d = body.dataset;
+
+        var thumbs = '';
+        if (images.length > 1) {
+          thumbs = '<div class="volt-qv__thumbs">' + images.slice(0, 8).map(function (src) {
+            return '<button type="button" class="volt-qv__thumb' + (src === mainSrc ? ' is-active' : '') + '" data-qv-thumb data-src="' + esc(src) + '" aria-label="' + esc(p.title) + '"><img src="' + esc(src) + '" alt="" loading="lazy"></button>';
+          }).join('') + '</div>';
         }
-        var lbl = body.dataset.addLabel, sold = body.dataset.soldLabel, view = body.dataset.viewLabel;
+
+        var desc = p.description ? '<div class="volt-qv__desc rte">' + p.description + '</div>' : '';
+
         body.innerHTML =
-          '<div class="volt-qv__grid"><div class="volt-qv__media">' + (img ? '<img src="' + esc(img) + '" alt="' + esc(p.title) + '">' : '') + '</div>' +
-          '<div class="volt-qv__info">' + (p.type ? '<div class="volt-qv__cat">' + esc(p.type) + '</div>' : '') +
-          '<h2 class="volt-qv__title">' + esc(p.title) + '</h2>' +
-          '<div class="volt-qv__price" data-qv-price>' + money(variant.price) + '</div>' +
-          '<div class="volt-qv__opts">' + opts + '</div>' +
-          '<button type="button" class="volt-qv__add" data-qv-add data-label="' + esc(lbl) + '" data-sold="' + esc(sold) + '"' + (variant.available ? '' : ' disabled') + '>' + (variant.available ? esc(lbl) : esc(sold)) + '</button>' +
-          '<a class="volt-qv__full" href="' + esc(p.url) + '">' + esc(view) + ' &rarr;</a></div></div>';
-        body.querySelectorAll('[data-qv-opt]').forEach(function (s) { s.addEventListener('change', update); });
+          '<div class="volt-qv__left">' +
+            '<div class="volt-qv__main-wrap">' + (mainSrc ? '<img class="volt-qv__main" data-qv-main src="' + esc(mainSrc) + '" alt="' + esc(p.title) + '">' : '') + '</div>' +
+            thumbs +
+          '</div>' +
+          '<div class="volt-qv__right">' +
+            (p.type ? '<div class="volt-qv__cat">' + esc(p.type) + '</div>' : '') +
+            '<h2 class="volt-qv__title" tabindex="-1">' + esc(p.title) + '</h2>' +
+            '<div class="volt-qv__price" data-qv-price></div>' +
+            (single ? '' : '<div class="volt-qv__options" data-qv-options></div>') +
+            '<div class="volt-qv__qty"><label class="volt-qv__optlabel" for="volt-qv-qty">' + esc(d.qtyLabel) + '</label>' +
+              '<input id="volt-qv-qty" class="volt-qv__qtyinput" data-qv-qty type="number" min="1" value="1" inputmode="numeric"></div>' +
+            '<button type="button" class="btn btn--acid btn--full volt-qv__add" data-qv-add data-label="' + esc(d.addLabel) + '" data-sold="' + esc(d.soldLabel) + '" data-unavail="' + esc(d.unavailLabel) + '">' + esc(d.addLabel) + '</button>' +
+            desc +
+            '<a class="volt-qv__full" href="' + esc(p.url) + '">' + esc(d.viewLabel) + ' &rarr;</a>' +
+          '</div>';
+
+        if (!single) renderOptions();
+        updateVariant();
+        body.querySelectorAll('[data-qv-thumb]').forEach(function (t) { t.addEventListener('click', function () { setMainImage(t.dataset.src); }); });
         var addBtn = body.querySelector('[data-qv-add]'); if (addBtn) addBtn.addEventListener('click', add);
+        var titleEl = body.querySelector('.volt-qv__title'); if (titleEl) titleEl.focus(); // move focus to loaded content (announces to AT)
+      }
+
+      function animateIn() {
+        if (!hasGsap()) return;
+        gsap.fromTo(dlg, { autoAlpha: 0, scale: 0.95 }, { autoAlpha: 1, scale: 1, duration: 0.35, ease: 'power3.out', clearProps: 'opacity,visibility,transform' });
       }
       function open(handle) {
+        closing = false;
         body.innerHTML = '<div class="volt-qv__loading">…</div>';
         dlg.showModal();
-        fetch('/products/' + handle + '.js').then(function (r) { return r.json(); }).then(render).catch(function () { body.innerHTML = '<div class="volt-qv__loading">—</div>'; });
+        var l = lenis(); if (l && l.stop) l.stop();
+        animateIn();
+        fetch('/products/' + handle + '.js').then(function (r) { return r.json(); }).then(render).catch(function () {
+          body.innerHTML = '<div class="volt-qv__loading" role="alert" tabindex="-1">' + esc(body.dataset.errorLabel || '—') + '</div>';
+          var el = body.querySelector('.volt-qv__loading'); if (el) el.focus();
+        });
       }
+      function close() {
+        if (closing) return;
+        var done = function () { dlg.close(); var l = lenis(); if (l && l.start) l.start(); closing = false; };
+        if (hasGsap()) { closing = true; gsap.to(dlg, { autoAlpha: 0, scale: 0.95, duration: 0.25, ease: 'power3.in', onComplete: done }); }
+        else { done(); }
+      }
+
       document.addEventListener('click', function (e) {
         var t = e.target.closest('[data-quick-view]');
         if (t && t.dataset.handle) { e.preventDefault(); open(t.dataset.handle); }
       });
-      var qc = dlg.querySelector('[data-qv-close]'); if (qc) qc.addEventListener('click', function () { dlg.close(); });
-      dlg.addEventListener('click', function (e) { if (e.target === dlg) dlg.close(); });
+      var qc = dlg.querySelector('[data-qv-close]'); if (qc) qc.addEventListener('click', close);
+      dlg.addEventListener('click', function (e) { if (e.target === dlg) close(); });
+      dlg.addEventListener('cancel', function (e) { e.preventDefault(); close(); }); // Esc
     })();
   </script>
 {%- endif -%}

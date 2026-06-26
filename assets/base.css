@@ -301,24 +301,59 @@ html:has(#smooth-wrapper) .volt-header{ position: relative; top: auto; }
 @keyframes volt-dialog-in{ from{ opacity: 0; transform: translateY(20px) scale(0.97); } }
 @media (prefers-reduced-motion: reduce){ .volt-dialog[open]{ animation: none; } }
 
-/* ---------- Quick View modal ---------- */
-.volt-quick-view{ max-width: 760px; padding: 0; }
-.volt-quick-view .volt-dialog__close{ color: var(--color-ink); background: var(--color-bg); }
-.volt-qv__loading{ padding: 80px; text-align: center; font-family: var(--font-mono); font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: var(--color-mid); }
-.volt-qv__grid{ display: grid; grid-template-columns: 1fr 1fr; }
-.volt-qv__media{ background: var(--color-surface); aspect-ratio: 1/1; }
-.volt-qv__media img{ width: 100%; height: 100%; object-fit: cover; }
-.volt-qv__info{ padding: clamp(24px, 3vw, 40px); display: flex; flex-direction: column; gap: 12px; }
+/* ---------- Quick View modal (centered two-column dialog) ---------- */
+.volt-quick-view{ position: fixed; inset: 0; margin: auto; width: 50vw; height: 90vh; max-width: none; max-height: 90vh; padding: 0; border: 1px solid var(--color-border); border-radius: 0; background: var(--color-bg); color: var(--color-ink); overflow: hidden; display: flex; flex-direction: column; box-shadow: 0 40px 90px rgba(0,0,0,.22); }
+.volt-quick-view::backdrop{ background: rgba(13,12,11,.6); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); }
+
+.volt-qv__head{ flex: 0 0 auto; display: flex; align-items: center; justify-content: space-between; padding: 15px 20px; border-bottom: 1px solid var(--color-border); }
+.volt-qv__eyebrow{ font-family: var(--font-mono); font-size: 10px; letter-spacing: .2em; text-transform: uppercase; color: var(--color-mid); }
+.volt-qv__close{ display: inline-flex; width: 36px; height: 36px; align-items: center; justify-content: center; background: none; border: 0; color: var(--color-ink); cursor: pointer; }
+.volt-qv__close:hover{ color: var(--color-mid); }
+.volt-qv__close svg{ width: 20px; height: 20px; }
+
+.volt-qv__loading{ margin: auto; padding: 80px; text-align: center; font-family: var(--font-mono); font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: var(--color-mid); }
+
+.volt-qv__body{ flex: 1 1 auto; min-height: 0; display: flex; overflow: hidden; }
+.volt-qv__left{ flex: 0 0 45%; display: flex; flex-direction: column; min-height: 0; background: var(--color-surface); border-right: 1px solid var(--color-border); }
+.volt-qv__main-wrap{ flex: 1 1 auto; min-height: 0; overflow: hidden; }
+.volt-qv__main{ width: 100%; height: 100%; object-fit: cover; display: block; }
+.volt-qv__thumbs{ flex: 0 0 auto; display: flex; gap: 8px; padding: 10px; overflow-x: auto; scrollbar-width: none; border-top: 1px solid var(--color-border); }
+.volt-qv__thumbs::-webkit-scrollbar{ display: none; }
+.volt-qv__thumb{ flex: 0 0 56px; width: 56px; height: 56px; padding: 0; border: 1px solid var(--color-border); background: var(--color-bg); cursor: pointer; overflow: hidden; }
+.volt-qv__thumb img{ width: 100%; height: 100%; object-fit: cover; display: block; }
+.volt-qv__thumb.is-active{ border-color: var(--color-ink); }
+
+.volt-qv__right{ flex: 1 1 55%; min-width: 0; overflow-y: auto; overflow-x: hidden; padding: clamp(20px, 3vw, 36px); display: flex; flex-direction: column; gap: 14px; }
 .volt-qv__cat{ font-family: var(--font-mono); font-size: 10px; letter-spacing: .14em; text-transform: uppercase; color: var(--color-mid); }
-.volt-qv__title{ font-family: var(--font-display); font-weight: 800; font-size: clamp(22px, 2.4vw, 30px); line-height: 1.05; margin: 0; }
-.volt-qv__price{ font-family: var(--font-display); font-weight: 800; font-size: 24px; }
-.volt-qv__opts{ display: flex; flex-direction: column; gap: 8px; }
+.volt-qv__title{ font-family: var(--font-display); font-weight: 700; font-size: clamp(22px, 2.4vw, 30px); line-height: 1.05; margin: 0; }
+.volt-qv__price{ font-family: var(--font-display); font-weight: 700; font-size: 22px; color: var(--color-ink); }
+.volt-qv__price s{ font-family: var(--font-mono); font-size: 14px; color: var(--color-mid); margin-left: 8px; }
+.volt-qv__options{ display: flex; flex-direction: column; gap: 16px; }
+.volt-qv__opt{ display: flex; flex-direction: column; gap: 8px; }
 .volt-qv__optlabel{ font-family: var(--font-mono); font-size: 10px; letter-spacing: .12em; text-transform: uppercase; color: var(--color-mid); }
-.volt-qv__select{ width: 100%; background: var(--color-bg); color: var(--color-ink); border: 1px solid var(--color-ink); border-radius: 0; padding: 12px 14px; font-family: var(--font-body); font-size: 14px; }
-.volt-qv__add{ margin-top: 6px; background: var(--color-acid); border: 0; color: var(--on-acid); font-family: var(--font-body); font-weight: 500; font-size: 13px; letter-spacing: .05em; text-transform: uppercase; padding: 15px; cursor: pointer; }
-.volt-qv__add[disabled]{ background: var(--color-border); color: var(--color-mid); cursor: not-allowed; }
-.volt-qv__full{ font-family: var(--font-mono); font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--color-ink); border-bottom: 2px solid var(--color-acid); align-self: flex-start; padding-bottom: 2px; }
-@media (max-width: 680px){ .volt-qv__grid{ grid-template-columns: 1fr; } .volt-qv__media{ aspect-ratio: 16/9; } }
+.volt-qv__swatch{ padding: 0; }
+.volt-qv__sizes{ display: flex; flex-wrap: wrap; gap: 8px; }
+.volt-qv__size{ min-width: 44px; padding: 10px 14px; background: var(--color-bg); color: var(--color-ink); border: 1px solid var(--color-border); border-radius: 0; font-family: var(--font-mono); font-size: 12px; cursor: pointer; transition: border-color .2s var(--ease), background .2s var(--ease), color .2s var(--ease); }
+.volt-qv__size:hover{ border-color: var(--color-ink); }
+.volt-qv__size.is-active{ background: var(--color-ink); color: var(--color-bg); border-color: var(--color-ink); }
+.volt-qv__size.is-soldout, .volt-qv__swatch.is-soldout{ opacity: .4; cursor: not-allowed; }
+.volt-qv__size.is-soldout{ text-decoration: line-through; }
+.volt-qv__qty{ display: flex; flex-direction: column; gap: 8px; }
+.volt-qv__qtyinput{ width: 96px; background: var(--color-bg); color: var(--color-ink); border: 1px solid var(--color-ink); border-radius: 0; padding: 11px 12px; font-family: var(--font-mono); font-size: 14px; }
+.volt-qv__add{ margin-top: 4px; }
+.volt-qv__desc{ font-size: 13px; line-height: 1.6; color: var(--color-mid); }
+.volt-qv__desc > :first-child{ margin-top: 0; }
+.volt-qv__full{ font-family: var(--font-mono); font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--color-ink); border-bottom: 2px solid var(--color-acid); align-self: flex-start; padding-bottom: 2px; text-decoration: none; }
+.volt-qv__full:hover{ color: var(--color-mid); }
+
+@media (max-width: 768px){
+  .volt-quick-view{ width: 90vw; height: 80vh; max-height: 80vh; }
+  .volt-qv__body{ flex-direction: column; }
+  .volt-qv__left{ flex: 0 0 auto; border-right: 0; border-bottom: 1px solid var(--color-border); }
+  .volt-qv__main-wrap{ height: 34vh; flex: 0 0 auto; }
+  .volt-qv__right{ flex: 1 1 auto; }
+}
+@media (prefers-reduced-motion: reduce){ .volt-quick-view{ animation: none; } }
 
 /* =====================================================================
    Swatch System — product card colours (30-colour map + variant images)
