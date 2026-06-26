@@ -116,6 +116,13 @@ ul, ol{ list-style: none; padding: 0; }
 }
 
 /* ---------- layout ---------- */
+/* VOLT sections are full-width with their own internal max-width containers.
+   Neutralize the skeleton's critical.css .shopify-section grid (it builds a
+   [margin | content | margin] grid from --page-margin, which VOLT does not
+   define — leaving an invalid template + a phantom column that shifts the page). */
+.shopify-section{ display: block; width: 100%; }
+.shopify-section > *{ grid-column: auto; }
+
 .page-width{ max-width: var(--page-width); margin-inline: auto; padding-inline: var(--container-padding); }
 .section{ padding-block: var(--section-space); }
 .section-inner{ max-width: var(--page-width); margin-inline: auto; padding-inline: var(--container-padding); }

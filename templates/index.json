@@ -35,13 +35,7 @@
         "block_5": {
           "type": "stat",
           "settings": {
-            "text": "HYROX CERTIFIED"
-          }
-        },
-        "block_6": {
-          "type": "stat",
-          "settings": {
-            "text": "NSF TESTED"
+            "text": "+3.2T STRAIN AVG"
           }
         }
       },
@@ -50,8 +44,7 @@
         "block_2",
         "block_3",
         "block_4",
-        "block_5",
-        "block_6"
+        "block_5"
       ]
     },
     "membership_tiers_3": {
@@ -61,43 +54,46 @@
         "block_1": {
           "type": "tier",
           "settings": {
-            "name": "Starter",
-            "gauge_fill": 40,
-            "price_monthly": "$49",
-            "price_annual": "$37",
-            "billed_annual": "Save $144 billed annually",
-            "cta_label": "Start Starter",
+            "tier_name": "STARTER",
+            "tagline": "Build the habit",
+            "gauge_value": 33,
+            "price": "$29",
+            "yearly_line": "/yr $261 · save 25%",
+            "popular": false,
             "accent": "mid",
-            "is_popular": false,
-            "features": "<ul><li>Live recovery + strain dashboard</li><li>2 coached programs / month</li><li>Community access</li><li>Mobile app</li></ul>"
+            "features_on": "Member dashboard access\n8 classes / month\n10% off all gear",
+            "features_off": "Strain & recovery tracking\n1:1 coaching sessions",
+            "cta_label": "Choose Protocol"
           }
         },
         "block_2": {
           "type": "tier",
           "settings": {
-            "name": "Performance",
-            "gauge_fill": 75,
-            "price_monthly": "$89",
-            "price_annual": "$67",
-            "billed_annual": "Save $264 billed annually",
-            "cta_label": "Go Performance",
+            "tier_name": "PERFORMANCE",
+            "tagline": "Train by the numbers",
+            "gauge_value": 67,
+            "price": "$49",
+            "yearly_line": "/yr $440 · save 25%",
+            "popular": true,
             "accent": "acid",
-            "is_popular": true,
-            "features": "<ul><li>Everything in Starter</li><li>Unlimited coached programs</li><li>Weekly 1:1 check-ins</li><li>Personalized nutrition protocol</li><li>Priority class booking</li></ul>"
+            "features_on": "Everything in Starter\nUnlimited classes\n20% off all gear\nStrain & recovery tracking",
+            "features_off": "1:1 coaching sessions",
+            "cta_label": "Choose Protocol"
           }
         },
         "block_3": {
           "type": "tier",
           "settings": {
-            "name": "Elite",
-            "gauge_fill": 100,
-            "price_monthly": "$149",
-            "price_annual": "$112",
-            "billed_annual": "Save $444 billed annually",
-            "cta_label": "Apply for Elite",
+            "tier_name": "ELITE",
+            "tagline": "Maximum output",
+            "gauge_value": 100,
+            "price": "$89",
+            "yearly_line": "/yr $801 · save 25%",
+            "popular": false,
             "accent": "ink",
-            "is_popular": false,
-            "features": "<ul><li>Everything in Performance</li><li>Dedicated performance coach</li><li>Quarterly lab + InBody testing</li><li>Recovery suite access</li><li>Member events + retreats</li></ul>"
+            "features_on": "Everything in Performance\n4 × 1:1 coaching / month\n30% off all gear\nCustom nutrition protocol\nPriority class booking",
+            "features_off": "",
+            "cta_label": "Choose Protocol"
           }
         }
       },
@@ -118,14 +114,16 @@
         "block_1": {
           "type": "stat",
           "settings": {
-            "value": "2,400+",
+            "value": "2,400",
+            "suffix": "+",
             "label": "Active members"
           }
         },
         "block_2": {
           "type": "stat",
           "settings": {
-            "value": "94%",
+            "value": "94",
+            "suffix": "%",
             "label": "Retention rate"
           }
         },
@@ -133,13 +131,15 @@
           "type": "stat",
           "settings": {
             "value": "847",
-            "label": "Classes per month"
+            "suffix": "",
+            "label": "Classes / month"
           }
         },
         "block_4": {
           "type": "stat",
           "settings": {
-            "value": "6.2T",
+            "value": "6.2",
+            "suffix": "T",
             "label": "Avg strain goal"
           }
         }
@@ -156,16 +156,28 @@
       "settings": {},
       "blocks": {
         "block_1": {
-          "type": "testimonial",
-          "settings": {}
+          "type": "stat",
+          "settings": {
+            "value": "−14",
+            "unit": "kg",
+            "label": "Bodyweight"
+          }
         },
         "block_2": {
-          "type": "testimonial",
-          "settings": {}
+          "type": "stat",
+          "settings": {
+            "value": "+8",
+            "unit": "",
+            "label": "Personal records"
+          }
         },
         "block_3": {
-          "type": "testimonial",
-          "settings": {}
+          "type": "stat",
+          "settings": {
+            "value": "+22",
+            "unit": "",
+            "label": "Recovery pts"
+          }
         }
       },
       "block_order": [
@@ -179,27 +191,36 @@
       "settings": {},
       "blocks": {
         "block_1": {
-          "type": "step",
+          "type": "phase",
           "settings": {
-            "label": "Phase 01",
-            "title": "Pre-workout",
-            "body": "<p>Prime the nervous system. Five-minute mobility ramp plus a measured caffeine and electrolyte load, timed to your training window for clean, jitter-free output.</p>"
+            "icon": "bolt",
+            "title": "Pre-Workout",
+            "a_name": "Pre-Workout V2",
+            "a_specs": "CAF 200mg · BETA-AL",
+            "b_name": "Creatine Mono",
+            "b_specs": "5g · CREAPURE®"
           }
         },
         "block_2": {
-          "type": "step",
+          "type": "phase",
           "settings": {
-            "label": "Phase 02",
+            "icon": "dumbbell",
             "title": "Training",
-            "body": "<p>Execute the day's block. Strain and heart-rate zones stream live to your dashboard so every set lands inside the target stimulus, not above it.</p>"
+            "a_name": "EAA Intra-Fuel",
+            "a_specs": "EAA 8g · ELECTROLYTE",
+            "b_name": "Whey Isolate",
+            "b_specs": "PRO 24g · NSF ✓"
           }
         },
         "block_3": {
-          "type": "step",
+          "type": "phase",
           "settings": {
-            "label": "Phase 03",
+            "icon": "moon",
             "title": "Recovery",
-            "body": "<p>Close the loop. Protein timing, sleep targets, and an HRV check the next morning confirm the session was absorbed before the next one is programmed.</p>"
+            "a_name": "Magnesium Recovery",
+            "a_specs": "MG 300mg · ZINC · B6",
+            "b_name": "Slow Casein · Choc",
+            "b_specs": "PRO 26g · NIGHT"
           }
         }
       },
