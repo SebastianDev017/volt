@@ -38,6 +38,13 @@
     ].filter(Boolean);
     if (plugins.length) gsap.registerPlugin.apply(gsap, plugins);
 
+    // Keep ScrollTrigger from rendering start-states / firing callbacks during
+    // setup — a common cause of the page jumping mid-load before settling.
+    if (window.ScrollTrigger) {
+      ScrollTrigger.defaults({ immediateRender: false });
+      ScrollTrigger.config({ limitCallbacks: true });
+    }
+
     gsap.defaults({ ease: CFG.ease || 'power3.out' });
 
     VoltAnim.smoothScroll();
@@ -59,7 +66,13 @@
     VoltAnim.ctaPulse();
 
     reveal();
-    if (window.ScrollTrigger) ScrollTrigger.refresh();
+    // Lenis is initialised in volt-scroll.js, which loads before this file, so
+    // refresh here runs AFTER Lenis init; refresh again on load once images/
+    // fonts settle so trigger positions are correct (prevents mid-page landings).
+    if (window.ScrollTrigger) {
+      ScrollTrigger.refresh();
+      window.addEventListener('load', function () { ScrollTrigger.refresh(); });
+    }
   }
 
   var sp = function () { return CFG.speed || 1; };
