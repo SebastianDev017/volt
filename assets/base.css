@@ -302,7 +302,11 @@ html:has(#smooth-wrapper) .volt-header{ position: relative; top: auto; }
 @media (prefers-reduced-motion: reduce){ .volt-dialog[open]{ animation: none; } }
 
 /* ---------- Quick View modal (centered two-column dialog) ---------- */
-.volt-quick-view{ position: fixed; inset: 0; margin: auto; width: 50vw; height: 90vh; max-width: none; max-height: 90vh; padding: 0; border: 1px solid var(--color-border); border-radius: 0; background: var(--color-bg); color: var(--color-ink); overflow: hidden; display: flex; flex-direction: column; box-shadow: 0 40px 90px rgba(0,0,0,.22); }
+/* Base rule must NOT set display — author `display:flex` overrides the UA
+   `dialog:not([open]){display:none}` (author origin beats user-agent), which
+   forces the closed dialog visible on load. Scope display to [open] instead. */
+.volt-quick-view{ position: fixed; inset: 0; margin: auto; width: 50vw; height: 90vh; max-width: none; max-height: 90vh; padding: 0; border: 1px solid var(--color-border); border-radius: 0; background: var(--color-bg); color: var(--color-ink); overflow: hidden; flex-direction: column; box-shadow: 0 40px 90px rgba(0,0,0,.22); }
+.volt-quick-view[open]{ display: flex; }
 .volt-quick-view::backdrop{ background: rgba(13,12,11,.6); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); }
 
 .volt-qv__head{ flex: 0 0 auto; display: flex; align-items: center; justify-content: space-between; padding: 15px 20px; border-bottom: 1px solid var(--color-border); }
