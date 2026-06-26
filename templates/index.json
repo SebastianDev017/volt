@@ -29,9 +29,9 @@
         "rhr": "52",
         "sleep": "7.4",
         "enable_animations": true,
-        "heading_animation": "split-words",
+        "heading_animation": "split-chars",
         "body_animation": "fade-up",
-        "section_delay": 0
+        "section_delay": 500
       }
     },
     "vitals_strip_2": {
@@ -349,7 +349,10 @@
     },
     "recently_viewed_10": {
       "type": "recently-viewed",
-      "settings": {}
+      "settings": {
+        "heading": "Recently viewed",
+        "max_items": 6
+      }
     }
   },
   "order": [
