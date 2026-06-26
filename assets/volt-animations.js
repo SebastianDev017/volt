@@ -285,21 +285,24 @@
       var cards = track.querySelectorAll('.fc-card');
       if (!cards.length) return;
 
+      // Read the per-card scatter offsets straight from the inline CSS vars
+      // (no matrix decomposition — avoids GSAP/CSS-transition conflicts).
       function v(card, prop, fb) { var n = parseFloat(card.style.getPropertyValue(prop)); return isNaN(n) ? fb : n; }
-      function settle() {
-        cards.forEach(function (card) {
-          gsap.to(card, {
-            y: v(card, '--fc-y', 0), rotation: v(card, '--fc-rot', 0), scale: v(card, '--fc-scale', 1),
-            duration: 0.7, ease: 'elastic.out(1, 0.6)', delay: Math.random() * 0.2
-          });
-        });
+      function scatterTo(card, extra) {
+        return gsap.to(card, Object.assign({ y: v(card, '--fc-y', 0), rotation: v(card, '--fc-rot', 0), scale: v(card, '--fc-scale', 1) }, extra));
       }
+      function scatterAll(extra) { cards.forEach(function (card) { scatterTo(card, Object.assign({ delay: Math.random() * 0.2 }, extra)); }); }
 
-      // Cards rise into their scattered CSS positions (rotation/scale preserved).
+      // Entrance: rise + fade, then land on the exact scatter targets.
       if (window.ScrollTrigger) {
-        gsap.from(cards, {
-          y: 60, opacity: 0, duration: 0.6, stagger: 0.07, ease: 'power3.out',
-          scrollTrigger: { trigger: stage, start: 'top 85%', once: true }
+        gsap.set(cards, { opacity: 0, y: 60, rotation: 0, scale: 1 });
+        ScrollTrigger.create({
+          trigger: stage, start: 'top 85%', once: true,
+          onEnter: function () {
+            cards.forEach(function (card, i) {
+              scatterTo(card, { opacity: 1, duration: 0.7, delay: i * 0.07, ease: 'power3.out' });
+            });
+          }
         });
       }
 
@@ -310,8 +313,8 @@
         edgeResistance: 0.85, dragClickables: true,
         onPress: function () { stage.classList.add('has-dragged'); },
         onDragStart: function () { gsap.to(cards, { y: 0, rotation: 0, scale: 1, duration: 0.3, ease: 'power2.out' }); },
-        onDragEnd: settle,
-        onThrowComplete: settle
+        onDragEnd: function () { scatterAll({ duration: 0.7, ease: 'elastic.out(1, 0.6)' }); },
+        onThrowComplete: function () { scatterAll({ duration: 0.5, ease: 'power2.out' }); }
       });
       var d = Draggable.get(track);
       stage.style.overflowX = 'hidden'; // Draggable owns movement now
