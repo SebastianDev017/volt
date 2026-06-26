@@ -14,11 +14,7 @@
       "settings": {
         "hero_layout": "split-image-left",
         "hero_image": "shopify://shop_images/theme_cover_image.jpg",
-        "hero_image_position": "top",
-        "content_align": "left",
         "overlay_opacity": 40,
-        "show_dashboard_panel": true,
-        "show_scroll_indicator": false,
         "eyebrow": "Member Protocol 2025",
         "heading_pre": "Train with",
         "heading_highlight": "data",
@@ -28,20 +24,11 @@
         "primary_link": "",
         "secondary_label": "Diagnose your level",
         "secondary_link": "",
-        "recovery_score": 87,
-        "strain_label": "14.2",
-        "strain_fill": 68,
-        "week_label": "14 DAYS",
-        "hrv": "68",
-        "rhr": "52",
-        "sleep": "7.4",
-        "enable_animations": true,
-        "heading_animation": "split-chars",
-        "body_animation": "fade-up",
-        "section_delay": 500,
         "carousel_collection": "",
-        "carousel_limit": 12,
-        "carousel_label": "Explore the protocol"
+        "carousel_limit": 6,
+        "carousel_label": "Explore the protocol",
+        "enable_animations": true,
+        "section_delay": 500
       }
     },
     "vitals_strip_2": {
