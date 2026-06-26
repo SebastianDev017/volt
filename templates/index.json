@@ -14,7 +14,7 @@
       "settings": {
         "hero_layout": "split-image-left",
         "hero_image": "shopify://shop_images/theme_cover_image.jpg",
-        "hero_image_position": "center",
+        "hero_image_position": "top",
         "content_align": "left",
         "overlay_opacity": 40,
         "show_dashboard_panel": true,
