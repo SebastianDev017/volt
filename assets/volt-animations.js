@@ -33,7 +33,8 @@
     // Register every plugin that actually loaded (CDN-resilient).
     var plugins = [
       window.ScrollTrigger, window.SplitText, window.DrawSVGPlugin,
-      window.MorphSVGPlugin, window.Flip, window.ScrollSmoother
+      window.MorphSVGPlugin, window.Flip, window.ScrollSmoother,
+      window.Draggable, window.InertiaPlugin
     ].filter(Boolean);
     if (plugins.length) gsap.registerPlugin.apply(gsap, plugins);
 
@@ -51,6 +52,7 @@
     VoltAnim.horizontalScroll();
     VoltAnim.morphStateChange();
     VoltAnim.flipLayoutTransition();
+    VoltAnim.draggableCarousel();
 
     reveal();
     if (window.ScrollTrigger) ScrollTrigger.refresh();
@@ -244,6 +246,33 @@
           on = !on;
           gsap.to(path, { duration: 0.4, morphSVG: on ? toPath : fromPath, ease: 'power2.inOut' });
         });
+      });
+    },
+
+    // ── Draggable carousel (hero product rail, inertia throw) ────────
+    draggableCarousel: function () {
+      if (!window.Draggable) return;
+      document.querySelectorAll('[data-draggable-carousel]').forEach(function (track) {
+        var wrap = track.closest('[data-carousel-wrap]') || track.parentElement;
+        var bounds = function () { var m = -(track.scrollWidth - wrap.offsetWidth); return { minX: m > 0 ? 0 : m, maxX: 0 }; };
+        Draggable.create(track, {
+          type: 'x',
+          bounds: bounds(),
+          inertia: !!window.InertiaPlugin,
+          edgeResistance: 0.85,
+          dragClickables: true,
+          onPress: function () { wrap.classList.add('is-dragging', 'has-dragged'); },
+          onRelease: function () { wrap.classList.remove('is-dragging'); }
+        });
+        var d = Draggable.get(track);
+        wrap.style.overflowX = 'hidden'; // Draggable owns movement now; disable native scroll
+        window.addEventListener('resize', function () { if (d) d.applyBounds(bounds()); });
+        if (window.ScrollTrigger) {
+          gsap.from(track.children, {
+            xPercent: 12, opacity: 0, duration: 0.55 * sp(), stagger: 0.06, ease: 'power3.out',
+            scrollTrigger: { trigger: wrap, start: 'top 88%', once: true }
+          });
+        }
       });
     },
 

@@ -1,0 +1,50 @@
+{%- liquid
+  assign coll = section.settings.carousel_collection
+  assign lim = section.settings.carousel_limit | default: 8
+-%}
+{%- if coll != blank and coll.products.size > 0 -%}
+  <section class="volt-hcar" data-animate>
+    <div class="volt-hcar__head">
+      {%- if section.settings.carousel_heading != blank -%}<span class="eyebrow">{{ section.settings.carousel_heading }}</span>{%- endif -%}
+      {%- if section.settings.view_all_url != blank -%}<a href="{{ section.settings.view_all_url }}" class="link-arrow">{{ section.settings.view_all_label | default: 'View all' }} &rarr;</a>{%- endif -%}
+    </div>
+    <div class="volt-hcar__wrap" data-carousel-wrap>
+      <div class="volt-hcar__track" data-draggable-carousel>
+        {%- for product in coll.products limit: lim -%}
+          <div class="volt-hcar__item">{% render 'product-card', card_product: product %}</div>
+        {%- endfor -%}
+      </div>
+    </div>
+    <div class="volt-hcar__hint" data-carousel-hint aria-hidden="true">&larr;&nbsp;&nbsp;drag&nbsp;&nbsp;&rarr;</div>
+  </section>
+{%- endif -%}
+
+{% stylesheet %}
+  .volt-hcar { padding: 44px 0 72px; overflow: hidden; }
+  .volt-hcar__head { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; flex-wrap: wrap; max-width: var(--page-width); margin-inline: auto; padding: 0 28px; margin-bottom: 26px; }
+  /* Native horizontal scroll by default (no-JS / reduced-motion fallback); Draggable takes over when it inits. */
+  .volt-hcar__wrap { position: relative; overflow-x: auto; scrollbar-width: none; cursor: grab; }
+  .volt-hcar__wrap::-webkit-scrollbar { display: none; }
+  .volt-hcar__wrap.is-dragging { cursor: grabbing; }
+  .volt-hcar__track { display: flex; gap: 20px; padding: 0 28px; will-change: transform; }
+  .volt-hcar__item { flex: 0 0 clamp(220px, 62vw, 280px); }
+  .volt-hcar__hint { text-align: center; font-family: var(--font-mono); font-size: 9px; letter-spacing: .2em; text-transform: uppercase; color: var(--color-mid); margin-top: 16px; transition: opacity .3s var(--ease); }
+  .volt-hcar__wrap.has-dragged ~ .volt-hcar__hint { opacity: 0; }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:sections.hero_carousel.name",
+  "tag": "section",
+  "settings": [
+    { "type": "text", "id": "carousel_heading", "label": "t:sections.hero_carousel.heading", "default": "Explore the protocol" },
+    { "type": "collection", "id": "carousel_collection", "label": "t:sections.hero_carousel.collection" },
+    { "type": "range", "id": "carousel_limit", "min": 4, "max": 12, "step": 1, "label": "t:sections.hero_carousel.limit", "default": 8 },
+    { "type": "url", "id": "view_all_url", "label": "t:sections.hero_carousel.view_all_url" },
+    { "type": "text", "id": "view_all_label", "label": "t:sections.hero_carousel.view_all_label", "default": "View all products" }
+  ],
+  "presets": [
+    { "name": "t:sections.hero_carousel.name" }
+  ]
+}
+{% endschema %}
