@@ -44,31 +44,28 @@ or any paid app. The theme has ZERO billing logic — only renders the UI widget
 Custom UI: "SUBSCRIBE & SAVE" toggle (acid when active), plan radios (acid border), savings pill "-25% ANNUAL",
 one-time option (ghost styling).
 
-## METAFIELDS (namespace `volt`)
-Standard products (template suffix none):
-- `product.metafields.volt.badge`    single_line_text: new/bestseller/limited/rare → card + PDP badge
-- `product.metafields.volt.category` single_line_text: strength/recovery/endurance/nutrition → card/PDP category line
-- `product.metafields.volt.specs`    json: {protein, carbs, fat, serving, cert} → card spec line + PDP spec line
-- `product.metafields.volt.protocol` rich_text: usage/how-to-use protocol
+## PRODUCT DATA — NO METAFIELDS (Theme-Store-clean)
+VOLT requires ZERO merchant-configured metafields. Everything comes from the Theme Editor (section blocks/settings) or native Shopify product data. Rule of thumb: if a merchant could set it in the section editor → section block/setting; if it's intrinsic product data → native field/tag. Metafields are never the answer.
 
-Membership products (template suffix `membership`):
-- `product.metafields.volt.tier`     single_line_text: starter/performance/elite → tier badge + gauge default (33/67/100)
-- `product.metafields.volt.features` json (list of strings): "What's included" unlock list (falls back to the section's features textarea)
+Native product TAGS (merchant adds in the normal product admin):
+- `badge:new` · `badge:bestseller` · `badge:limited` · `badge:rare` → card/PDP badge (value uppercased)
+- `cat:strength` · `cat:recovery` · `cat:endurance` · `cat:nutrition` → card/PDP category pill (value capitalized)
+- Journal card category = the article's first tag.
 
-Bundle products (template suffix `bundle`):
-- `product.metafields.volt.bundle_items`    list.product_reference: the products in the bundle (grid + multi-add)
-- `product.metafields.volt.bundle_discount` number_integer: % saved vs individual (badge + savings pill; the actual discount is a Shopify automatic/cart discount the merchant configures — items add with `properties._bundle`)
-- `product.metafields.volt.bundle_label`    single_line_text: header badge text (default "Bundle Deal")
+Native product FIELDS:
+- `product.type` → membership tier ("Starter" / "Performance" / "Elite"): tier badge, label, and gauge default (33/67/100).
+- `product.compare_at_price` > `product.price` → "MEMBER SAVE X%" pill + strikethrough (no hardcoded discount; merchant just sets a compare-at price).
+- `product.vendor` → PDP subtitle.
+
+Section BLOCKS (Theme Editor; defaults pre-populated in the template JSON):
+- main-product → `macro` (nutrition rows), `certification` (cert badges), `faq`, `shipping_info`, `size_chart`.
+- main-product-membership → `feature` (included checkbox + text), `faq`.
+- main-product-bundle → `bundle_item` (product + quantity), `bundle_info` (limit 1: discount %, savings label, badge label), `bundle_benefit`.
 
 Template detection: `snippets/product-card.liquid` branches on `product.template_suffix`
-(membership → "Membership" badge + "from $X/mo" + Join now; bundle → "Bundle · Save X%" + Get the bundle; else standard quick-add + member price).
+(membership → "Membership" badge + "from $X/mo" + Join now; bundle → "Bundle" + Get the bundle; else standard quick-add + compare-at member savings).
 
-CUSTOMER (merchant sets via Shopify Flow or manually) — gates header tier badge + membership page:
-- `customer.tags`: `volt-member-starter` / `volt-member-performance` / `volt-member-elite`
-
-## METAOBJECTS
-- NutritionFacts: serving_size, calories, protein, carbs, fat, fiber, key_vitamins (JSON), certifications (list)
-- MemberTestimonial: name, tier_name, join_date, result_headline, before_metric, after_metric, before_image, after_image
+Member-only content gating (e.g. `customer.tags`) is the merchant's job via Shopify Flow / Markets — NOT baked into the theme.
 
 ## LISTINGS STRUCTURE (Shopify requires this exact format)
 ```

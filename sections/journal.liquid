@@ -19,7 +19,7 @@
           {%- liquid
             assign words = article.content | strip_html | split: ' ' | size
             assign read = words | divided_by: 200 | at_least: 1
-            assign cat = article.metafields.volt.category | default: article.tags.first | default: 'Training'
+            assign cat = article.tags.first | default: 'Training'
           -%}
           <article class="volt-jcard" data-stagger-item>
             <a href="{{ article.url }}" class="volt-jcard__media">

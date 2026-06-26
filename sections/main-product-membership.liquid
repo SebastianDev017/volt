@@ -1,8 +1,8 @@
 {%- liquid
   assign p = product
   assign v = p.selected_or_first_available_variant
-  assign tier = p.metafields.volt.tier | default: 'performance' | downcase
-  assign tier_label = tier | capitalize
+  assign tier = p.type | default: 'Performance' | downcase
+  assign tier_label = p.type | default: 'Performance'
   if tier == 'starter'
     assign gauge_default = 33
   elsif tier == 'elite'
@@ -14,7 +14,6 @@
   assign circ = 326.726
   assign gfill = gauge_value | times: circ | divided_by: 100.0
   assign goff = circ | minus: gfill
-  assign features = p.metafields.volt.features.value
 -%}
 <section class="volt-mp" data-animate>
   <div class="volt-mp__inner">
@@ -56,8 +55,14 @@
         <div class="volt-mp__unlock">
           <div class="volt-mp__unlocklabel">What's included</div>
           <ul class="volt-mp__feats">
-            {%- if features != blank and features.size > 0 -%}
-              {%- for f in features -%}<li><span>✓</span>{{ f }}</li>{%- endfor -%}
+            {%- assign feature_blocks = section.blocks | where: 'type', 'feature' -%}
+            {%- if feature_blocks.size > 0 -%}
+              {%- for block in feature_blocks -%}
+                <li {{ block.shopify_attributes }}>
+                  {%- if block.settings.included -%}<span>✓</span>{%- else -%}<span class="volt-mp__feat-no">—</span>{%- endif -%}
+                  {{ block.settings.feature_text }}
+                </li>
+              {%- endfor -%}
             {%- elsif section.settings.features != blank -%}
               {%- assign lines = section.settings.features | newline_to_br | split: '<br />' -%}
               {%- for f in lines -%}{%- assign t = f | strip -%}{%- if t != blank -%}<li><span>✓</span>{{ t }}</li>{%- endif -%}{%- endfor -%}
@@ -136,6 +141,7 @@
   .volt-mp__feats { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 13px; }
   .volt-mp__feats li { display: flex; align-items: flex-start; gap: 11px; font-size: 14px; }
   .volt-mp__feats span { color: var(--color-acid); font-size: 14px; }
+  .volt-mp__feats .volt-mp__feat-no { color: var(--color-mid); }
   .volt-mp__faq { margin-top: 28px; }
   .volt-mp__faqitem { border-bottom: 1px solid var(--color-border); }
   .volt-mp__faqitem:first-child { border-top: 1px solid var(--color-border); }
@@ -177,6 +183,14 @@
     { "type": "text", "id": "social_proof", "label": "t:sections.main_product_membership.social_proof", "default": "Join 2,400+ members training smarter." }
   ],
   "blocks": [
+    {
+      "type": "feature",
+      "name": "t:sections.main_product_membership.blocks.feature.name",
+      "settings": [
+        { "type": "checkbox", "id": "included", "label": "t:sections.main_product_membership.blocks.feature.included", "default": true },
+        { "type": "text", "id": "feature_text", "label": "t:sections.main_product_membership.blocks.feature.feature_text", "default": "Unlimited group classes" }
+      ]
+    },
     {
       "type": "faq",
       "name": "t:sections.main_product_membership.blocks.faq.name",

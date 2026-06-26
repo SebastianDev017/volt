@@ -1,14 +1,17 @@
 {%- liquid
   assign p = product
-  assign items = p.metafields.volt.bundle_items.value
-  assign discount = p.metafields.volt.bundle_discount
-  assign label = p.metafields.volt.bundle_label | default: 'Bundle Deal'
+  assign bundle_info = section.blocks | where: 'type', 'bundle_info' | first
+  assign discount = bundle_info.settings.discount_percent | default: 20
+  assign label = bundle_info.settings.badge_label | default: 'Bundle Deal'
+  assign bundle_items = section.blocks | where: 'type', 'bundle_item'
   assign individual = 0
-  if items
-    for it in items
-      assign individual = individual | plus: it.price
-    endfor
-  endif
+  for block in bundle_items
+    assign ip = block.settings.product
+    if ip != blank
+      assign line_total = ip.price | times: block.settings.quantity
+      assign individual = individual | plus: line_total
+    endif
+  endfor
   assign savings = individual | minus: p.price
 -%}
 <section class="volt-bundle" data-animate>
@@ -16,7 +19,9 @@
     <div class="volt-bundle__head">
       <span class="volt-bundle__badge">{{ label }}</span>
       <h1 class="volt-bundle__title">{{ p.title }}</h1>
-      {%- if discount != blank -%}
+      {%- if bundle_info.settings.savings_label != blank -%}
+        <div class="volt-bundle__savecallout">{{ bundle_info.settings.savings_label }}</div>
+      {%- elsif discount != blank and discount > 0 -%}
         <div class="volt-bundle__savecallout">Save {{ discount }}% vs buying individually</div>
       {%- elsif savings > 0 -%}
         <div class="volt-bundle__savecallout">Save {{ savings | money }} vs buying individually</div>
@@ -24,30 +29,26 @@
       {%- if section.settings.social_proof != blank -%}<p class="volt-bundle__social">{{ section.settings.social_proof }}</p>{%- endif -%}
     </div>
 
-    {%- if items and items.size > 0 -%}
+    {%- if bundle_items.size > 0 -%}
       <form data-bundle-form data-bundle-handle="{{ p.handle }}" class="volt-bundle__form">
         <div class="volt-bundle__grid">
-          {%- for it in items -%}
-            {%- assign iv = it.selected_or_first_available_variant -%}
-            <div class="volt-bundle__item">
-              <a href="{{ it.url }}" class="volt-bundle__itemimg">
-                {%- if it.featured_image -%}{{ it.featured_image | image_url: width: 400 | image_tag: loading: 'lazy', widths: '200, 300, 400', alt: it.title | escape }}
-                {%- else -%}{{ 'product-1' | placeholder_svg_tag: '' }}{%- endif -%}
-                <span class="volt-bundle__included">Included</span>
-              </a>
-              <div class="volt-bundle__itembody">
-                <div class="volt-bundle__itemname">{{ it.title }}</div>
-                {%- if it.variants.size > 1 -%}
-                  <label class="volt-bundle__choose" for="bi-{{ forloop.index }}">Choose your option</label>
-                  <select id="bi-{{ forloop.index }}" class="volt-bundle__select" data-bundle-item data-quantity="1">
-                    {%- for variant in it.variants -%}{%- if variant.available -%}<option value="{{ variant.id }}">{{ variant.title }}</option>{%- endif -%}{%- endfor -%}
-                  </select>
-                {%- else -%}
-                  <input type="hidden" data-bundle-item data-quantity="1" value="{{ iv.id }}">
-                {%- endif -%}
-                <div class="volt-bundle__itemprice"><s>{{ it.price | money }}</s><span>Included in bundle</span></div>
+          {%- for block in bundle_items -%}
+            {%- assign ip = block.settings.product -%}
+            {%- if ip != blank -%}
+              <div class="volt-bundle__item" {{ block.shopify_attributes }}>
+                <a href="{{ ip.url }}" class="volt-bundle__itemimg">
+                  {%- if ip.featured_image -%}{{ ip.featured_image | image_url: width: 400 | image_tag: loading: 'lazy', widths: '200, 300, 400', alt: ip.title | escape }}
+                  {%- else -%}{{ 'product-1' | placeholder_svg_tag: '' }}{%- endif -%}
+                  <span class="volt-bundle__included">Included</span>
+                </a>
+                <div class="volt-bundle__itembody">
+                  <div class="volt-bundle__itemname">{{ ip.title }}</div>
+                  {%- if block.settings.quantity > 1 -%}<div class="volt-bundle__choose">Qty: {{ block.settings.quantity }}</div>{%- endif -%}
+                  <input type="hidden" data-bundle-item data-quantity="{{ block.settings.quantity }}" value="{{ ip.selected_or_first_available_variant.id }}">
+                  <div class="volt-bundle__itemprice"><s>{{ ip.price | money }}</s><span>Included in bundle</span></div>
+                </div>
               </div>
-            </div>
+            {%- endif -%}
           {%- endfor -%}
         </div>
 
@@ -55,7 +56,7 @@
           <div class="volt-bundle__pricecol">
             {%- if individual > 0 -%}<div class="volt-bundle__indiv">Individual value <s>{{ individual | money }}</s></div>{%- endif -%}
             <div class="volt-bundle__price">{{ p.price | money }}</div>
-            {%- if savings > 0 -%}<span class="volt-bundle__savepill">You save {% if discount != blank %}{{ discount }}% — {% endif %}{{ savings | money }}</span>{%- endif -%}
+            {%- if savings > 0 -%}<span class="volt-bundle__savepill">You save {% if discount != blank and discount > 0 %}{{ discount }}% — {% endif %}{{ savings | money }}</span>{%- endif -%}
           </div>
           <button type="submit" data-bundle-submit class="volt-bundle__add">Add protocol to bag</button>
         </div>
@@ -65,7 +66,7 @@
         </div>
       </form>
     {%- else -%}
-      <p class="volt-bundle__empty">Add products to this bundle via the <strong>volt.bundle_items</strong> metafield (list of product references).</p>
+      <p class="volt-bundle__empty">Add <strong>Bundle item</strong> blocks in the theme editor to populate this bundle.</p>
     {%- endif -%}
 
     {%- assign benefits = section.blocks | where: 'type', 'bundle_benefit' -%}
@@ -160,10 +161,28 @@
   "name": "t:sections.main_product_bundle.name",
   "tag": "section",
   "settings": [
-    { "type": "paragraph", "content": "t:sections.main_product_bundle.note" },
+    { "type": "paragraph", "content": "Build the bundle by adding Bundle item blocks (one product each), then add a single Bundle info block to set the discount, savings label, and header badge." },
     { "type": "text", "id": "social_proof", "label": "t:sections.main_product_bundle.social_proof", "default": "Most popular protocol" }
   ],
   "blocks": [
+    {
+      "type": "bundle_item",
+      "name": "t:sections.main_product_bundle.blocks.bundle_item.name",
+      "settings": [
+        { "type": "product", "id": "product", "label": "t:sections.main_product_bundle.blocks.bundle_item.product" },
+        { "type": "range", "id": "quantity", "min": 1, "max": 10, "step": 1, "default": 1, "label": "t:sections.main_product_bundle.blocks.bundle_item.quantity" }
+      ]
+    },
+    {
+      "type": "bundle_info",
+      "name": "t:sections.main_product_bundle.blocks.bundle_info.name",
+      "limit": 1,
+      "settings": [
+        { "type": "range", "id": "discount_percent", "min": 0, "max": 50, "step": 5, "default": 20, "label": "t:sections.main_product_bundle.blocks.bundle_info.discount_percent" },
+        { "type": "text", "id": "savings_label", "label": "t:sections.main_product_bundle.blocks.bundle_info.savings_label", "default": "SAVE 20% vs buying individually" },
+        { "type": "text", "id": "badge_label", "label": "t:sections.main_product_bundle.blocks.bundle_info.badge_label", "default": "Bundle Deal" }
+      ]
+    },
     {
       "type": "bundle_benefit",
       "name": "t:sections.main_product_bundle.blocks.benefit.name",

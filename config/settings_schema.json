@@ -331,12 +331,6 @@
         "id": "show_member_price",
         "label": "t:settings.products.show_member_price",
         "default": true
-      },
-      {
-        "type": "checkbox",
-        "id": "show_tasting_specs",
-        "label": "t:settings.products.show_tasting_specs",
-        "default": true
       }
     ]
   },

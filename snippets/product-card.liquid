@@ -21,11 +21,16 @@
   {%- liquid
     assign tpl = p.template_suffix
     assign v = p.selected_or_first_available_variant
-    assign mprice = p.price | times: 0.8
-    assign badge = p.metafields.volt.badge
-    assign cat = p.metafields.volt.category
-    assign sp = p.metafields.volt.specs.value
-    assign bundle_discount = p.metafields.volt.bundle_discount
+    assign badge = ''
+    assign cat = ''
+    for tag in p.tags
+      if tag contains 'badge:' and badge == ''
+        assign badge = tag | remove: 'badge:' | upcase
+      endif
+      if tag contains 'cat:' and cat == ''
+        assign cat = tag | remove: 'cat:' | capitalize
+      endif
+    endfor
   -%}
   <div class="volt-card volt-card--{{ tpl | default: 'standard' }}" data-stagger-item>
     <div class="volt-card__media">
@@ -40,7 +45,7 @@
         {%- if tpl == 'membership' -%}
           <span class="volt-card__badge volt-card__badge--acid">{{ 'products.membership' | t: default: 'Membership' }}</span>
         {%- elsif tpl == 'bundle' -%}
-          <span class="volt-card__badge volt-card__badge--acid">{{ 'products.bundle' | t: default: 'Bundle' }}{% if bundle_discount != blank %} · {{ 'products.save' | t: default: 'Save' }} {{ bundle_discount }}%{% endif %}</span>
+          <span class="volt-card__badge volt-card__badge--acid">{{ 'products.bundle' | t: default: 'Bundle' }}</span>
         {%- elsif p.available == false -%}
           <span class="volt-card__badge volt-card__badge--ink">{{ 'products.sold_out' | t: default: 'Sold out' }}</span>
         {%- elsif badge != blank -%}
@@ -51,7 +56,11 @@
         {%- endif -%}
       </div>
 
-      {%- if show_member and tpl == blank -%}<span class="volt-card__member">{{ 'products.member_off' | t: default: 'Member −20%' }}</span>{%- endif -%}
+      {%- if show_member and p.compare_at_price > p.price -%}
+        {%- assign savepct = p.compare_at_price | minus: p.price | times: 100 | divided_by: p.compare_at_price -%}
+        {%- assign member_lbl = 'products.member' | t: default: 'Member' -%}
+        <span class="volt-card__member">{{ member_lbl | upcase }} −{{ savepct }}%</span>
+      {%- endif -%}
 
       {%- if settings.quick_view and tpl == blank -%}
         <button type="button" class="volt-card__qv" data-quick-view data-handle="{{ p.handle }}" data-magnetic data-magnetic-strength="0.2">{{ 'products.quick_view' | t: default: 'Quick view' }}</button>
@@ -78,15 +87,9 @@
         <div class="volt-card__price"><span class="volt-card__amount">{{ p.price | money }}</span>{%- if p.compare_at_price > p.price -%}<span class="volt-card__compare">{{ p.compare_at_price | money }}</span>{%- endif -%}</div>
         <a href="{{ p.url }}" class="volt-card__tplcta">{{ 'products.get_bundle' | t: default: 'Get the bundle' }} &rarr;</a>
       {%- else -%}
-        {%- if settings.show_tasting_specs and sp != blank -%}
-          {%- capture specline -%}{%- if sp.protein != blank %}PRO {{ sp.protein }}{% endif %}{%- if sp.carbs != blank %} · CARBS {{ sp.carbs }}{% endif %}{%- if sp.serving != blank %} · {{ sp.serving }}{% endif %}{%- endcapture -%}
-          {%- assign specline = specline | strip -%}
-          {%- if specline != blank -%}<div class="volt-card__specs">{{ specline }}</div>{%- endif -%}
-        {%- endif -%}
         <div class="volt-card__price">
           <span class="volt-card__amount">{{ p.price | money }}</span>
           {%- if p.compare_at_price > p.price -%}<span class="volt-card__compare">{{ p.compare_at_price | money }}</span>{%- endif -%}
-          {%- if show_member -%}<span class="volt-card__mp">{{ mprice | money }} {{ 'products.member' | t: default: 'member' }}</span>{%- endif -%}
         </div>
       {%- endif -%}
     </div>

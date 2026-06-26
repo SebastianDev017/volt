@@ -1,13 +1,5 @@
 {%- liquid
   assign menu = linklists[settings.menu]
-  assign tier_label = ''
-  if customer.tags contains 'volt-member-elite'
-    assign tier_label = 'Elite'
-  elsif customer.tags contains 'volt-member-performance'
-    assign tier_label = 'Performance'
-  elsif customer.tags contains 'volt-member-starter'
-    assign tier_label = 'Starter'
-  endif
   if customer
     assign account_href = routes.account_url
   else
@@ -63,7 +55,6 @@
       <a href="{{ account_href }}" class="volt-header__account" aria-label="{{ 'sections.header_main.account' | t: default: 'Account' }}">
         {%- if customer -%}<span class="volt-header__initial">{{ customer.first_name | slice: 0 | upcase | default: 'A' }}</span>
         {%- else -%}<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-7 8-7s8 3 8 7"/></svg>{%- endif -%}
-        {%- if tier_label != blank -%}<span class="volt-header__tier">{{ tier_label }}</span>{%- endif -%}
       </a>
       <a href="{{ routes.cart_url }}" class="volt-header__icon volt-header__cart" aria-label="{{ 'sections.header_main.cart' | t: default: 'Cart' }}">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 7h12l-1.2 12.2a2 2 0 0 1-2 1.8H9.2a2 2 0 0 1-2-1.8Z"/><path d="M9 7a3 3 0 0 1 6 0"/></svg>

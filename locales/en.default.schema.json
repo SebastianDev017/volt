@@ -395,6 +395,10 @@
           "heading": "Modal heading",
           "size_data": "Size table",
           "size_data_info": "Paste an HTML table (use the rich-text editor's table tool)."
+        },
+        "certification": {
+          "name": "Certification",
+          "cert_name": "Certification name"
         }
       },
       "gallery_header": "Gallery",
@@ -413,6 +417,11 @@
           "name": "FAQ item",
           "question": "Question",
           "answer": "Answer"
+        },
+        "feature": {
+          "name": "Feature",
+          "included": "Included in this tier",
+          "feature_text": "Feature text"
         }
       }
     },
@@ -426,6 +435,17 @@
           "icon": "Icon (emoji)",
           "heading": "Heading",
           "description": "Description"
+        },
+        "bundle_item": {
+          "name": "Bundle item",
+          "product": "Product",
+          "quantity": "Quantity"
+        },
+        "bundle_info": {
+          "name": "Bundle info",
+          "discount_percent": "Discount %",
+          "savings_label": "Savings label",
+          "badge_label": "Header badge label"
         }
       }
     },
@@ -654,7 +674,6 @@
       "image_radius": "Image corner radius",
       "stock_threshold": "Low-stock threshold",
       "show_member_price": "Show member price on cards",
-      "show_tasting_specs": "Show spec line on cards",
       "quick_view": "Enable quick view",
       "quick_view_info": "Adds a quick-view button on product cards that opens a mini product modal."
     },

@@ -3,11 +3,12 @@
     "bundle_main": {
       "type": "main-product-bundle",
       "blocks": {
+        "info": { "type": "bundle_info", "settings": { "discount_percent": 20, "savings_label": "SAVE 20% vs buying individually", "badge_label": "Bundle Deal" } },
         "b1": { "type": "bundle_benefit", "settings": { "icon": "⚡", "heading": "Engineered to stack", "description": "Each item is dosed to work with the others — no redundant ingredients, no wasted scoops." } },
         "b2": { "type": "bundle_benefit", "settings": { "icon": "◆", "heading": "Cheaper together", "description": "Bundle pricing beats buying each product on its own — same gear, lower total." } },
         "b3": { "type": "bundle_benefit", "settings": { "icon": "↻", "heading": "One-tap reorder", "description": "Your whole protocol in a single add-to-cart. Re-buy the stack in seconds." } }
       },
-      "block_order": ["b1", "b2", "b3"],
+      "block_order": ["info", "b1", "b2", "b3"],
       "settings": {}
     },
     "bundle_statement": {

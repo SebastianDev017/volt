@@ -3,11 +3,16 @@
     "main": {
       "type": "main-product-membership",
       "blocks": {
+        "f1": { "type": "feature", "settings": { "included": true, "feature_text": "Unlimited group classes" } },
+        "f2": { "type": "feature", "settings": { "included": true, "feature_text": "App + member dashboard access" } },
+        "f3": { "type": "feature", "settings": { "included": true, "feature_text": "Member pricing on all gear" } },
+        "f4": { "type": "feature", "settings": { "included": true, "feature_text": "Strain & recovery tracking" } },
+        "f5": { "type": "feature", "settings": { "included": true, "feature_text": "Monthly 1:1 coach check-in" } },
         "q1": { "type": "faq", "settings": { "question": "Can I cancel anytime?", "answer": "<p>Yes — memberships are month-to-month. Cancel from your dashboard anytime, no fees.</p>" } },
         "q2": { "type": "faq", "settings": { "question": "What's included in the app?", "answer": "<p>Live recovery and strain scoring, class booking, program tracking, and member-only pricing.</p>" } },
         "q3": { "type": "faq", "settings": { "question": "Do you offer annual billing?", "answer": "<p>Yes — choose the annual plan at checkout and save 25% versus monthly.</p>" } }
       },
-      "block_order": ["q1", "q2", "q3"],
+      "block_order": ["f1", "f2", "f3", "f4", "f5", "q1", "q2", "q3"],
       "settings": {}
     },
     "proof": {

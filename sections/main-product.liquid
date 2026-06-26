@@ -2,9 +2,16 @@
   assign p = product
   assign v = p.selected_or_first_available_variant
   assign member = p.price | times: 0.8
-  assign sp = p.metafields.volt.specs.value
   assign shipping_blocks = section.blocks | where: 'type', 'shipping_info'
   assign size_chart = section.blocks | where: 'type', 'size_chart' | first
+  assign cat_tag = ''
+  for tag in p.tags
+    assign tag_prefix = tag | slice: 0, 4
+    if tag_prefix == 'cat:'
+      assign cat_tag = tag | remove_first: 'cat:' | strip | capitalize
+      break
+    endif
+  endfor
 -%}
 <section class="volt-pdp" data-animate>
   <div class="volt-pdp__crumbs">
@@ -45,7 +52,7 @@
 
       {%- comment -%} INFO {%- endcomment -%}
       <div class="volt-pdp__info">
-        {%- if p.metafields.volt.category != blank -%}<span class="volt-pdp__cat">{{ p.metafields.volt.category }}</span>{%- endif -%}
+        {%- if cat_tag != blank -%}<span class="volt-pdp__cat">{{ cat_tag }}</span>{%- endif -%}
         <h1 class="volt-pdp__title">{{ p.title }}</h1>
         {%- if p.vendor != blank -%}<div class="volt-pdp__sub">{{ p.vendor }}</div>{%- endif -%}
 
@@ -58,9 +65,6 @@
           {%- if settings.show_member_price -%}<span class="volt-pdp__mprice">{{ member | money }} member</span>{%- endif -%}
           {%- if p.compare_at_price > p.price -%}<span class="volt-pdp__compare" data-pdp-compare>{{ p.compare_at_price | money }}</span>{%- endif -%}
         </div>
-        {%- capture specline -%}{%- if sp.protein != blank %}PRO {{ sp.protein }}{% endif %}{%- if sp.carbs != blank %} · CARBS {{ sp.carbs }}{% endif %}{%- if sp.fat != blank %} · FAT {{ sp.fat }}{% endif %}{%- if sp.cert != blank %} · {{ sp.cert }}{% endif %}{%- endcapture -%}
-        {%- assign specline = specline | strip -%}
-        {%- if specline != blank -%}<div class="volt-pdp__specs">{{ specline }}</div>{%- endif -%}
 
         {%- form 'product', p, id: 'pdp-form', class: 'volt-pdp__form' -%}
           <input type="hidden" name="id" value="{{ v.id }}" data-pdp-id>
@@ -176,9 +180,16 @@
           </div>
           <div class="volt-nut__panel volt-nut__panel--certs">
             <div class="volt-nut__certs">
-              <div class="volt-nut__cert"><span class="volt-nut__certmark">NSF</span><div>Certified for Sport®<br>Lot-tested for banned substances</div></div>
-              <div class="volt-nut__cert"><span class="volt-nut__certmark">INFORMED</span><div>Informed Sport<br>Every batch screened</div></div>
-              <div class="volt-nut__cert"><span class="volt-nut__certmark">3RD-PARTY</span><div>Independent lab<br>Heavy-metal tested</div></div>
+              {%- assign cert_blocks = section.blocks | where: 'type', 'certification' -%}
+              {%- if cert_blocks.size > 0 -%}
+                {%- for block in cert_blocks -%}
+                  <div class="volt-nut__cert" {{ block.shopify_attributes }}><span class="volt-nut__certmark">{{ block.settings.cert_name }}</span><div>{{ block.settings.cert_name }}<br>Independently verified</div></div>
+                {%- endfor -%}
+              {%- else -%}
+                <div class="volt-nut__cert"><span class="volt-nut__certmark">NSF</span><div>Certified for Sport®<br>Lot-tested for banned substances</div></div>
+                <div class="volt-nut__cert"><span class="volt-nut__certmark">INFORMED</span><div>Informed Sport<br>Every batch screened</div></div>
+                <div class="volt-nut__cert"><span class="volt-nut__certmark">3RD-PARTY</span><div>Independent lab<br>Heavy-metal tested</div></div>
+              {%- endif -%}
             </div>
           </div>
         </div>
@@ -436,6 +447,13 @@
         { "type": "text", "id": "label", "label": "t:sections.main_product.blocks.macro.label", "default": "Protein" },
         { "type": "text", "id": "value", "label": "t:sections.main_product.blocks.macro.value", "default": "24g" },
         { "type": "range", "id": "fill", "min": 0, "max": 100, "step": 1, "unit": "%", "label": "t:sections.main_product.blocks.macro.fill", "default": 96 }
+      ]
+    },
+    {
+      "type": "certification",
+      "name": "t:sections.main_product.blocks.certification.name",
+      "settings": [
+        { "type": "text", "id": "cert_name", "label": "t:sections.main_product.blocks.certification.cert_name", "default": "NSF Certified" }
       ]
     },
     {
