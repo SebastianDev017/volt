@@ -134,6 +134,12 @@
     "vitals_strip": {
       "aria": "Estadísticas de miembros"
     },
+    "referral": {
+      "you_get": "Tú recibes",
+      "they_get": "Ellos reciben",
+      "share_label": "Comparte tu código",
+      "copied": "Copiado"
+    },
     "promo_popup": {
       "eyebrow": "Solo miembros",
       "email_label": "Correo electrónico",

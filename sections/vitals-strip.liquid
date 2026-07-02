@@ -4,7 +4,11 @@
     <div class="volt-vitals__track">
       {%- for n in (1..2) -%}
         {%- for block in section.blocks -%}
-          <span class="volt-vitals__item" {{ block.shopify_attributes }}>{{ block.settings.text }}</span><span class="volt-vitals__sep" aria-hidden="true">/</span>
+          {%- if block.type == 'institutional' -%}
+            <span class="volt-vitals__item volt-vitals__item--inst" {{ block.shopify_attributes }}>{{ block.settings.text }}</span><span class="volt-vitals__sep" aria-hidden="true">/</span>
+          {%- else -%}
+            <span class="volt-vitals__item" {{ block.shopify_attributes }}>{{ block.settings.text }}</span><span class="volt-vitals__sep" aria-hidden="true">/</span>
+          {%- endif -%}
         {%- endfor -%}
       {%- endfor -%}
     </div>
@@ -18,6 +22,8 @@
   .volt-vitals:hover .volt-vitals__track { animation-play-state: paused; }
   .volt-vitals__item, .volt-vitals__sep { font-family: var(--font-mono); font-size: 13px; letter-spacing: .1em; color: var(--color-acid); padding-right: 32px; white-space: nowrap; }
   .volt-vitals__sep { opacity: .4; }
+  /* Institutional credibility slot (Momentous/Oura) — inverted chip so certification/athlete stats read differently from member stats */
+  .volt-vitals__item--inst { background: var(--color-acid); color: var(--color-ink); padding: 3px 10px; margin-right: 32px; padding-right: 10px; }
   @media (prefers-reduced-motion: reduce) { .volt-vitals__track { animation: none; white-space: normal; } }
 {% endstylesheet %}
 
@@ -59,6 +65,13 @@
       "settings": [
         { "type": "text", "id": "text", "label": "t:sections.vitals_strip.blocks.stat.text", "default": "2,400 MEMBERS" }
       ]
+    },
+    {
+      "type": "institutional",
+      "name": "t:sections.vitals_strip.blocks.institutional.name",
+      "settings": [
+        { "type": "text", "id": "text", "label": "t:sections.vitals_strip.blocks.institutional.text", "info": "t:sections.vitals_strip.blocks.institutional.text_info", "default": "NSF CERTIFIED FACILITY" }
+      ]
     }
   ],
   "presets": [
@@ -67,8 +80,10 @@
       "blocks": [
         { "type": "stat", "settings": { "text": "2,400 MEMBERS" } },
         { "type": "stat", "settings": { "text": "847 CLASSES/MONTH" } },
+        { "type": "institutional", "settings": { "text": "NSF CERTIFIED FACILITY" } },
         { "type": "stat", "settings": { "text": "94% RETENTION" } },
         { "type": "stat", "settings": { "text": "AVG FIRST PR: WEEK 6" } },
+        { "type": "institutional", "settings": { "text": "TRUSTED BY 40+ PRO ATHLETES" } },
         { "type": "stat", "settings": { "text": "+3.2T STRAIN AVG" } }
       ]
     }

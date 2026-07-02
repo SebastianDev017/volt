@@ -92,9 +92,13 @@
         </div>
         <div class="volt-mp__tiername">{{ tier_label }} intensity</div>
 
+        {%- comment -%} In-context app-UI preview (Oura embedded-app pattern): chrome bar + VOLT Score + metrics + labeled week {%- endcomment -%}
         <div class="volt-mp__preview">
-          <div class="volt-mp__previewhead">Preview member dashboard</div>
-          {%- comment -%} WHOOP-style compression: one 0-100 VOLT Score up top, raw metrics below {%- endcomment -%}
+          <div class="volt-mp__previewchrome">
+            <span class="volt-mp__previewdot" aria-hidden="true"></span>
+            <span class="volt-mp__previewapp">VOLT · This week</span>
+            <span class="volt-mp__previewhead">Member dashboard</span>
+          </div>
           <div class="volt-mp__score">{% render 'volt-score', score: section.settings.volt_score, size: 84 %}</div>
           <div class="volt-mp__minimetrics">
             <div><span class="k">Recovery</span><span class="v">87%</span></div>
@@ -104,6 +108,7 @@
           <div class="volt-mp__bars">
             <i style="height:48%"></i><i style="height:66%"></i><i style="height:54%"></i><i style="height:80%"></i><i style="height:62%"></i><i style="height:92%"></i><i style="height:74%"></i><i style="height:100%"></i>
           </div>
+          <div class="volt-mp__days" aria-hidden="true"><span>M</span><span>T</span><span>W</span><span>T</span><span>F</span><span>S</span><span>S</span><span class="volt-mp__daynow">·</span></div>
         </div>
 
         <div class="volt-mp__trust">
@@ -161,7 +166,13 @@
   .volt-mp__dialval span { font-size: 14px; color: var(--color-mid); }
   .volt-mp__tiername { font-family: var(--font-mono); font-size: 10px; letter-spacing: .14em; text-transform: uppercase; color: var(--color-acid); margin-top: 12px; }
   .volt-mp__preview { width: 100%; background: var(--color-ink); color: var(--color-bg); padding: 20px; margin-top: 28px; }
-  .volt-mp__previewhead { font-family: var(--font-mono); font-size: 9px; letter-spacing: .16em; text-transform: uppercase; color: rgba(240,238,234,.5); font-style: italic; }
+  .volt-mp__previewchrome { display: flex; align-items: center; gap: 8px; padding-bottom: 12px; border-bottom: 1px solid rgba(240,238,234,.12); }
+  .volt-mp__previewdot { width: 7px; height: 7px; border-radius: 50%; background: var(--color-acid); flex: none; }
+  .volt-mp__previewapp { font-family: var(--font-mono); font-size: 9px; letter-spacing: .14em; text-transform: uppercase; color: var(--color-bg); }
+  .volt-mp__previewhead { font-family: var(--font-mono); font-size: 9px; letter-spacing: .16em; text-transform: uppercase; color: rgba(240,238,234,.5); font-style: italic; margin-left: auto; }
+  .volt-mp__days { display: flex; gap: 4px; margin-top: 6px; }
+  .volt-mp__days span { flex: 1; text-align: center; font-family: var(--font-mono); font-size: 8px; letter-spacing: .04em; color: rgba(240,238,234,.45); }
+  .volt-mp__daynow { color: var(--color-acid); }
   .volt-mp__score { display: flex; justify-content: center; margin-top: 16px; }
   .volt-mp__score .volt-score__label { color: rgba(240,238,234,.55); opacity: 1; }
   .volt-mp__minimetrics { display: flex; justify-content: space-between; gap: 10px; margin-top: 16px; }

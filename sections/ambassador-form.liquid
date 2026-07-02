@@ -1,0 +1,108 @@
+{% render 'section-style', section: section %}
+{%- comment -%}
+  Ambassador signup — a simple application form for members who want deeper
+  brand involvement (SPYLT multi-program community pattern). Submits through
+  the native contact form (tagged "ambassador"); no app required.
+  Used by templates/page.ambassador.json.
+{%- endcomment -%}
+<section class="volt-amb" data-animate>
+  <div class="volt-amb__inner">
+    <header class="volt-amb__head">
+      {%- if section.settings.eyebrow != blank -%}<div class="volt-amb__eyebrow">{{ section.settings.eyebrow }}</div>{%- endif -%}
+      <h1 class="volt-amb__title">{{ section.settings.heading | default: page.title }}</h1>
+      {%- if section.settings.body != blank -%}<p class="volt-amb__body">{{ section.settings.body }}</p>{%- endif -%}
+    </header>
+
+    {%- form 'contact', class: 'volt-amb__form' -%}
+      {%- if form.posted_successfully? -%}
+        <p class="volt-amb__success" role="status">{{ section.settings.success_text }}</p>
+      {%- else -%}
+        <input type="hidden" name="contact[tags]" value="ambassador">
+        {%- if form.errors -%}<p class="volt-amb__error" role="alert">{{ form.errors | default_errors }}</p>{%- endif -%}
+        <div class="volt-amb__row">
+          <div class="volt-amb__field">
+            <label for="amb-name">{{ section.settings.name_label }}</label>
+            <input id="amb-name" class="input" type="text" name="contact[name]" autocomplete="name" required>
+          </div>
+          <div class="volt-amb__field">
+            <label for="amb-email">{{ section.settings.email_label }}</label>
+            <input id="amb-email" class="input" type="email" name="contact[email]" autocomplete="email" required>
+          </div>
+        </div>
+        <div class="volt-amb__field">
+          <label for="amb-social">{{ section.settings.social_label }}</label>
+          <input id="amb-social" class="input" type="text" name="contact[social]" placeholder="@">
+        </div>
+        <div class="volt-amb__field">
+          <label for="amb-why">{{ section.settings.why_label }}</label>
+          <textarea id="amb-why" class="input volt-amb__textarea" name="contact[body]" rows="5" required></textarea>
+        </div>
+        <button type="submit" class="btn btn--acid volt-amb__submit">{{ section.settings.submit_label }}</button>
+      {%- endif -%}
+    {%- endform -%}
+  </div>
+</section>
+
+{% stylesheet %}
+  .volt-amb__inner { max-width: 720px; margin-inline: auto; padding: clamp(64px, 9vw, 120px) 28px; }
+  .volt-amb__head { text-align: center; margin-bottom: 40px; }
+  .volt-amb__eyebrow { font-family: var(--font-mono); font-size: 11px; letter-spacing: .18em; text-transform: uppercase; color: var(--color-acid-accessible); }
+  .volt-amb__title { font-family: var(--font-display); font-weight: 800; font-size: calc(clamp(35px, 4vw, 56px) * var(--section-heading-scale, 1)); line-height: 1; letter-spacing: -.015em; margin: 14px 0 0; }
+  .volt-amb__body { font-size: 15px; line-height: 1.65; color: var(--color-mid); margin: 16px auto 0; max-width: 52ch; }
+  .volt-amb__form { display: flex; flex-direction: column; gap: 18px; }
+  .volt-amb__row { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+  .volt-amb__field { display: flex; flex-direction: column; gap: 8px; }
+  .volt-amb__field label { font-family: var(--font-mono); font-size: 10px; letter-spacing: .14em; text-transform: uppercase; color: var(--color-mid); }
+  .volt-amb__textarea { resize: vertical; min-height: 120px; }
+  .volt-amb__submit { align-self: flex-start; }
+  .volt-amb__success { font-family: var(--font-mono); font-size: 13px; color: var(--color-ink); border: 1px solid var(--color-border); border-left: 3px solid var(--color-acid); background: var(--color-surface); padding: 18px 20px; margin: 0; }
+  .volt-amb__error { font-size: 13px; color: var(--color-danger); margin: 0; }
+  @media (max-width: 640px) { .volt-amb__row { grid-template-columns: 1fr; } }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:sections.ambassador.name",
+  "tag": "section",
+  "settings": [
+    { "type": "header", "content": "t:sections.style.header" },
+    { "type": "select", "id": "color_scheme", "label": "t:sections.style.color_scheme", "default": "inherit", "options": [
+      { "value": "inherit", "label": "t:sections.style.scheme_inherit" },
+      { "value": "volt", "label": "t:sections.style.scheme_volt" },
+      { "value": "anthracite", "label": "t:sections.style.scheme_anthracite" },
+      { "value": "titanium", "label": "t:sections.style.scheme_titanium" },
+      { "value": "ink", "label": "t:sections.style.scheme_ink" },
+      { "value": "acid", "label": "t:sections.style.scheme_acid" }
+    ] },
+    { "type": "select", "id": "heading_size", "label": "t:sections.style.heading_size", "default": "medium", "options": [
+      { "value": "small", "label": "t:sections.style.size_small" },
+      { "value": "medium", "label": "t:sections.style.size_medium" },
+      { "value": "large", "label": "t:sections.style.size_large" },
+      { "value": "xl", "label": "t:sections.style.size_xl" }
+    ] },
+    { "type": "color", "id": "heading_color", "label": "t:sections.style.heading_color" },
+    { "type": "color", "id": "body_color", "label": "t:sections.style.body_color" },
+    { "type": "select", "id": "button_style", "label": "t:sections.style.button_style", "default": "acid", "options": [
+      { "value": "acid", "label": "t:sections.style.btn_acid" },
+      { "value": "outline", "label": "t:sections.style.btn_outline" },
+      { "value": "ghost", "label": "t:sections.style.btn_ghost" },
+      { "value": "ink", "label": "t:sections.style.btn_ink" },
+      { "value": "white", "label": "t:sections.style.btn_white" }
+    ] },
+    { "type": "checkbox", "id": "show_accent_rule", "label": "t:sections.style.show_accent_rule", "default": false },
+    { "type": "text", "id": "eyebrow", "label": "t:sections.ambassador.eyebrow", "default": "// Represent the protocol" },
+    { "type": "text", "id": "heading", "label": "t:sections.ambassador.heading", "default": "Become a VOLT ambassador." },
+    { "type": "textarea", "id": "body", "label": "t:sections.ambassador.body", "default": "Coaches, athletes and community leaders: get early product access, a personal referral code, and a seat at member events." },
+    { "type": "header", "content": "t:sections.ambassador.form_header" },
+    { "type": "text", "id": "name_label", "label": "t:sections.ambassador.name_label", "default": "Name" },
+    { "type": "text", "id": "email_label", "label": "t:sections.ambassador.email_label", "default": "Email" },
+    { "type": "text", "id": "social_label", "label": "t:sections.ambassador.social_label", "default": "Instagram / TikTok handle" },
+    { "type": "text", "id": "why_label", "label": "t:sections.ambassador.why_label", "default": "Why you — training background, community, numbers" },
+    { "type": "text", "id": "submit_label", "label": "t:sections.ambassador.submit_label", "default": "Apply" },
+    { "type": "text", "id": "success_text", "label": "t:sections.ambassador.success_text", "default": "Application received — we review every one and reply within 5 business days." }
+  ],
+  "presets": [
+    { "name": "t:sections.ambassador.name" }
+  ]
+}
+{% endschema %}

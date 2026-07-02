@@ -1,0 +1,13 @@
+{
+  "sections": {
+    "main": {
+      "type": "referral",
+      "settings": {}
+    },
+    "tiers": {
+      "type": "membership-tiers",
+      "settings": {}
+    }
+  },
+  "order": ["main", "tiers"]
+}

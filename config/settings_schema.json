@@ -410,6 +410,29 @@
         "type": "url",
         "id": "sticky_cta_url",
         "label": "t:settings.conversion.sticky_url"
+      },
+      {
+        "type": "header",
+        "content": "t:settings.conversion.referral_header"
+      },
+      {
+        "type": "text",
+        "id": "referral_give",
+        "label": "t:settings.conversion.referral_give",
+        "default": "1 month free"
+      },
+      {
+        "type": "text",
+        "id": "referral_get",
+        "label": "t:settings.conversion.referral_get",
+        "default": "20% off their first month"
+      },
+      {
+        "type": "text",
+        "id": "referral_code",
+        "label": "t:settings.conversion.referral_code",
+        "info": "t:settings.conversion.referral_code_info",
+        "default": "VOLTCIRCLE"
       }
     ]
   },

@@ -63,11 +63,18 @@
           "settings": {
             "text": "+3.2T STRAIN AVG"
           }
+        },
+        "block_6": {
+          "type": "institutional",
+          "settings": {
+            "text": "NSF CERTIFIED FACILITY"
+          }
         }
       },
       "block_order": [
         "block_1",
         "block_2",
+        "block_6",
         "block_3",
         "block_4",
         "block_5"

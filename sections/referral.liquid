@@ -1,0 +1,123 @@
+{% render 'section-style', section: section %}
+{%- comment -%}
+  VOLT Circle — invite-a-friend referral section (SPYLT community-program
+  pattern). Both-party incentives + the share code live in theme settings
+  (Conversion & UX group) so they stay consistent wherever this section is
+  placed; heading/copy are per-section.
+{%- endcomment -%}
+<section class="volt-circle" data-animate>
+  <div class="volt-circle__inner">
+    <div class="volt-circle__intro">
+      {%- if section.settings.eyebrow != blank -%}<div class="volt-circle__eyebrow">{{ section.settings.eyebrow }}</div>{%- endif -%}
+      {%- if section.settings.heading != blank -%}<h2 class="volt-circle__title" {% render 'anim-attrs', value: section.settings.heading_animation, enabled: section.settings.enable_animations %}>{{ section.settings.heading }}</h2>{%- endif -%}
+      {%- if section.settings.body != blank -%}<p class="volt-circle__body">{{ section.settings.body }}</p>{%- endif -%}
+    </div>
+
+    <div class="volt-circle__cards" data-stagger-group>
+      <div class="volt-circle__card" data-stagger-item>
+        <span class="volt-circle__cardlabel">{{ 'sections.referral.you_get' | t: default: 'You get' }}</span>
+        <span class="volt-circle__cardvalue">{{ settings.referral_give | default: '1 month free' }}</span>
+      </div>
+      <div class="volt-circle__card volt-circle__card--acid" data-stagger-item>
+        <span class="volt-circle__cardlabel">{{ 'sections.referral.they_get' | t: default: 'They get' }}</span>
+        <span class="volt-circle__cardvalue">{{ settings.referral_get | default: '20% off their first month' }}</span>
+      </div>
+    </div>
+
+    {%- if settings.referral_code != blank -%}
+      <div class="volt-circle__share">
+        <span class="volt-circle__sharelabel">{{ 'sections.referral.share_label' | t: default: 'Share your code' }}</span>
+        <button type="button" class="volt-circle__code" data-referral-copy data-copied-label="{{ 'sections.referral.copied' | t: default: 'Copied' }}">
+          <span data-referral-code>{{ settings.referral_code }}</span>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="0"/><path d="M5 15V5a1 1 0 0 1 1-1h10"/></svg>
+        </button>
+      </div>
+    {%- endif -%}
+  </div>
+</section>
+
+{% stylesheet %}
+  .volt-circle { background: var(--color-ink); color: var(--color-bg); }
+  .volt-circle__inner { max-width: var(--page-width); margin-inline: auto; padding: 104px 28px; display: grid; grid-template-columns: 1.1fr 1fr; gap: clamp(32px, 5vw, 72px); align-items: center; }
+  .volt-circle__eyebrow { font-family: var(--font-mono); font-size: 11px; letter-spacing: .18em; text-transform: uppercase; color: var(--color-acid); }
+  .volt-circle__title { font-family: var(--font-display); font-weight: 800; font-size: calc(clamp(35px, 3.5vw, 53px) * var(--section-heading-scale, 1)); line-height: 1.02; letter-spacing: -.01em; margin: 14px 0 0; }
+  .volt-circle__body { font-size: 15px; line-height: 1.65; color: rgba(240,238,234,.65); margin: 16px 0 0; max-width: 46ch; }
+  .volt-circle__cards { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .volt-circle__card { border: 1px solid rgba(240,238,234,.18); padding: 24px 22px; display: flex; flex-direction: column; gap: 10px; }
+  .volt-circle__card--acid { background: var(--color-acid); color: var(--color-ink); border-color: var(--color-acid); }
+  .volt-circle__cardlabel { font-family: var(--font-mono); font-size: 10px; letter-spacing: .16em; text-transform: uppercase; opacity: .6; }
+  .volt-circle__cardvalue { font-family: var(--font-display); font-weight: 800; font-size: 22px; line-height: 1.1; }
+  .volt-circle__share { grid-column: 2; display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+  .volt-circle__sharelabel { font-family: var(--font-mono); font-size: 10px; letter-spacing: .14em; text-transform: uppercase; color: rgba(240,238,234,.55); }
+  .volt-circle__code { display: inline-flex; align-items: center; gap: 10px; border: 1px dashed var(--color-acid); background: none; color: var(--color-acid); font-family: var(--font-mono); font-size: 14px; letter-spacing: .14em; padding: 11px 16px; cursor: pointer; transition: background var(--dur-fast) var(--ease), color var(--dur-fast) var(--ease); }
+  .volt-circle__code:hover { background: var(--color-acid); color: var(--color-ink); transition-delay: .03s; }
+  .volt-circle__code svg { width: 15px; height: 15px; }
+  @media (max-width: 860px) { .volt-circle__inner { grid-template-columns: 1fr; padding-block: 84px; } .volt-circle__share { grid-column: auto; } }
+{% endstylesheet %}
+
+<script>
+  (function () {
+    document.querySelectorAll('[data-referral-copy]').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var codeEl = btn.querySelector('[data-referral-code]');
+        var code = codeEl ? codeEl.textContent.trim() : '';
+        if (!code || !navigator.clipboard) return;
+        navigator.clipboard.writeText(code).then(function () {
+          var orig = codeEl.textContent;
+          codeEl.textContent = btn.dataset.copiedLabel || 'Copied';
+          setTimeout(function () { codeEl.textContent = orig; }, 1400);
+        }).catch(function () {});
+      });
+    });
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "t:sections.referral.name",
+  "tag": "section",
+  "settings": [
+    { "type": "paragraph", "content": "t:sections.referral.note" },
+    { "type": "header", "content": "t:sections.style.header" },
+    { "type": "select", "id": "color_scheme", "label": "t:sections.style.color_scheme", "default": "inherit", "options": [
+      { "value": "inherit", "label": "t:sections.style.scheme_inherit" },
+      { "value": "volt", "label": "t:sections.style.scheme_volt" },
+      { "value": "anthracite", "label": "t:sections.style.scheme_anthracite" },
+      { "value": "titanium", "label": "t:sections.style.scheme_titanium" },
+      { "value": "ink", "label": "t:sections.style.scheme_ink" },
+      { "value": "acid", "label": "t:sections.style.scheme_acid" }
+    ] },
+    { "type": "select", "id": "heading_size", "label": "t:sections.style.heading_size", "default": "medium", "options": [
+      { "value": "small", "label": "t:sections.style.size_small" },
+      { "value": "medium", "label": "t:sections.style.size_medium" },
+      { "value": "large", "label": "t:sections.style.size_large" },
+      { "value": "xl", "label": "t:sections.style.size_xl" }
+    ] },
+    { "type": "color", "id": "heading_color", "label": "t:sections.style.heading_color" },
+    { "type": "color", "id": "body_color", "label": "t:sections.style.body_color" },
+    { "type": "select", "id": "button_style", "label": "t:sections.style.button_style", "default": "acid", "options": [
+      { "value": "acid", "label": "t:sections.style.btn_acid" },
+      { "value": "outline", "label": "t:sections.style.btn_outline" },
+      { "value": "ghost", "label": "t:sections.style.btn_ghost" },
+      { "value": "ink", "label": "t:sections.style.btn_ink" },
+      { "value": "white", "label": "t:sections.style.btn_white" }
+    ] },
+    { "type": "checkbox", "id": "show_accent_rule", "label": "t:sections.style.show_accent_rule", "default": false },
+    { "type": "text", "id": "eyebrow", "label": "t:sections.referral.eyebrow", "default": "// VOLT Circle" },
+    { "type": "text", "id": "heading", "label": "t:sections.referral.heading", "default": "Train together. Both win." },
+    { "type": "textarea", "id": "body", "label": "t:sections.referral.body", "default": "Invite a training partner into the protocol. When they activate a membership with your code, you both get rewarded — every referral, no cap." },
+    { "type": "header", "content": "t:sections.animation.header" },
+    { "type": "checkbox", "id": "enable_animations", "label": "t:sections.animation.enable", "default": true },
+    { "type": "select", "id": "heading_animation", "label": "t:sections.animation.heading", "default": "split-words", "options": [
+      { "value": "none", "label": "t:sections.animation.opt_none" },
+      { "value": "split-chars", "label": "t:sections.animation.opt_split_chars" },
+      { "value": "split-words", "label": "t:sections.animation.opt_split_words" },
+      { "value": "split-lines", "label": "t:sections.animation.opt_split_lines" },
+      { "value": "fade-up", "label": "t:sections.animation.opt_fade_up" }
+    ] }
+  ],
+  "presets": [
+    { "name": "t:sections.referral.name" }
+  ]
+}
+{% endschema %}

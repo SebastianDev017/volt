@@ -325,6 +325,11 @@
         "stat": {
           "name": "Stat",
           "text": "Text"
+        },
+        "institutional": {
+          "name": "Institutional stat",
+          "text": "Text",
+          "text_info": "Certification / pro-athlete style credibility numbers — rendered as an inverted chip."
         }
       }
     },
@@ -747,6 +752,26 @@
       "heading": "Heading",
       "max_items": "Max items"
     },
+    "referral": {
+      "name": "VOLT Circle (referral)",
+      "note": "The give/get incentives and share code live in Theme settings → Conversion & UX so they stay consistent site-wide.",
+      "eyebrow": "Eyebrow",
+      "heading": "Heading",
+      "body": "Body"
+    },
+    "ambassador": {
+      "name": "Ambassador form",
+      "eyebrow": "Eyebrow",
+      "heading": "Heading",
+      "body": "Body",
+      "form_header": "Form labels",
+      "name_label": "Name field label",
+      "email_label": "Email field label",
+      "social_label": "Social handle field label",
+      "why_label": "Application field label",
+      "submit_label": "Submit button label",
+      "success_text": "Success message"
+    },
     "certification_strip": {
       "name": "Certification strip",
       "label": "Strip label",
@@ -838,7 +863,12 @@
       "sticky_enable": "Show sticky CTA on homepage",
       "sticky_text": "Left text",
       "sticky_label": "Button label",
-      "sticky_url": "Button link"
+      "sticky_url": "Button link",
+      "referral_header": "VOLT Circle (referral)",
+      "referral_give": "Referrer incentive (\"You get\")",
+      "referral_get": "Friend incentive (\"They get\")",
+      "referral_code": "Share code",
+      "referral_code_info": "Create a matching discount code in Shopify admin — the theme only displays it."
     },
     "animations": {
       "name": "Animations & experience",
