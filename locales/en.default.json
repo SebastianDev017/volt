@@ -177,6 +177,11 @@
     "quantity": "Quantity",
     "unavailable": "Unavailable",
     "error": "Could not load product",
-    "no_reviews": "No reviews yet"
+    "no_reviews": "No reviews yet",
+    "per_serving": "per serving",
+    "formulated_with": "Formulated with",
+    "notify_me": "Notify me",
+    "notify_placeholder": "Email address",
+    "notify_success": "You're on the list — we'll email you when it's back."
   }
 }

@@ -115,8 +115,8 @@
               <input type="number" name="quantity" value="1" min="1" data-pdp-qty aria-label="Quantity">
               <button type="button" data-pdp-inc aria-label="Increase quantity">+</button>
             </div>
-            <button type="submit" name="add" class="volt-pdp__add"{% unless p.available %} disabled{% endunless %} data-pdp-add>
-              {%- if p.available -%}Add to Cart{%- else -%}Sold out{%- endif -%}
+            <button type="submit" name="add" class="volt-pdp__add"{% unless p.available %} disabled{% endunless %} data-pdp-add data-add-label="{{ 'products.add' | t: default: 'Add to cart' }}" data-sold-label="{{ 'products.sold_out' | t: default: 'Sold out' }}">
+              {%- if p.available -%}{{ 'products.add' | t: default: 'Add to cart' }}{%- else -%}{{ 'products.sold_out' | t: default: 'Sold out' }}{%- endif -%}
             </button>
           </div>
 
@@ -124,6 +124,23 @@
             <span><i>&#9670;</i> Free shipping $75+</span><span><i>&#9670;</i> 30-day guarantee</span><span><i>&#9670;</i> NSF certified</span>
           </div>
         {%- endform -%}
+
+        {%- comment -%} Sold out → anticipation copy + back-in-stock capture (separate form; must not nest inside the product form) {%- endcomment -%}
+        {%- unless p.available -%}
+          <div class="volt-pdp__notify">
+            <div class="volt-pdp__notifycopy">{{ section.settings.restock_estimate | default: 'Back in stock soon' }} — {{ 'products.notify_me' | t: default: 'get notified' | downcase }}</div>
+            {%- form 'contact', class: 'volt-pdp__notifyform' -%}
+              {%- if form.posted_successfully? -%}
+                <p class="volt-pdp__notifysuccess" role="status">{{ 'products.notify_success' | t: default: "You're on the list — we'll email you when it's back." }}</p>
+              {%- else -%}
+                <input type="hidden" name="contact[body]" value="Restock request: {{ p.title | escape }} ({{ shop.url }}{{ p.url }})">
+                <label class="visually-hidden" for="pdp-notify-email">{{ 'products.notify_placeholder' | t: default: 'Email address' }}</label>
+                <input id="pdp-notify-email" class="volt-pdp__notifyinput" type="email" name="contact[email]" required autocomplete="email" placeholder="{{ 'products.notify_placeholder' | t: default: 'Email address' }}">
+                <button type="submit" class="volt-pdp__notifybtn">{{ 'products.notify_me' | t: default: 'Notify me' }}</button>
+              {%- endif -%}
+            {%- endform -%}
+          </div>
+        {%- endunless -%}
 
         {%- if shipping_blocks.size > 0 -%}
           {%- for block in shipping_blocks -%}
@@ -147,12 +164,39 @@
         {%- endif -%}
 
         {%- if p.description != blank -%}<div class="volt-pdp__desc rte">{{ p.description }}</div>{%- endif -%}
+
+        {%- comment -%} Formulated With — expert credibility blocks (Momentous pattern) {%- endcomment -%}
+        {%- assign experts = section.blocks | where: 'type', 'expert' -%}
+        {%- for block in experts -%}
+          <div class="volt-pdp__expert" {{ block.shopify_attributes }}>
+            <div class="volt-pdp__experthead">
+              {%- if block.settings.image != blank -%}
+                {{ block.settings.image | image_url: width: 160 | image_tag: loading: 'lazy', widths: '80, 160', class: 'volt-pdp__expertimg', alt: block.settings.expert_name | escape }}
+              {%- endif -%}
+              <div>
+                <div class="volt-pdp__experteyebrow">{{ 'products.formulated_with' | t: default: 'Formulated with' }}</div>
+                <div class="volt-pdp__expertname">{{ block.settings.expert_name }}</div>
+                {%- if block.settings.credentials != blank -%}<div class="volt-pdp__expertcreds">{{ block.settings.credentials }}</div>{%- endif -%}
+              </div>
+            </div>
+            {%- if block.settings.quote != blank -%}<blockquote class="volt-pdp__expertquote">&ldquo;{{ block.settings.quote }}&rdquo;</blockquote>{%- endif -%}
+          </div>
+        {%- endfor -%}
       </div>
     </div>
 
-    {%- comment -%} NUTRITION PANEL (radio-driven tabs) {%- endcomment -%}
+    {%- comment -%} NUTRITION PANEL — progressive disclosure (Oura pattern): summary row by default, "See the science" expands the full data breakdown {%- endcomment -%}
     {%- assign macros = section.blocks | where: 'type', 'macro' -%}
     {%- if macros.size > 0 or section.settings.ingredients != blank -%}
+    <details class="volt-pdp__science">
+      <summary class="volt-pdp__sciencehead">
+        <span class="volt-pdp__sciencesummary">
+          {%- if section.settings.serving != blank -%}<span class="volt-pdp__sciencestat">{{ section.settings.serving }} <small>{{ 'products.per_serving' | t: default: 'per serving' }}</small></span>{%- endif -%}
+          {%- if section.settings.calories != blank -%}<span class="volt-pdp__sciencestat">{{ section.settings.calories }} <small>kcal</small></span>{%- endif -%}
+          {%- if section.settings.science_claim != blank -%}<span class="volt-pdp__scienceclaim">{{ section.settings.science_claim }}</span>{%- endif -%}
+        </span>
+        <span class="volt-pdp__sciencetoggle">{{ section.settings.science_label | default: 'See the science' }}<span class="volt-pdp__faqicon">+</span></span>
+      </summary>
       <div class="volt-nut">
         <input type="radio" name="nut-pdp" id="nut-facts-pdp" class="visually-hidden" checked>
         <input type="radio" name="nut-pdp" id="nut-ingr-pdp" class="visually-hidden">
@@ -198,6 +242,7 @@
           </div>
         </div>
       </div>
+    </details>
     {%- endif -%}
 
     {%- comment -%} FAQ {%- endcomment -%}
@@ -241,7 +286,7 @@
   {%- comment -%} STICKY BUY BAR (mobile) {%- endcomment -%}
   <div class="volt-pdp__sticky">
     <div class="volt-pdp__stickyprice"><span>{{ p.price | money }}</span><small>{% if settings.show_member_price %}Member{% else %}Price{% endif %}</small></div>
-    <button type="submit" form="pdp-form" name="add" class="volt-pdp__add"{% unless p.available %} disabled{% endunless %}>{% if p.available %}Add to Cart{% else %}Sold out{% endif %}</button>
+    <button type="submit" form="pdp-form" name="add" class="volt-pdp__add"{% unless p.available %} disabled{% endunless %}>{% if p.available %}{{ 'products.add' | t: default: 'Add to cart' }}{% else %}{{ 'products.sold_out' | t: default: 'Sold out' }}{% endif %}</button>
   </div>
 </section>
 
@@ -371,6 +416,36 @@
     .volt-pdp__recgrid { grid-template-columns: 1fr 1fr; }
     .volt-pdp__sticky { display: flex; }
   }
+  /* ── Progressive disclosure — "See the science" (Oura pattern) ── */
+  .volt-pdp__science { margin-top: 40px; border: 1px solid var(--color-border); background: var(--color-bg); }
+  .volt-pdp__sciencehead { display: flex; align-items: center; justify-content: space-between; gap: 20px; flex-wrap: wrap; cursor: pointer; padding: 18px 22px; list-style: none; }
+  .volt-pdp__sciencehead::-webkit-details-marker { display: none; }
+  .volt-pdp__sciencesummary { display: flex; align-items: baseline; gap: 22px; flex-wrap: wrap; }
+  .volt-pdp__sciencestat { font-family: var(--font-display); font-weight: 800; font-size: 20px; }
+  .volt-pdp__sciencestat small { font-family: var(--font-mono); font-weight: 400; font-size: 10px; letter-spacing: .08em; text-transform: uppercase; color: var(--color-mid); margin-left: 3px; }
+  .volt-pdp__scienceclaim { font-family: var(--font-mono); font-size: 11px; letter-spacing: .06em; text-transform: uppercase; color: var(--color-mid); }
+  .volt-pdp__sciencetoggle { display: inline-flex; align-items: center; gap: 8px; font-family: var(--font-mono); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--color-ink); border-bottom: 2px solid var(--color-acid); padding-bottom: 2px; }
+  .volt-pdp__science[open] .volt-pdp__faqicon { transform: rotate(45deg); }
+  .volt-pdp__science .volt-nut { margin-top: 0; border: 0; border-top: 1px solid var(--color-border); }
+
+  /* ── Formulated With — expert credibility (Momentous pattern) ── */
+  .volt-pdp__expert { margin-top: 26px; border: 1px solid var(--color-border); border-left: 3px solid var(--color-acid); background: var(--color-surface); padding: 20px 22px; }
+  .volt-pdp__experthead { display: flex; align-items: center; gap: 16px; }
+  .volt-pdp__expertimg { width: 52px; height: 52px; border-radius: 50%; object-fit: cover; flex: none; }
+  .volt-pdp__experteyebrow { font-family: var(--font-mono); font-size: 9px; letter-spacing: .16em; text-transform: uppercase; color: var(--color-acid-accessible); }
+  .volt-pdp__expertname { font-family: var(--font-display); font-weight: 800; font-size: 16px; margin-top: 3px; }
+  .volt-pdp__expertcreds { font-family: var(--font-mono); font-size: 10px; letter-spacing: .04em; color: var(--color-mid); margin-top: 2px; }
+  .volt-pdp__expertquote { font-family: var(--font-display); font-style: italic; font-size: 14px; line-height: 1.55; color: var(--color-ink); margin: 14px 0 0; }
+
+  /* ── Back-in-stock capture (sold out) ── */
+  .volt-pdp__notify { margin-top: 18px; border: 1px solid var(--color-border); background: var(--color-surface); padding: 18px 20px; }
+  .volt-pdp__notifycopy { font-family: var(--font-mono); font-size: 11px; letter-spacing: .06em; text-transform: uppercase; color: var(--color-ink); margin-bottom: 12px; }
+  .volt-pdp__notifyform { display: flex; gap: 0; }
+  .volt-pdp__notifyinput { flex: 1; min-width: 0; background: var(--color-bg); color: var(--color-ink); border: 1px solid var(--color-ink); border-right: 0; border-radius: 0; padding: 12px 14px; font-size: 14px; }
+  .volt-pdp__notifyinput:focus { outline: none; }
+  .volt-pdp__notifybtn { flex: none; background: var(--color-ink); color: var(--color-bg); border: 0; border-radius: 0; padding: 12px 18px; font-family: var(--font-body); font-weight: 500; font-size: 11px; letter-spacing: .1em; text-transform: uppercase; cursor: pointer; transition: background var(--dur-fast) var(--ease), color var(--dur-fast) var(--ease); }
+  .volt-pdp__notifybtn:hover { background: var(--color-acid); color: var(--on-acid); transition-delay: .03s; }
+  .volt-pdp__notifysuccess { font-family: var(--font-mono); font-size: 12px; color: var(--color-ink); margin: 0; }
 {% endstylesheet %}
 
 <script>
@@ -424,7 +499,7 @@
         if (this.priceEl) this.priceEl.textContent = this.money(match.price);
         if (this.addBtn) {
           this.addBtn.disabled = !match.available;
-          this.addBtn.textContent = match.available ? 'Add to Cart' : 'Sold out';
+          this.addBtn.textContent = match.available ? (this.addBtn.dataset.addLabel || 'Add to cart') : (this.addBtn.dataset.soldLabel || 'Sold out');
         }
       }
     });
@@ -446,6 +521,10 @@
     { "type": "text", "id": "serving", "label": "t:sections.main_product.serving", "default": "30g" },
     { "type": "text", "id": "calories", "label": "t:sections.main_product.calories", "default": "120" },
     { "type": "richtext", "id": "ingredients", "label": "t:sections.main_product.ingredients" },
+    { "type": "text", "id": "science_label", "label": "t:sections.main_product.science_label", "default": "See the science" },
+    { "type": "text", "id": "science_claim", "label": "t:sections.main_product.science_claim", "default": "NSF certified · every batch third-party tested" },
+    { "type": "header", "content": "t:sections.main_product.availability_header" },
+    { "type": "text", "id": "restock_estimate", "label": "t:sections.main_product.restock_estimate", "info": "t:sections.main_product.restock_estimate_info", "default": "Back in stock in 2–3 weeks" },
     { "type": "header", "content": "t:sections.main_product.recs_header" },
     { "type": "text", "id": "recommendations_eyebrow", "label": "t:sections.main_product.recs_eyebrow", "default": "// Pairs Well With" },
     { "type": "text", "id": "recommendations_heading", "label": "t:sections.main_product.recs_heading", "default": "Complete your stack." },
@@ -474,6 +553,17 @@
       "settings": [
         { "type": "text", "id": "question", "label": "t:sections.main_product.blocks.faq.question", "default": "How do I use this?" },
         { "type": "richtext", "id": "answer", "label": "t:sections.main_product.blocks.faq.answer", "default": "<p>Mix one scoop with 250ml of water or milk, post-workout or any time you need protein.</p>" }
+      ]
+    },
+    {
+      "type": "expert",
+      "name": "t:sections.main_product.blocks.expert.name",
+      "limit": 2,
+      "settings": [
+        { "type": "image_picker", "id": "image", "label": "t:sections.main_product.blocks.expert.image" },
+        { "type": "text", "id": "expert_name", "label": "t:sections.main_product.blocks.expert.expert_name", "default": "Dr. Alex Reyes" },
+        { "type": "text", "id": "credentials", "label": "t:sections.main_product.blocks.expert.credentials", "default": "PhD Exercise Physiology · CSCS" },
+        { "type": "textarea", "id": "quote", "label": "t:sections.main_product.blocks.expert.quote", "default": "Dosed to the clinical literature — no fairy dust, no proprietary blends." }
       ]
     },
     {

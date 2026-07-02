@@ -177,6 +177,11 @@
     "quantity": "Menge",
     "unavailable": "Nicht verfügbar",
     "error": "Produkt konnte nicht geladen werden",
-    "no_reviews": "Noch keine Bewertungen"
+    "no_reviews": "Noch keine Bewertungen",
+    "per_serving": "pro Portion",
+    "formulated_with": "Entwickelt mit",
+    "notify_me": "Benachrichtige mich",
+    "notify_placeholder": "E-Mail-Adresse",
+    "notify_success": "Du stehst auf der Liste — wir melden uns, sobald es wieder da ist."
   }
 }

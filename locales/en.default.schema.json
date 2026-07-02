@@ -397,6 +397,11 @@
       "serving": "Serving size",
       "calories": "Calories",
       "ingredients": "Ingredients",
+      "science_label": "\"See the science\" toggle label",
+      "science_claim": "Summary claim (shown collapsed)",
+      "availability_header": "Availability",
+      "restock_estimate": "Restock estimate (sold out)",
+      "restock_estimate_info": "Shown with a notify-me email capture when the product is sold out.",
       "recs_header": "Recommendations",
       "recs_eyebrow": "Eyebrow",
       "recs_heading": "Heading",
@@ -430,6 +435,13 @@
         "certification": {
           "name": "Certification",
           "cert_name": "Certification name"
+        },
+        "expert": {
+          "name": "Formulated with (expert)",
+          "image": "Photo",
+          "expert_name": "Name",
+          "credentials": "Credentials",
+          "quote": "Quote"
         }
       },
       "gallery_header": "Gallery",
@@ -439,6 +451,8 @@
       "name": "Membership product",
       "subtitle": "Subtitle",
       "gauge_value": "Intensity gauge (%)",
+      "volt_score": "VOLT Score (dashboard preview)",
+      "volt_score_info": "One compressed 0-100 score shown in the dashboard preview panel.",
       "features": "Feature list (fallback)",
       "features_info": "Used when the product has no volt.features metafield. One per line.",
       "guarantee": "Guarantee line",
@@ -706,6 +720,19 @@
       "name": "Recently viewed",
       "heading": "Heading",
       "max_items": "Max items"
+    },
+    "certification_strip": {
+      "name": "Certification strip",
+      "label": "Strip label",
+      "blocks": {
+        "cert": {
+          "name": "Certification badge",
+          "logo": "Logo",
+          "logo_info": "Upload the certifier's logo. Without one, the name renders as a styled text mark.",
+          "cert_name": "Name",
+          "detail": "Detail line"
+        }
+      }
     },
     "hero_carousel": {
       "name": "Hero carousel",

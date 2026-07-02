@@ -23,7 +23,17 @@
       "block_order": ["m1", "m2", "m3", "m4", "f1", "f2", "f3"],
       "settings": {}
     },
+    "certs": {
+      "type": "certification-strip",
+      "blocks": {
+        "c1": { "type": "cert", "settings": { "name": "NSF Certified for Sport", "detail": "Every lot screened" } },
+        "c2": { "type": "cert", "settings": { "name": "Informed Sport", "detail": "Batch tested" } },
+        "c3": { "type": "cert", "settings": { "name": "Third-party lab", "detail": "Heavy-metal tested" } }
+      },
+      "block_order": ["c1", "c2", "c3"],
+      "settings": { "label": "Certified & tested" }
+    },
     "recently_viewed": { "type": "recently-viewed", "settings": {} }
   },
-  "order": ["main", "recently_viewed"]
+  "order": ["main", "certs", "recently_viewed"]
 }

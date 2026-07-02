@@ -94,6 +94,8 @@
 
         <div class="volt-mp__preview">
           <div class="volt-mp__previewhead">Preview member dashboard</div>
+          {%- comment -%} WHOOP-style compression: one 0-100 VOLT Score up top, raw metrics below {%- endcomment -%}
+          <div class="volt-mp__score">{% render 'volt-score', score: section.settings.volt_score, size: 84 %}</div>
           <div class="volt-mp__minimetrics">
             <div><span class="k">Recovery</span><span class="v">87%</span></div>
             <div><span class="k">Strain</span><span class="v">14.2</span></div>
@@ -160,6 +162,8 @@
   .volt-mp__tiername { font-family: var(--font-mono); font-size: 10px; letter-spacing: .14em; text-transform: uppercase; color: var(--color-acid); margin-top: 12px; }
   .volt-mp__preview { width: 100%; background: var(--color-ink); color: var(--color-bg); padding: 20px; margin-top: 28px; }
   .volt-mp__previewhead { font-family: var(--font-mono); font-size: 9px; letter-spacing: .16em; text-transform: uppercase; color: rgba(240,238,234,.5); font-style: italic; }
+  .volt-mp__score { display: flex; justify-content: center; margin-top: 16px; }
+  .volt-mp__score .volt-score__label { color: rgba(240,238,234,.55); opacity: 1; }
   .volt-mp__minimetrics { display: flex; justify-content: space-between; gap: 10px; margin-top: 16px; }
   .volt-mp__minimetrics .k { display: block; font-family: var(--font-mono); font-size: 8px; letter-spacing: .12em; text-transform: uppercase; color: rgba(240,238,234,.45); }
   .volt-mp__minimetrics .v { display: block; font-family: var(--font-mono); font-size: 16px; color: var(--color-bg); margin-top: 3px; }
@@ -179,6 +183,7 @@
   "settings": [
     { "type": "textarea", "id": "subtitle", "label": "t:sections.main_product_membership.subtitle", "default": "Everything you need to train by the numbers — dashboard, classes, and member pricing." },
     { "type": "range", "id": "gauge_value", "min": 0, "max": 100, "step": 1, "unit": "%", "label": "t:sections.main_product_membership.gauge_value", "default": 67 },
+    { "type": "range", "id": "volt_score", "min": 0, "max": 100, "step": 1, "label": "t:sections.main_product_membership.volt_score", "info": "t:sections.main_product_membership.volt_score_info", "default": 84 },
     { "type": "textarea", "id": "features", "label": "t:sections.main_product_membership.features", "info": "t:sections.main_product_membership.features_info", "default": "Unlimited classes\nApp + dashboard access\nMember pricing on all gear\nStrain & recovery tracking\nMonthly coach check-in" },
     { "type": "text", "id": "guarantee", "label": "t:sections.main_product_membership.guarantee", "default": "30-day guarantee · Cancel anytime · No contracts" },
     { "type": "text", "id": "social_proof", "label": "t:sections.main_product_membership.social_proof", "default": "Join 2,400+ members training smarter." }

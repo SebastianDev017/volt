@@ -1,0 +1,80 @@
+{% render 'section-style', section: section %}
+{%- comment -%}
+  Certification trust strip — a slim persistent row of third-party testing /
+  certification badges (Momentous pattern). Each badge is a block: merchant
+  uploads a logo (image_picker) or falls back to a styled text mark.
+{%- endcomment -%}
+<section class="volt-certs" data-animate>
+  <div class="volt-certs__inner">
+    {%- if section.settings.label != blank -%}
+      <span class="volt-certs__label">{{ section.settings.label }}</span>
+    {%- endif -%}
+    <div class="volt-certs__row">
+      {%- for block in section.blocks -%}
+        <div class="volt-certs__item" {{ block.shopify_attributes }}>
+          {%- if block.settings.logo != blank -%}
+            {{ block.settings.logo | image_url: width: 240 | image_tag: loading: 'lazy', widths: '120, 240', class: 'volt-certs__logo', alt: block.settings.name | escape }}
+          {%- else -%}
+            <span class="volt-certs__mark">{{ block.settings.name }}</span>
+          {%- endif -%}
+          {%- if block.settings.detail != blank -%}<span class="volt-certs__detail">{{ block.settings.detail }}</span>{%- endif -%}
+        </div>
+      {%- endfor -%}
+    </div>
+  </div>
+</section>
+
+{% stylesheet %}
+  .volt-certs { border-top: 1px solid var(--color-border); border-bottom: 1px solid var(--color-border); background: var(--color-bg); }
+  .volt-certs__inner { max-width: var(--page-width); margin-inline: auto; padding: 26px 28px; display: flex; align-items: center; gap: clamp(20px, 4vw, 48px); flex-wrap: wrap; }
+  .volt-certs__label { flex: 0 0 auto; font-family: var(--font-mono); font-size: 10px; letter-spacing: .18em; text-transform: uppercase; color: var(--color-mid); }
+  .volt-certs__row { flex: 1 1 auto; display: flex; align-items: center; justify-content: space-around; gap: clamp(16px, 3vw, 40px); flex-wrap: wrap; }
+  .volt-certs__item { display: flex; align-items: center; gap: 10px; }
+  .volt-certs__logo { height: 34px; width: auto; filter: grayscale(1); opacity: .72; transition: filter var(--dur-med) var(--ease), opacity var(--dur-med) var(--ease); }
+  .volt-certs__item:hover .volt-certs__logo { filter: none; opacity: 1; transition-delay: .06s; }
+  .volt-certs__mark { display: inline-block; font-family: var(--font-mono); font-size: 10px; font-weight: 500; letter-spacing: .12em; text-transform: uppercase; border: 1.5px solid var(--color-ink); color: var(--color-ink); padding: 7px 11px; }
+  .volt-certs__detail { font-family: var(--font-mono); font-size: 9px; letter-spacing: .06em; text-transform: uppercase; color: var(--color-mid); max-width: 16ch; line-height: 1.4; }
+  @media (max-width: 700px) { .volt-certs__inner { flex-direction: column; align-items: flex-start; gap: 14px; } .volt-certs__row { justify-content: flex-start; } }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:sections.certification_strip.name",
+  "tag": "section",
+  "settings": [
+    { "type": "header", "content": "t:sections.style.header" },
+    { "type": "select", "id": "color_scheme", "label": "t:sections.style.color_scheme", "default": "inherit", "options": [
+      { "value": "inherit", "label": "t:sections.style.scheme_inherit" },
+      { "value": "volt", "label": "t:sections.style.scheme_volt" },
+      { "value": "anthracite", "label": "t:sections.style.scheme_anthracite" },
+      { "value": "titanium", "label": "t:sections.style.scheme_titanium" },
+      { "value": "ink", "label": "t:sections.style.scheme_ink" },
+      { "value": "acid", "label": "t:sections.style.scheme_acid" }
+    ] },
+    { "type": "text", "id": "label", "label": "t:sections.certification_strip.label", "default": "Certified & tested" }
+  ],
+  "blocks": [
+    {
+      "type": "cert",
+      "name": "t:sections.certification_strip.blocks.cert.name",
+      "settings": [
+        { "type": "image_picker", "id": "logo", "label": "t:sections.certification_strip.blocks.cert.logo", "info": "t:sections.certification_strip.blocks.cert.logo_info" },
+        { "type": "text", "id": "name", "label": "t:sections.certification_strip.blocks.cert.cert_name", "default": "NSF Certified" },
+        { "type": "text", "id": "detail", "label": "t:sections.certification_strip.blocks.cert.detail" }
+      ]
+    }
+  ],
+  "max_blocks": 6,
+  "presets": [
+    {
+      "name": "t:sections.certification_strip.name",
+      "blocks": [
+        { "type": "cert", "settings": { "name": "NSF Certified for Sport", "detail": "Every lot screened" } },
+        { "type": "cert", "settings": { "name": "Informed Sport", "detail": "Batch tested" } },
+        { "type": "cert", "settings": { "name": "Third-party lab", "detail": "Heavy-metal tested" } },
+        { "type": "cert", "settings": { "name": "cGMP Facility", "detail": "FDA registered" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

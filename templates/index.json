@@ -350,6 +350,17 @@
         "heading": "Recently viewed",
         "max_items": 6
       }
+    },
+    "certification_strip_11": {
+      "type": "certification-strip",
+      "blocks": {
+        "c1": { "type": "cert", "settings": { "name": "NSF Certified for Sport", "detail": "Every lot screened" } },
+        "c2": { "type": "cert", "settings": { "name": "Informed Sport", "detail": "Batch tested" } },
+        "c3": { "type": "cert", "settings": { "name": "Third-party lab", "detail": "Heavy-metal tested" } },
+        "c4": { "type": "cert", "settings": { "name": "cGMP Facility", "detail": "FDA registered" } }
+      },
+      "block_order": ["c1", "c2", "c3", "c4"],
+      "settings": { "label": "Certified & tested" }
     }
   },
   "order": [
@@ -362,6 +373,7 @@
     "how_it_works_7",
     "journal_8",
     "newsletter_diagnostic_9",
-    "recently_viewed_10"
+    "recently_viewed_10",
+    "certification_strip_11"
   ]
 }

@@ -1,0 +1,35 @@
+{% doc %}
+  Renders the VOLT Score — one compressed 0-100 number (WHOOP-style single-number
+  compression of recovery/strain/streak) as an SVG ring badge.
+  @param {number} score - 0-100 value.
+  @param {string} label - Caption under the number (defaults to "VOLT Score").
+  @param {number} size - Diameter in px (defaults to 96).
+  @example
+  {% render 'volt-score', score: 84, label: 'VOLT Score' %}
+{% enddoc %}
+{%- liquid
+  assign vsc = score | default: 84 | at_least: 0 | at_most: 100
+  assign vsz = size | default: 96
+  assign vlb = label | default: 'VOLT Score'
+  assign circ = 264
+  assign fill = vsc | times: circ | divided_by: 100.0
+  assign off = circ | minus: fill
+-%}
+<div class="volt-score" style="--vs-size: {{ vsz }}px;">
+  <div class="volt-score__ring">
+    <svg viewBox="0 0 96 96" aria-hidden="true">
+      <circle cx="48" cy="48" r="42" fill="none" stroke="currentColor" opacity=".14" stroke-width="7"/>
+      <circle cx="48" cy="48" r="42" fill="none" stroke="var(--color-acid)" stroke-width="7" stroke-linecap="round" stroke-dasharray="{{ circ }}" stroke-dashoffset="{{ off }}" transform="rotate(-90 48 48)"/>
+    </svg>
+    <span class="volt-score__num" data-counter="{{ vsc }}">{{ vsc }}</span>
+  </div>
+  <span class="volt-score__label">{{ vlb }}</span>
+</div>
+
+{% stylesheet %}
+  .volt-score { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+  .volt-score__ring { position: relative; width: var(--vs-size, 96px); height: var(--vs-size, 96px); }
+  .volt-score__ring svg { width: 100%; height: 100%; display: block; }
+  .volt-score__num { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-weight: 800; font-size: calc(var(--vs-size, 96px) * 0.30); letter-spacing: -.02em; }
+  .volt-score__label { font-family: var(--font-mono); font-size: 9px; letter-spacing: .16em; text-transform: uppercase; opacity: .65; }
+{% endstylesheet %}
