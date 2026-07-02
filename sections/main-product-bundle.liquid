@@ -5,11 +5,16 @@
   assign label = bundle_info.settings.badge_label | default: 'Bundle Deal'
   assign bundle_items = section.blocks | where: 'type', 'bundle_item'
   assign individual = 0
+  assign has_steps = false
   for block in bundle_items
     assign ip = block.settings.product
-    if ip != blank
+    if ip != blank and block.settings.optional != true
       assign line_total = ip.price | times: block.settings.quantity
       assign individual = individual | plus: line_total
+    endif
+    assign bstep = block.settings.step | default: '1'
+    if bstep != '1'
+      assign has_steps = true
     endif
   endfor
   assign savings = individual | minus: p.price
@@ -30,33 +35,54 @@
     </div>
 
     {%- if bundle_items.size > 0 -%}
-      <form data-bundle-form data-bundle-handle="{{ p.handle }}" class="volt-bundle__form">
-        <div class="volt-bundle__grid">
-          {%- for block in bundle_items -%}
-            {%- assign ip = block.settings.product -%}
-            {%- if ip != blank -%}
-              <div class="volt-bundle__item" {{ block.shopify_attributes }}>
-                <a href="{{ ip.url }}" class="volt-bundle__itemimg">
-                  {%- if ip.featured_image -%}{{ ip.featured_image | image_url: width: 400 | image_tag: loading: 'lazy', widths: '200, 300, 400', alt: ip.title | escape }}
-                  {%- else -%}{{ 'product-1' | placeholder_svg_tag: '' }}{%- endif -%}
-                  <span class="volt-bundle__included">Included</span>
-                </a>
-                <div class="volt-bundle__itembody">
-                  <div class="volt-bundle__itemname">{{ ip.title }}</div>
-                  {%- if block.settings.quantity > 1 -%}<div class="volt-bundle__choose">Qty: {{ block.settings.quantity }}</div>{%- endif -%}
-                  <input type="hidden" data-bundle-item data-quantity="{{ block.settings.quantity }}" value="{{ ip.selected_or_first_available_variant.id }}">
-                  <div class="volt-bundle__itemprice"><s>{{ ip.price | money }}</s><span>Included in bundle</span></div>
+      {%- capture step_labels -%}{{ section.settings.step1_label | default: 'The base' }}|{{ section.settings.step2_label | default: 'Choose your flavor' }}|{{ section.settings.step3_label | default: 'Goal add-ons' }}{%- endcapture -%}
+      {%- assign step_label_arr = step_labels | split: '|' -%}
+      <form data-bundle-form data-bundle-handle="{{ p.handle }}" data-bundle-price="{{ p.price }}" class="volt-bundle__form">
+        {%- if has_steps -%}
+          {%- comment -%} Guided 3-step builder (Gainful build-your-own flow) {%- endcomment -%}
+          <div class="volt-bundle__steps">
+            {%- for snum in (1..3) -%}
+              {%- assign s = snum | append: '' -%}
+              {%- assign step_count = 0 -%}
+              {%- for block in bundle_items -%}
+                {%- assign bstep = block.settings.step | default: '1' -%}
+                {%- if bstep == s and block.settings.product != blank -%}{%- assign step_count = step_count | plus: 1 -%}{%- endif -%}
+              {%- endfor -%}
+              {%- if step_count > 0 -%}
+                <div class="volt-bundle__step">
+                  <div class="volt-bundle__stephead">
+                    <span class="volt-bundle__stepnum">0{{ snum }}</span>
+                    <span class="volt-bundle__steplabel">{{ step_label_arr[forloop.index0] }}</span>
+                  </div>
+                  <div class="volt-bundle__stepitems">
+                    {%- for block in bundle_items -%}
+                      {%- assign bstep = block.settings.step | default: '1' -%}
+                      {%- assign ip = block.settings.product -%}
+                      {%- if bstep == s and ip != blank -%}
+                        {% render 'bundle-item', block: block, ip: ip, addon_label: section.settings.addon_label %}
+                      {%- endif -%}
+                    {%- endfor -%}
+                  </div>
                 </div>
-              </div>
-            {%- endif -%}
-          {%- endfor -%}
-        </div>
+              {%- endif -%}
+            {%- endfor -%}
+          </div>
+        {%- else -%}
+          <div class="volt-bundle__grid">
+            {%- for block in bundle_items -%}
+              {%- assign ip = block.settings.product -%}
+              {%- if ip != blank -%}
+                {% render 'bundle-item', block: block, ip: ip, addon_label: section.settings.addon_label %}
+              {%- endif -%}
+            {%- endfor -%}
+          </div>
+        {%- endif -%}
 
         <div class="volt-bundle__pricing">
           <div class="volt-bundle__pricecol">
-            {%- if individual > 0 -%}<div class="volt-bundle__indiv">Individual value <s>{{ individual | money }}</s></div>{%- endif -%}
+            {%- if individual > 0 -%}<div class="volt-bundle__indiv">Individual value <s data-bundle-indiv>{{ individual | money }}</s></div>{%- endif -%}
             <div class="volt-bundle__price">{{ p.price | money }}</div>
-            {%- if savings > 0 -%}<span class="volt-bundle__savepill">You save {% if discount != blank and discount > 0 %}{{ discount }}% — {% endif %}{{ savings | money }}</span>{%- endif -%}
+            <span class="volt-bundle__savepill" data-bundle-savepill{% unless savings > 0 %} hidden{% endunless %}>You save {% if discount != blank and discount > 0 %}{{ discount }}% — {% endif %}{{ savings | money }}</span>
           </div>
           <button type="submit" data-bundle-submit class="volt-bundle__add">Add protocol to bag</button>
         </div>
@@ -95,6 +121,21 @@
   .volt-bundle__savecallout { font-family: var(--font-mono); font-size: 13px; letter-spacing: .04em; color: var(--color-acid); margin-top: 14px; }
   .volt-bundle__social { font-family: var(--font-display); font-style: italic; color: var(--color-mid); margin: 8px 0 0; }
   .volt-bundle__grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--color-border); border: 1px solid var(--color-border); }
+
+  /* ── Guided 3-step builder (Gainful flow; arrow chain like how-it-works) ── */
+  .volt-bundle__steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: clamp(16px, 2.5vw, 32px); align-items: start; }
+  .volt-bundle__step { position: relative; }
+  .volt-bundle__stephead { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+  .volt-bundle__stepnum { display: inline-grid; place-items: center; width: 30px; height: 30px; background: var(--color-ink); color: var(--color-acid); font-family: var(--font-mono); font-size: 11px; }
+  .volt-bundle__steplabel { font-family: var(--font-display); font-weight: 800; font-size: 16px; }
+  .volt-bundle__step:not(:last-child) .volt-bundle__stephead::after { content: "→"; margin-left: auto; color: var(--color-mid); font-size: 18px; }
+  .volt-bundle__stepitems { display: flex; flex-direction: column; gap: 14px; }
+  .volt-bundle__stepitems .volt-bundle__item { border: 1px solid var(--color-border); }
+  .volt-bundle__included--opt { background: var(--color-ink); color: var(--color-acid); }
+  .volt-bundle__item--optional { opacity: .82; transition: opacity var(--dur-fast) var(--ease); }
+  .volt-bundle__item--optional:has([data-bundle-toggle]:checked) { opacity: 1; outline: 2px solid var(--color-acid); outline-offset: -2px; }
+  .volt-bundle__toggle { display: flex; align-items: center; gap: 9px; cursor: pointer; margin-top: auto; font-family: var(--font-mono); font-size: 11px; letter-spacing: .04em; }
+  .volt-bundle__toggle input { width: 16px; height: 16px; accent-color: var(--color-acid); cursor: pointer; }
   .volt-bundle__item { background: var(--color-bg); display: flex; flex-direction: column; }
   .volt-bundle__itemimg { position: relative; display: block; aspect-ratio: 1/1; background: var(--color-surface); overflow: hidden; }
   .volt-bundle__itemimg img { width: 100%; height: 100%; object-fit: cover; transition: transform var(--dur-fast) var(--ease); }
@@ -123,20 +164,59 @@
   .volt-bundle__benefiticon { font-size: 26px; }
   .volt-bundle__benefitheading { font-family: var(--font-display); font-weight: 700; font-size: 18px; margin: 12px 0 6px; }
   .volt-bundle__benefitdesc { font-size: 14px; line-height: 1.6; color: var(--color-mid); margin: 0; }
-  @media (max-width: 860px) { .volt-bundle__grid, .volt-bundle__whygrid { grid-template-columns: 1fr; } .volt-bundle__pricing { flex-direction: column; align-items: stretch; } .volt-bundle__add { width: 100%; } }
+  @media (max-width: 860px) { .volt-bundle__grid, .volt-bundle__whygrid, .volt-bundle__steps { grid-template-columns: 1fr; } .volt-bundle__pricing { flex-direction: column; align-items: stretch; } .volt-bundle__add { width: 100%; } .volt-bundle__step:not(:last-child) .volt-bundle__stephead::after { content: "↓"; } }
 {% endstylesheet %}
 
 <script>
   (function () {
+    function money(cents) {
+      try { return new Intl.NumberFormat(document.documentElement.lang || 'en', { style: 'currency', currency: (window.Shopify && Shopify.currency && Shopify.currency.active) || 'USD' }).format(cents / 100); }
+      catch (e) { return '$' + (cents / 100).toFixed(2); }
+    }
+    function recalc(form) {
+      var total = 0;
+      form.querySelectorAll('[data-bundle-item]').forEach(function (el) {
+        if (el.disabled || !el.value) return;
+        total += parseInt(el.dataset.linePrice || '0', 10);
+      });
+      var indiv = form.querySelector('[data-bundle-indiv]');
+      if (indiv && total > 0) indiv.textContent = money(total);
+      var pill = form.querySelector('[data-bundle-savepill]');
+      if (pill) {
+        var savings = total - parseInt(form.dataset.bundlePrice || '0', 10);
+        if (savings > 0) { pill.hidden = false; pill.textContent = 'You save ' + money(savings); }
+        else { pill.hidden = true; }
+      }
+    }
     function init(form) {
       var button = form.querySelector('[data-bundle-submit]');
+      // Step builder: flavor/variant selects update the hidden line input; optional
+      // add-on toggles enable/disable it. Both re-run the live totals.
+      form.addEventListener('change', function (e) {
+        var sel = e.target.closest ? e.target.closest('[data-bundle-variant]') : null;
+        if (sel) {
+          var item = sel.closest('.volt-bundle__item');
+          var input = item && item.querySelector('[data-bundle-item]');
+          var opt = sel.options[sel.selectedIndex];
+          if (input && opt) { input.value = opt.value; input.dataset.linePrice = opt.dataset.linePrice || input.dataset.linePrice; }
+          recalc(form);
+          return;
+        }
+        var tog = e.target.closest ? e.target.closest('[data-bundle-toggle]') : null;
+        if (tog) {
+          var titem = tog.closest('.volt-bundle__item');
+          var tinput = titem && titem.querySelector('[data-bundle-item]');
+          if (tinput) tinput.disabled = !tog.checked;
+          recalc(form);
+        }
+      });
       form.addEventListener('submit', function (e) {
         e.preventDefault();
         if (!button) return;
         button.disabled = true; var original = button.textContent; button.textContent = 'Adding...';
         var items = [];
         form.querySelectorAll('[data-bundle-item]').forEach(function (el) {
-          if (!el.value) return;
+          if (!el.value || el.disabled) return;
           items.push({ id: parseInt(el.value, 10), quantity: parseInt(el.dataset.quantity || '1', 10), properties: { _bundle: form.dataset.bundleHandle, _bundle_item: 'true' } });
         });
         if (!items.length) { button.disabled = false; button.textContent = original; return; }
@@ -163,8 +243,13 @@
   "name": "t:sections.main_product_bundle.name",
   "tag": "section",
   "settings": [
-    { "type": "paragraph", "content": "Build the bundle by adding Bundle item blocks (one product each), then add a single Bundle info block to set the discount, savings label, and header badge." },
-    { "type": "text", "id": "social_proof", "label": "t:sections.main_product_bundle.social_proof", "default": "Most popular protocol" }
+    { "type": "paragraph", "content": "Build the bundle by adding Bundle item blocks (one product each), then add a single Bundle info block to set the discount, savings label, and header badge. Give items a Step (base / flavor / add-on) to switch to the guided 3-step builder." },
+    { "type": "text", "id": "social_proof", "label": "t:sections.main_product_bundle.social_proof", "default": "Most popular protocol" },
+    { "type": "header", "content": "t:sections.main_product_bundle.stepper_header" },
+    { "type": "text", "id": "step1_label", "label": "t:sections.main_product_bundle.step1_label", "default": "The base" },
+    { "type": "text", "id": "step2_label", "label": "t:sections.main_product_bundle.step2_label", "default": "Choose your flavor" },
+    { "type": "text", "id": "step3_label", "label": "t:sections.main_product_bundle.step3_label", "default": "Goal add-ons" },
+    { "type": "text", "id": "addon_label", "label": "t:sections.main_product_bundle.addon_label", "default": "Add to protocol" }
   ],
   "blocks": [
     {
@@ -172,7 +257,13 @@
       "name": "t:sections.main_product_bundle.blocks.bundle_item.name",
       "settings": [
         { "type": "product", "id": "product", "label": "t:sections.main_product_bundle.blocks.bundle_item.product" },
-        { "type": "range", "id": "quantity", "min": 1, "max": 10, "step": 1, "default": 1, "label": "t:sections.main_product_bundle.blocks.bundle_item.quantity" }
+        { "type": "range", "id": "quantity", "min": 1, "max": 10, "step": 1, "default": 1, "label": "t:sections.main_product_bundle.blocks.bundle_item.quantity" },
+        { "type": "select", "id": "step", "label": "t:sections.main_product_bundle.blocks.bundle_item.step", "default": "1", "options": [
+          { "value": "1", "label": "t:sections.main_product_bundle.blocks.bundle_item.step_base" },
+          { "value": "2", "label": "t:sections.main_product_bundle.blocks.bundle_item.step_flavor" },
+          { "value": "3", "label": "t:sections.main_product_bundle.blocks.bundle_item.step_addon" }
+        ] },
+        { "type": "checkbox", "id": "optional", "label": "t:sections.main_product_bundle.blocks.bundle_item.optional", "info": "t:sections.main_product_bundle.blocks.bundle_item.optional_info", "default": false }
       ]
     },
     {

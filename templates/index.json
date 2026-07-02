@@ -19,7 +19,7 @@
         "heading_pre": "Train with",
         "heading_highlight": "data",
         "heading_post": ", not guesswork.",
-        "subheading": "Track your strain, protect your recovery, and train with purpose. Your membership is a performance system — not a punch card.",
+        "subheading": "Track strain, protect recovery, train with purpose. A performance system — not a punch card.",
         "primary_label": "Start your protocol",
         "primary_link": "",
         "secondary_label": "Diagnose your level",
@@ -124,18 +124,34 @@
             "cta_label": "Choose Protocol",
             "cta_link": ""
           }
+        },
+        "faq_1": {
+          "type": "faq",
+          "settings": { "question": "Can I cancel anytime?", "answer": "<p>Yes — memberships are month-to-month. Cancel from your dashboard anytime, no fees.</p>" }
+        },
+        "faq_2": {
+          "type": "faq",
+          "settings": { "question": "Can I switch tiers later?", "answer": "<p>Upgrade or downgrade from your dashboard — the change applies at your next billing cycle.</p>" }
+        },
+        "faq_3": {
+          "type": "faq",
+          "settings": { "question": "Is there a joining fee?", "answer": "<p>Not during the founding window — the $0 activation offer applies to every tier while the countdown runs.</p>" }
         }
       },
       "block_order": [
         "block_1",
         "block_2",
-        "block_3"
+        "block_3",
+        "faq_1",
+        "faq_2",
+        "faq_3"
       ],
       "settings": {
         "eyebrow": "// The Core Model",
         "heading": "Choose your protocol.",
         "body": "Three tiers, one system. Every membership unlocks the dashboard, class booking, and member pricing on gear.",
         "countdown_end_date": "2026-12-31T23:59:59",
+        "offer_text": "$0 founding activation fee",
         "dashboard_link_label": "Already a member? Access your dashboard →",
         "dashboard_link": "",
         "enable_animations": true,

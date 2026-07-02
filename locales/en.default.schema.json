@@ -119,6 +119,12 @@
       "tier_handle_info": "Links the quiz to /products/volt-membership-[handle]. Set the product handle suffix for each tier.",
       "tier_performance_handle": "Performance tier handle",
       "tier_elite_handle": "Elite tier handle",
+      "bundles_header": "Goal bundles (quiz recommendation)",
+      "bundles_info": "When set, the quiz CTA routes to the bundle matching the shopper's primary goal instead of the membership tier link.",
+      "bundle_strength": "Strength bundle",
+      "bundle_endurance": "Endurance bundle",
+      "bundle_fatloss": "Fat-loss bundle",
+      "bundle_health": "General-health bundle",
       "newsletter_header": "Newsletter capture",
       "newsletter_heading": "Newsletter label",
       "newsletter_body": "Newsletter body",
@@ -135,7 +141,15 @@
       "dashboard_link": "Footer link",
       "most_popular": "Most popular",
       "offer_ends": "Founding rate ends",
+      "offer_text": "Founding offer line",
+      "offer_text_info": "Shown with the countdown above the tier grid, e.g. \"$0 founding activation fee\".",
+      "faq_heading": "FAQ heading",
       "blocks": {
+        "faq": {
+          "name": "FAQ item",
+          "question": "Question",
+          "answer": "Answer"
+        },
         "tier": {
           "name": "Tier",
           "tier_name": "Tier name",
@@ -475,6 +489,11 @@
       "name": "Bundle product",
       "note": "Reads volt.bundle_items (list of products), volt.bundle_discount (integer %), and volt.bundle_label from the product metafields.",
       "social_proof": "Social proof",
+      "stepper_header": "Guided builder (steps)",
+      "step1_label": "Step 1 label",
+      "step2_label": "Step 2 label",
+      "step3_label": "Step 3 label",
+      "addon_label": "Add-on toggle label",
       "blocks": {
         "benefit": {
           "name": "Benefit",
@@ -485,7 +504,13 @@
         "bundle_item": {
           "name": "Bundle item",
           "product": "Product",
-          "quantity": "Quantity"
+          "quantity": "Quantity",
+          "step": "Builder step",
+          "step_base": "01 — Base",
+          "step_flavor": "02 — Flavor / variant",
+          "step_addon": "03 — Goal add-on",
+          "optional": "Optional add-on",
+          "optional_info": "Rendered with a toggle; excluded from the cart until the shopper opts in."
         },
         "bundle_info": {
           "name": "Bundle info",

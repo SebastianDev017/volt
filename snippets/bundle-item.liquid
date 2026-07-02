@@ -1,0 +1,45 @@
+{% doc %}
+  One bundle component card (used by the flat grid AND the 3-step builder).
+  @param {block} block - bundle_item block (settings: product, quantity, step, optional).
+  @param {product} ip - the resolved component product.
+  @param {string} addon_label - toggle label for optional add-ons.
+  @example
+  {% render 'bundle-item', block: block, ip: ip, addon_label: section.settings.addon_label %}
+{% enddoc %}
+{%- liquid
+  assign iv = ip.selected_or_first_available_variant
+  assign qty = block.settings.quantity | default: 1
+  assign line_price = iv.price | times: qty
+  assign optional = block.settings.optional
+-%}
+<div class="volt-bundle__item{% if optional %} volt-bundle__item--optional{% endif %}" {{ block.shopify_attributes }}>
+  <a href="{{ ip.url }}" class="volt-bundle__itemimg">
+    {%- if ip.featured_image -%}{{ ip.featured_image | image_url: width: 400 | image_tag: loading: 'lazy', widths: '200, 300, 400', alt: ip.title | escape }}
+    {%- else -%}{{ 'product-1' | placeholder_svg_tag: '' }}{%- endif -%}
+    {%- if optional -%}
+      <span class="volt-bundle__included volt-bundle__included--opt">Optional</span>
+    {%- else -%}
+      <span class="volt-bundle__included">Included</span>
+    {%- endif -%}
+  </a>
+  <div class="volt-bundle__itembody">
+    <div class="volt-bundle__itemname">{{ ip.title }}</div>
+    {%- if qty > 1 -%}<div class="volt-bundle__choose">Qty: {{ qty }}</div>{%- endif -%}
+    {%- if ip.variants.size > 1 -%}
+      <select class="volt-bundle__select" data-bundle-variant aria-label="{{ ip.title | escape }}">
+        {%- for v in ip.variants -%}
+          <option value="{{ v.id }}" data-line-price="{{ v.price | times: qty }}"{% if v.id == iv.id %} selected{% endif %}{% unless v.available %} disabled{% endunless %}>{{ v.title }}{% unless v.available %} — {{ 'products.sold_out' | t: default: 'Sold out' }}{% endunless %}</option>
+        {%- endfor -%}
+      </select>
+    {%- endif -%}
+    <input type="hidden" data-bundle-item data-quantity="{{ qty }}" data-line-price="{{ line_price }}" value="{{ iv.id }}"{% if optional %} disabled{% endif %}>
+    {%- if optional -%}
+      <label class="volt-bundle__toggle">
+        <input type="checkbox" data-bundle-toggle>
+        <span>{{ addon_label | default: 'Add to protocol' }} &middot; +{{ line_price | money }}</span>
+      </label>
+    {%- else -%}
+      <div class="volt-bundle__itemprice"><s>{{ line_price | money }}</s><span>Included in bundle</span></div>
+    {%- endif -%}
+  </div>
+</div>

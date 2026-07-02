@@ -9,6 +9,17 @@
       {%- if section.settings.body != blank -%}<p class="volt-tiers__body" {% render 'anim-attrs', value: 'fade-up', enabled: section.settings.enable_animations %}>{{ section.settings.body }}</p>{%- endif -%}
     </div>
 
+    {%- comment -%} Time-boxed founding offer (Equinox limited-initiation pattern) {%- endcomment -%}
+    {%- if section.settings.offer_text != blank and section.settings.countdown_end_date != blank -%}
+      <div class="volt-tiers__offer">
+        <span class="volt-tiers__offertext">{{ section.settings.offer_text }}</span>
+        <countdown-timer class="volt-tiers__offercd" data-end="{{ section.settings.countdown_end_date }}">
+          <span class="volt-tiers__offerends">{{ 'sections.membership_tiers.offer_ends' | t: default: 'Founding rate ends' }}</span>
+          <span class="volt-tiers__offerval" data-cd-display>--:--:--</span>
+        </countdown-timer>
+      </div>
+    {%- endif -%}
+
     <div class="volt-tiers__grid" {% render 'anim-attrs', value: section.settings.cards_animation, enabled: section.settings.enable_animations %}>
       {%- for block in section.blocks -%}
         {%- liquid
@@ -57,6 +68,20 @@
       {%- endfor -%}
     </div>
 
+    {%- comment -%} FAQ directly beneath the pricing table (Peloton plan+FAQ proximity) {%- endcomment -%}
+    {%- assign tier_faqs = section.blocks | where: 'type', 'faq' -%}
+    {%- if tier_faqs.size > 0 -%}
+      <div class="volt-tiers__faq">
+        {%- if section.settings.faq_heading != blank -%}<h3 class="volt-tiers__faqtitle">{{ section.settings.faq_heading }}</h3>{%- endif -%}
+        {%- for block in tier_faqs -%}
+          <details class="volt-tiers__faqitem" {{ block.shopify_attributes }}>
+            <summary>{{ block.settings.question }}<span class="volt-tiers__faqicon" aria-hidden="true">+</span></summary>
+            <div class="volt-tiers__faqbody rte">{{ block.settings.answer }}</div>
+          </details>
+        {%- endfor -%}
+      </div>
+    {%- endif -%}
+
     {%- if section.settings.dashboard_link_label != blank -%}
       <div class="volt-tiers__foot"><a href="{{ section.settings.dashboard_link | default: '#' }}" class="volt-tiers__dash">{{ section.settings.dashboard_link_label }}</a></div>
     {%- endif -%}
@@ -69,6 +94,12 @@
   .volt-tiers__eyebrow { font-family: var(--font-mono); font-size: 11px; letter-spacing: .18em; text-transform: uppercase; color: var(--color-mid); }
   .volt-tiers__title { font-family: var(--font-display); font-weight: 800; font-size: calc(clamp(35px, 3.5vw, 53px) * var(--section-heading-scale, 1)); line-height: 1.02; letter-spacing: -.01em; margin: 14px 0 0; }
   .volt-tiers__body { font-size: 14px; line-height: 1.6; color: var(--color-mid); max-width: 38ch; margin: 0; }
+
+  .volt-tiers__offer { display: flex; align-items: center; justify-content: center; gap: 18px; flex-wrap: wrap; border: 1px solid var(--color-border); border-left: 3px solid var(--color-acid); background: var(--color-surface); padding: 14px 20px; margin-bottom: 32px; }
+  .volt-tiers__offertext { font-family: var(--font-display); font-weight: 800; font-size: 16px; }
+  .volt-tiers__offercd { display: inline-flex; align-items: baseline; gap: 10px; }
+  .volt-tiers__offerends { font-family: var(--font-mono); font-size: 10px; letter-spacing: .12em; text-transform: uppercase; color: var(--color-mid); }
+  .volt-tiers__offerval { font-family: var(--font-mono); font-size: 13px; background: var(--color-ink); color: var(--color-acid); padding: 3px 8px; }
 
   .volt-tiers__grid { display: grid; grid-template-columns: repeat(3, 1fr); }
   .volt-tier { border: 1px solid var(--color-border); background: var(--color-bg); padding: 34px 30px; display: flex; flex-direction: column; position: relative; }
@@ -108,6 +139,17 @@
   .volt-tier__cta:hover { background: var(--color-ink); color: var(--color-bg); transition-delay: .03s; }
   .volt-tier--popular .volt-tier__cta { background: var(--color-acid); border-color: var(--color-acid); color: var(--color-ink); }
   .volt-tier--popular .volt-tier__cta:hover { filter: brightness(1.05); background: var(--color-acid); color: var(--color-ink); }
+  .volt-tiers__faq { max-width: 720px; margin: 44px auto 0; }
+  .volt-tiers__faqtitle { font-family: var(--font-display); font-weight: 800; font-size: 22px; margin: 0 0 12px; }
+  .volt-tiers__faqitem { border-bottom: 1px solid var(--color-border); }
+  .volt-tiers__faqitem:first-of-type { border-top: 1px solid var(--color-border); }
+  .volt-tiers__faqitem summary { display: flex; align-items: center; justify-content: space-between; gap: 16px; cursor: pointer; padding: 16px 2px; font-family: var(--font-display); font-weight: 700; font-size: 15px; list-style: none; transition: color var(--dur-fast) var(--ease); }
+  .volt-tiers__faqitem summary:hover { color: var(--color-mid); transition-delay: .03s; }
+  .volt-tiers__faqitem summary::-webkit-details-marker { display: none; }
+  .volt-tiers__faqicon { color: var(--color-acid-accessible); font-size: 18px; transition: transform var(--dur-fast) var(--ease); }
+  .volt-tiers__faqitem[open] .volt-tiers__faqicon { transform: rotate(45deg); }
+  .volt-tiers__faqbody { font-size: 14px; line-height: 1.65; color: var(--color-mid); padding: 0 2px 18px; }
+
   .volt-tiers__foot { text-align: center; margin-top: 32px; }
   .volt-tiers__dash { font-family: var(--font-mono); font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: var(--color-ink); text-decoration: none; border-bottom: 2px solid var(--color-acid); padding-bottom: 3px; transition: color var(--dur-fast) var(--ease); }
   .volt-tiers__dash:hover, .volt-tiers__dash:focus-visible { color: var(--color-mid); transition-delay: .03s; }
@@ -178,6 +220,8 @@
     { "type": "text", "id": "heading", "label": "t:sections.membership_tiers.heading", "default": "Choose your protocol." },
     { "type": "textarea", "id": "body", "label": "t:sections.membership_tiers.body", "default": "Three tiers, one system. Every membership unlocks the dashboard, class booking, and member pricing on gear." },
     { "type": "text", "id": "countdown_end_date", "label": "t:sections.membership_tiers.countdown_end_date", "info": "t:sections.membership_tiers.countdown_end_date_info", "default": "2026-12-31T23:59:59" },
+    { "type": "text", "id": "offer_text", "label": "t:sections.membership_tiers.offer_text", "info": "t:sections.membership_tiers.offer_text_info", "default": "$0 founding activation fee" },
+    { "type": "text", "id": "faq_heading", "label": "t:sections.membership_tiers.faq_heading", "default": "Questions, answered." },
     { "type": "text", "id": "dashboard_link_label", "label": "t:sections.membership_tiers.dashboard_link_label", "default": "Already a member? Access your dashboard →" },
     { "type": "url", "id": "dashboard_link", "label": "t:sections.membership_tiers.dashboard_link" },
     { "type": "header", "content": "t:sections.animation.header" },
@@ -225,16 +269,27 @@
         { "type": "text", "id": "cta_label", "label": "t:sections.membership_tiers.blocks.tier.cta_label", "default": "Choose Protocol" },
         { "type": "url", "id": "cta_link", "label": "t:sections.membership_tiers.blocks.tier.cta_link" }
       ]
+    },
+    {
+      "type": "faq",
+      "name": "t:sections.membership_tiers.blocks.faq.name",
+      "settings": [
+        { "type": "text", "id": "question", "label": "t:sections.membership_tiers.blocks.faq.question", "default": "Can I cancel anytime?" },
+        { "type": "richtext", "id": "answer", "label": "t:sections.membership_tiers.blocks.faq.answer", "default": "<p>Yes — memberships are month-to-month. Cancel from your dashboard anytime, no fees.</p>" }
+      ]
     }
   ],
-  "max_blocks": 3,
+  "max_blocks": 8,
   "presets": [
     {
       "name": "t:sections.membership_tiers.name",
       "blocks": [
         { "type": "tier", "settings": { "tier_name": "STARTER", "tagline": "Build the habit", "gauge_value": 33, "price": "$29", "yearly_line": "/yr $261 · save 25%", "popular": false, "accent": "mid", "features_on": "Member dashboard access\n8 classes / month\n10% off all gear", "features_off": "Strain & recovery tracking\n1:1 coaching sessions", "cta_label": "Choose Protocol" } },
         { "type": "tier", "settings": { "tier_name": "PERFORMANCE", "tagline": "Train by the numbers", "gauge_value": 67, "price": "$49", "yearly_line": "/yr $440 · save 25%", "popular": true, "accent": "acid", "features_on": "Everything in Starter\nUnlimited classes\n20% off all gear\nStrain & recovery tracking", "features_off": "1:1 coaching sessions", "cta_label": "Choose Protocol" } },
-        { "type": "tier", "settings": { "tier_name": "ELITE", "tagline": "Maximum output", "gauge_value": 100, "price": "$89", "yearly_line": "/yr $801 · save 25%", "popular": false, "accent": "ink", "features_on": "Everything in Performance\n4 × 1:1 coaching / month\n30% off all gear\nCustom nutrition protocol\nPriority class booking", "features_off": "", "cta_label": "Choose Protocol" } }
+        { "type": "tier", "settings": { "tier_name": "ELITE", "tagline": "Maximum output", "gauge_value": 100, "price": "$89", "yearly_line": "/yr $801 · save 25%", "popular": false, "accent": "ink", "features_on": "Everything in Performance\n4 × 1:1 coaching / month\n30% off all gear\nCustom nutrition protocol\nPriority class booking", "features_off": "", "cta_label": "Choose Protocol" } },
+        { "type": "faq", "settings": { "question": "Can I cancel anytime?", "answer": "<p>Yes — memberships are month-to-month. Cancel from your dashboard anytime, no fees.</p>" } },
+        { "type": "faq", "settings": { "question": "Can I switch tiers later?", "answer": "<p>Upgrade or downgrade from your dashboard — the change applies at your next billing cycle.</p>" } },
+        { "type": "faq", "settings": { "question": "Is there a joining fee?", "answer": "<p>Not during the founding window — the $0 activation offer applies to every tier while the countdown runs.</p>" } }
       ]
     }
   ]

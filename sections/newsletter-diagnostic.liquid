@@ -20,6 +20,10 @@
         data-tier-starter="{{ tier_starter }}"
         data-tier-performance="{{ tier_performance }}"
         data-tier-elite="{{ tier_elite }}"
+        {%- if section.settings.bundle_strength != blank %} data-bundle-strength="{{ section.settings.bundle_strength.url }}"{% endif -%}
+        {%- if section.settings.bundle_endurance != blank %} data-bundle-endurance="{{ section.settings.bundle_endurance.url }}"{% endif -%}
+        {%- if section.settings.bundle_fatloss != blank %} data-bundle-fat-loss="{{ section.settings.bundle_fatloss.url }}"{% endif -%}
+        {%- if section.settings.bundle_health != blank %} data-bundle-health="{{ section.settings.bundle_health.url }}"{% endif -%}
       >
         <div class="volt-quiz__bar" aria-hidden="true"><span class="volt-quiz__bar-fill" data-quiz-fill></span></div>
         <p class="volt-quiz__progress"><span data-quiz-step>01</span> / 04</p>
@@ -28,10 +32,10 @@
           <fieldset class="volt-quiz__step" data-quiz-fieldset="0" aria-current="step">
             <legend class="volt-quiz__legend">{{ 'sections.newsletter_diagnostic.q1_title' | t: default: 'Primary goal' }}</legend>
             <div class="volt-quiz__options">
-              <button type="button" class="volt-quiz__opt" data-quiz-answer>{{ 'sections.newsletter_diagnostic.q1_a' | t: default: 'Build strength' }}</button>
-              <button type="button" class="volt-quiz__opt" data-quiz-answer>{{ 'sections.newsletter_diagnostic.q1_b' | t: default: 'Improve endurance' }}</button>
-              <button type="button" class="volt-quiz__opt" data-quiz-answer>{{ 'sections.newsletter_diagnostic.q1_c' | t: default: 'Lose fat' }}</button>
-              <button type="button" class="volt-quiz__opt" data-quiz-answer>{{ 'sections.newsletter_diagnostic.q1_d' | t: default: 'General health' }}</button>
+              <button type="button" class="volt-quiz__opt" data-quiz-answer data-quiz-goal="strength">{{ 'sections.newsletter_diagnostic.q1_a' | t: default: 'Build strength' }}</button>
+              <button type="button" class="volt-quiz__opt" data-quiz-answer data-quiz-goal="endurance">{{ 'sections.newsletter_diagnostic.q1_b' | t: default: 'Improve endurance' }}</button>
+              <button type="button" class="volt-quiz__opt" data-quiz-answer data-quiz-goal="fat-loss">{{ 'sections.newsletter_diagnostic.q1_c' | t: default: 'Lose fat' }}</button>
+              <button type="button" class="volt-quiz__opt" data-quiz-answer data-quiz-goal="health">{{ 'sections.newsletter_diagnostic.q1_d' | t: default: 'General health' }}</button>
             </div>
           </fieldset>
           <fieldset class="volt-quiz__step" data-quiz-fieldset="1" hidden>
@@ -156,8 +160,20 @@
           performance: this.getAttribute('data-tier-performance') || 'performance',
           elite: this.getAttribute('data-tier-elite') || 'elite'
         };
+        // Goal → recommended bundle URLs (Gainful quiz-to-cart funnel).
+        // When a bundle is configured for the chosen goal, the CTA routes to that
+        // bundle's product page; otherwise it falls back to the membership tier.
+        this.bundles = {
+          'strength': this.getAttribute('data-bundle-strength'),
+          'endurance': this.getAttribute('data-bundle-endurance'),
+          'fat-loss': this.getAttribute('data-bundle-fat-loss'),
+          'health': this.getAttribute('data-bundle-health')
+        };
+        this.goal = null; this.tier = null;
+        try { this.goal = localStorage.getItem('volt-goal'); } catch (e) {}
         var stored = null; try { stored = localStorage.getItem('volt-tier'); } catch (e) {}
         if (stored && this.tiers[stored]) this.setTier(stored);
+        this.updateCta();
         this.addEventListener('click', this.onClick.bind(this));
         this.show(0);
       }
@@ -169,6 +185,8 @@
       answer(btn) {
         var field = btn.closest('[data-quiz-fieldset]');
         field.querySelectorAll('[data-quiz-answer]').forEach(function (b) { b.setAttribute('aria-pressed', b === btn ? 'true' : 'false'); });
+        var goal = btn.getAttribute('data-quiz-goal');
+        if (goal) { this.goal = goal; try { localStorage.setItem('volt-goal', goal); } catch (e) {} this.updateCta(); }
         var tier = btn.getAttribute('data-quiz-tier');
         if (tier) { this.setTier(tier); return; }
         var self = this;
@@ -176,10 +194,17 @@
       }
       setTier(tier) {
         if (!this.tiers[tier]) return;
+        this.tier = tier;
         try { localStorage.setItem('volt-tier', tier); } catch (e) {}
-        if (this.cta) this.cta.setAttribute('href', this.base + this.tiers[tier]);
+        this.updateCta();
         var last = this.steps[this.total - 1];
         if (last) last.querySelectorAll('[data-quiz-tier]').forEach(function (b) { b.setAttribute('aria-pressed', b.getAttribute('data-quiz-tier') === tier ? 'true' : 'false'); });
+      }
+      updateCta() {
+        if (!this.cta) return;
+        var bundle = this.goal && this.bundles[this.goal];
+        if (bundle) { this.cta.setAttribute('href', bundle); return; }
+        if (this.tier) this.cta.setAttribute('href', this.base + this.tiers[this.tier]);
       }
       show(i) {
         if (i < 0 || i >= this.total) return;
@@ -232,6 +257,11 @@
     { "type": "text", "id": "tier_starter_handle", "label": "t:sections.newsletter_diagnostic.tier_starter_handle", "info": "t:sections.newsletter_diagnostic.tier_handle_info", "default": "starter" },
     { "type": "text", "id": "tier_performance_handle", "label": "t:sections.newsletter_diagnostic.tier_performance_handle", "default": "performance" },
     { "type": "text", "id": "tier_elite_handle", "label": "t:sections.newsletter_diagnostic.tier_elite_handle", "default": "elite" },
+    { "type": "header", "content": "t:sections.newsletter_diagnostic.bundles_header", "info": "t:sections.newsletter_diagnostic.bundles_info" },
+    { "type": "product", "id": "bundle_strength", "label": "t:sections.newsletter_diagnostic.bundle_strength" },
+    { "type": "product", "id": "bundle_endurance", "label": "t:sections.newsletter_diagnostic.bundle_endurance" },
+    { "type": "product", "id": "bundle_fatloss", "label": "t:sections.newsletter_diagnostic.bundle_fatloss" },
+    { "type": "product", "id": "bundle_health", "label": "t:sections.newsletter_diagnostic.bundle_health" },
     { "type": "header", "content": "t:sections.newsletter_diagnostic.newsletter_header" },
     { "type": "text", "id": "newsletter_heading", "label": "t:sections.newsletter_diagnostic.newsletter_heading", "default": "Or join the dispatch" },
     { "type": "textarea", "id": "newsletter_body", "label": "t:sections.newsletter_diagnostic.newsletter_body", "default": "Weekly performance science, member protocols and early access to drops. No filler." },
