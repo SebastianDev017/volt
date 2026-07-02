@@ -254,7 +254,8 @@
   /* ---------- sidebar ---------- */
   .volt-coll__sidebar { position: sticky; top: var(--header-height); }
   .volt-coll__filters { border-top: 1px solid var(--color-ink); }
-  .volt-coll__filterstrigger { display: flex; align-items: center; justify-content: space-between; font-family: var(--font-mono); font-size: 11px; letter-spacing: .16em; text-transform: uppercase; color: var(--color-ink); padding: 16px 0; cursor: pointer; list-style: none; }
+  .volt-coll__filterstrigger { display: flex; align-items: center; justify-content: space-between; font-family: var(--font-mono); font-size: 11px; letter-spacing: .16em; text-transform: uppercase; color: var(--color-ink); padding: 16px 0; cursor: pointer; list-style: none; transition: color var(--dur-fast) var(--ease); }
+  .volt-coll__filterstrigger:hover, .volt-coll__filterstrigger:focus-visible { color: var(--color-mid); transition-delay: .03s; }
   .volt-coll__filterstrigger::-webkit-details-marker { display: none; }
   .volt-coll__chev { font-family: var(--font-display); font-size: 18px; line-height: 1; transition: transform var(--dur-med) var(--ease); }
   .volt-coll__filters[open] .volt-coll__chev { transform: rotate(45deg); }
@@ -271,13 +272,16 @@
   .volt-coll__checkbox:checked + .volt-coll__checkbox-box { border-color: var(--color-ink); }
   .volt-coll__checkbox:checked + .volt-coll__checkbox-box::after { transform: scale(1); }
   .volt-coll__checkbox:focus-visible + .volt-coll__checkbox-box { outline: 2px solid var(--color-acid); outline-offset: 2px; }
+  .volt-coll__check:hover .volt-coll__checkbox-box { border-color: var(--color-ink); transition-delay: .03s; }
+  .volt-coll__value--off .volt-coll__check:hover .volt-coll__checkbox-box { border-color: var(--color-border); }
   .volt-coll__checklabel { color: var(--color-ink); }
   .volt-coll__checkcount { margin-left: auto; font-family: var(--font-mono); font-size: 10px; color: var(--color-mid); }
   .volt-coll__value--off { opacity: .4; }
   .volt-coll__value--off .volt-coll__check { cursor: not-allowed; }
 
   .volt-coll__price { display: flex; align-items: center; gap: 8px; }
-  .volt-coll__pricefield { display: flex; align-items: center; gap: 4px; border: 1px solid var(--color-border); background: var(--color-bg); padding: 8px 10px; flex: 1; min-width: 0; }
+  .volt-coll__pricefield { display: flex; align-items: center; gap: 4px; border: 1px solid var(--color-border); background: var(--color-bg); padding: 8px 10px; flex: 1; min-width: 0; transition: border-color var(--dur-fast) var(--ease); }
+  .volt-coll__pricefield:hover { border-color: var(--color-ink); transition-delay: .03s; }
   .volt-coll__pricefield:focus-within { border-color: var(--color-ink); }
   .volt-coll__pricecur { font-family: var(--font-mono); font-size: 11px; color: var(--color-mid); }
   .volt-coll__priceinput { width: 100%; border: 0; background: none; font-family: var(--font-mono); font-size: 13px; padding: 0; min-width: 0; }
@@ -285,16 +289,18 @@
   .volt-coll__pricesep { color: var(--color-mid); }
 
   .volt-coll__formactions { display: flex; flex-direction: column; gap: 12px; padding-top: 20px; border-top: 1px solid var(--color-border); margin-top: 4px; }
-  .volt-coll__clear, .volt-coll__clearall { font-family: var(--font-mono); font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--color-mid); text-align: center; }
-  .volt-coll__clear:hover, .volt-coll__clearall:hover { color: var(--color-ink); }
+  .volt-coll__clear, .volt-coll__clearall { font-family: var(--font-mono); font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--color-mid); text-align: center; transition: color var(--dur-fast) var(--ease); }
+  .volt-coll__clear:hover, .volt-coll__clearall:hover { color: var(--color-ink); transition-delay: .03s; }
 
   /* ---------- main / bar ---------- */
   .volt-coll__bar { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px; padding-bottom: 18px; margin-bottom: 22px; border-bottom: 1px solid var(--color-border); }
   .volt-coll__count { font-family: var(--font-mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--color-mid); }
   .volt-coll__sort { display: flex; align-items: center; gap: 10px; }
-  .volt-coll__sortlabel { font-family: var(--font-mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--color-mid); }
+  .volt-coll__sortlabel { font-family: var(--font-mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--color-mid); transition: color var(--dur-fast) var(--ease); }
+  .volt-coll__sortlabel:hover { color: var(--color-ink); transition-delay: .03s; }
   .volt-coll__selectwrap { position: relative; }
-  .volt-coll__select { appearance: none; -webkit-appearance: none; background: var(--color-bg); color: var(--color-ink); border: 1px solid var(--color-border); border-radius: 0; font-family: var(--font-mono); font-size: 12px; letter-spacing: .04em; padding: 10px 34px 10px 14px; cursor: pointer; }
+  .volt-coll__select { appearance: none; -webkit-appearance: none; background: var(--color-bg); color: var(--color-ink); border: 1px solid var(--color-border); border-radius: 0; font-family: var(--font-mono); font-size: 12px; letter-spacing: .04em; padding: 10px 34px 10px 14px; cursor: pointer; transition: border-color var(--dur-fast) var(--ease); }
+  .volt-coll__select:hover { border-color: var(--color-ink); transition-delay: .03s; }
   .volt-coll__select:focus { outline: none; border-color: var(--color-ink); }
   .volt-coll__selectchev { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); pointer-events: none; font-size: 11px; color: var(--color-mid); }
 
@@ -329,8 +335,8 @@
     .volt-coll__layout { grid-template-columns: 1fr; }
     .volt-coll__sidebar { position: static; top: auto; margin-bottom: 8px; }
     .volt-coll__filters { border-top: 1px solid var(--color-ink); border-bottom: 1px solid var(--color-border); }
-    .volt-coll__mobtrigger { display: flex; align-items: center; justify-content: center; position: sticky; bottom: 16px; z-index: var(--z-drawer); margin: 0 auto; width: max-content; font-family: var(--font-mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; background: var(--color-ink); color: var(--color-bg); padding: 14px 26px; box-shadow: 0 12px 30px rgba(13,12,11,0.22); }
-    .volt-coll__mobtrigger:hover { background: var(--color-acid); color: var(--on-acid); }
+    .volt-coll__mobtrigger { display: flex; align-items: center; justify-content: center; position: sticky; bottom: 16px; z-index: var(--z-drawer); margin: 0 auto; width: max-content; font-family: var(--font-mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; background: var(--color-ink); color: var(--color-bg); padding: 14px 26px; box-shadow: 0 12px 30px rgba(13,12,11,0.22); transition: background var(--dur-fast) var(--ease), color var(--dur-fast) var(--ease); }
+    .volt-coll__mobtrigger:hover { background: var(--color-acid); color: var(--on-acid); transition-delay: .03s; }
   }
 
   @media (min-width: 769px) {

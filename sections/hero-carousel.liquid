@@ -103,8 +103,8 @@
 
   .fc-card__info { padding: 14px 16px; display: flex; flex-direction: column; gap: 3px; }
   .fc-card__vendor { font-family: var(--font-mono); font-size: 9px; font-weight: 500; letter-spacing: .2em; text-transform: uppercase; color: var(--color-mid); }
-  .fc-card__title { font-family: var(--font-display); font-weight: var(--font-display-weight-2); font-size: 15px; color: var(--color-ink); line-height: 1.2; text-decoration: none; }
-  .fc-card__title:hover { color: var(--color-mid); }
+  .fc-card__title { font-family: var(--font-display); font-weight: var(--font-display-weight-2); font-size: 15px; color: var(--color-ink); line-height: 1.2; text-decoration: none; transition: color var(--dur-fast) var(--ease); }
+  .fc-card__title:hover { color: var(--color-mid); transition-delay: .03s; }
   .fc-card__price { font-family: var(--font-mono); font-size: 13px; color: var(--color-ink); margin-top: 4px; }
 
   .float-carousel__hint { position: absolute; bottom: 14px; left: 50%; transform: translateX(-50%); font-family: var(--font-mono); font-size: 9px; letter-spacing: .2em; text-transform: uppercase; color: var(--color-mid); opacity: 1; transition: opacity .4s var(--ease); }

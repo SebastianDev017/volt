@@ -71,7 +71,7 @@
               {%- endif -%}
             </a>
             <div class="volt-blog__feat-body">
-              {%- if f_cat != blank -%}<span class="volt-blog__cat">{{ f_cat }}</span>{%- endif -%}
+              {%- if f_cat != blank -%}<span class="volt-blog__cat" data-cat="{{ f_cat | handleize }}">{{ f_cat }}</span>{%- endif -%}
               <div class="volt-blog__feat-meta">{{ f_read }} MIN READ &middot; {{ featured.published_at | date: '%b %d, %Y' }}</div>
               <h2 class="volt-blog__feat-title"><a href="{{ featured.url }}">{{ featured.title }}</a></h2>
               {%- if featured.excerpt_or_content != blank -%}
@@ -98,7 +98,7 @@
                   {{ 'image' | placeholder_svg_tag: 'volt-bcard__img' }}
                 {%- endif -%}
               </a>
-              {%- if cat != blank -%}<span class="volt-bcard__cat">{{ cat }}</span>{%- endif -%}
+              {%- if cat != blank -%}<span class="volt-bcard__cat" data-cat="{{ cat | handleize }}">{{ cat }}</span>{%- endif -%}
               <div class="volt-bcard__meta">{{ read }} MIN READ &middot; {{ article.published_at | date: '%b %d, %Y' }}</div>
               <h3 class="volt-bcard__title"><a href="{{ article.url }}">{{ article.title }}</a></h3>
               {%- if article.excerpt_or_content != blank -%}
@@ -154,8 +154,8 @@
   .volt-blog__desc { font-size: 16px; line-height: 1.6; color: var(--color-mid); margin-top: 16px; }
 
   .volt-blog__filters { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 48px; padding-bottom: 28px; border-bottom: 1px solid var(--color-border); }
-  .volt-blog__pill { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--color-ink); background: var(--color-surface); border: 1px solid var(--color-border); border-radius: 0; padding: 9px 16px; text-decoration: none; transition: background var(--ease), color var(--ease), border-color var(--ease); }
-  .volt-blog__pill:hover { border-color: var(--color-ink); }
+  .volt-blog__pill { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--color-ink); background: var(--color-surface); border: 1px solid var(--color-border); border-radius: 0; padding: 9px 16px; text-decoration: none; transition: background var(--dur-fast) var(--ease), color var(--dur-fast) var(--ease), border-color var(--dur-fast) var(--ease); }
+  .volt-blog__pill:hover { border-color: var(--color-ink); transition-delay: .03s; }
   .volt-blog__pill.is-active { background: var(--color-acid); color: var(--color-ink); border-color: var(--color-acid); }
 
   .volt-blog__featured { display: grid; grid-template-columns: 60% 40%; gap: 0; border: 1px solid var(--color-border); background: var(--color-surface); margin-bottom: 56px; }
@@ -166,8 +166,8 @@
   .volt-blog__cat { font-family: var(--font-mono); font-size: 9px; letter-spacing: 0.12em; text-transform: uppercase; background: var(--color-acid); color: var(--color-ink); padding: 4px 8px; }
   .volt-blog__feat-meta { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.06em; color: var(--color-mid); margin-top: 18px; }
   .volt-blog__feat-title { font-family: var(--font-display); font-weight: 800; font-size: clamp(26px, 3vw, 40px); line-height: 1.04; letter-spacing: -0.01em; margin: 12px 0 0; }
-  .volt-blog__feat-title a { color: var(--color-ink); text-decoration: none; }
-  .volt-blog__feat-title a:hover { color: var(--color-mid); }
+  .volt-blog__feat-title a { color: var(--color-ink); text-decoration: none; transition: color var(--dur-fast) var(--ease); }
+  .volt-blog__feat-title a:hover { color: var(--color-mid); transition-delay: .03s; }
   .volt-blog__feat-excerpt { font-size: 15px; line-height: 1.6; color: var(--color-mid); margin: 16px 0 0; }
   .volt-blog__feat-cta { font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--color-ink); text-decoration: none; border-bottom: 2px solid var(--color-acid); padding-bottom: 3px; margin-top: 24px; display: inline-flex; gap: 8px; align-items: center; transition: gap var(--dur-med) var(--ease); }
   .volt-blog__feat-cta:hover { gap: 13px; }
@@ -178,18 +178,24 @@
   .volt-bcard__img { width: 100%; height: 100%; object-fit: cover; transition: transform var(--dur-slow) var(--ease); }
   .volt-bcard:hover .volt-bcard__img { transform: scale(1.04); }
   .volt-bcard__cat { align-self: flex-start; font-family: var(--font-mono); font-size: 9px; letter-spacing: 0.12em; text-transform: uppercase; background: var(--color-acid); color: var(--color-ink); padding: 4px 8px; margin: 16px 0 12px; }
+  /* Per-category identity — existing palette tokens only; unknown categories keep acid */
+  .volt-blog__cat[data-cat="nutrition"], .volt-bcard__cat[data-cat="nutrition"] { background: var(--color-ink); color: var(--color-bg); }
+  .volt-blog__cat[data-cat="recovery"], .volt-bcard__cat[data-cat="recovery"],
+  .volt-blog__cat[data-cat="sleep"], .volt-bcard__cat[data-cat="sleep"] { background: var(--color-mid); color: var(--color-bg); }
+  .volt-blog__cat[data-cat="mindset"], .volt-bcard__cat[data-cat="mindset"],
+  .volt-blog__cat[data-cat="coaching"], .volt-bcard__cat[data-cat="coaching"] { background: var(--color-bg); color: var(--color-ink); border: 1px solid var(--color-ink); }
   .volt-bcard__meta { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.06em; color: var(--color-mid); }
   .volt-bcard__title { font-family: var(--font-display); font-weight: 700; font-size: 20px; line-height: 1.12; margin: 10px 0 8px; }
-  .volt-bcard__title a { color: var(--color-ink); text-decoration: none; }
-  .volt-bcard__title a:hover { color: var(--color-mid); }
+  .volt-bcard__title a { color: var(--color-ink); text-decoration: none; transition: color var(--dur-fast) var(--ease); }
+  .volt-bcard__title a:hover { color: var(--color-mid); transition-delay: .03s; }
   .volt-bcard__excerpt { font-size: 14px; line-height: 1.6; color: var(--color-mid); margin: 0; }
 
   .volt-blog__empty { font-family: var(--font-mono); font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--color-mid); padding: 48px 0; }
 
   .volt-blog__pager { display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 8px; margin-top: 64px; padding-top: 40px; border-top: 1px solid var(--color-border); }
   .volt-blog__pages { display: inline-flex; flex-wrap: wrap; gap: 8px; }
-  .volt-blog__page { font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.04em; color: var(--color-ink); background: var(--color-surface); border: 1px solid var(--color-border); border-radius: 0; min-width: 40px; height: 40px; padding: 0 12px; display: inline-flex; align-items: center; justify-content: center; gap: 8px; text-decoration: none; transition: background var(--ease), color var(--ease), border-color var(--ease); }
-  .volt-blog__page:hover { border-color: var(--color-ink); }
+  .volt-blog__page { font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.04em; color: var(--color-ink); background: var(--color-surface); border: 1px solid var(--color-border); border-radius: 0; min-width: 40px; height: 40px; padding: 0 12px; display: inline-flex; align-items: center; justify-content: center; gap: 8px; text-decoration: none; transition: background var(--dur-fast) var(--ease), color var(--dur-fast) var(--ease), border-color var(--dur-fast) var(--ease); }
+  .volt-blog__page:hover { border-color: var(--color-ink); transition-delay: .03s; }
   .volt-blog__page.is-current { background: var(--color-acid); color: var(--color-ink); border-color: var(--color-acid); }
   .volt-blog__page.is-gap { background: transparent; border-color: transparent; color: var(--color-mid); }
   .volt-blog__page.is-disabled { color: var(--color-mid); opacity: 0.45; cursor: default; }

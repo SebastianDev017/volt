@@ -97,7 +97,8 @@
   .volt-bundle__grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--color-border); border: 1px solid var(--color-border); }
   .volt-bundle__item { background: var(--color-bg); display: flex; flex-direction: column; }
   .volt-bundle__itemimg { position: relative; display: block; aspect-ratio: 1/1; background: var(--color-surface); overflow: hidden; }
-  .volt-bundle__itemimg img { width: 100%; height: 100%; object-fit: cover; }
+  .volt-bundle__itemimg img { width: 100%; height: 100%; object-fit: cover; transition: transform var(--dur-fast) var(--ease); }
+  .volt-bundle__itemimg:hover img, .volt-bundle__itemimg:focus-visible img { transform: scale(1.04); transition-delay: .08s; }
   .volt-bundle__included { position: absolute; top: 0; left: 0; font-family: var(--font-mono); font-size: 9px; letter-spacing: .12em; text-transform: uppercase; background: var(--color-success); color: #06210F; padding: 5px 9px; }
   .volt-bundle__itembody { padding: 16px; display: flex; flex-direction: column; gap: 8px; flex: 1; }
   .volt-bundle__itemname { font-family: var(--font-display); font-weight: 700; font-size: 16px; }
@@ -111,7 +112,8 @@
   .volt-bundle__indiv s { margin-left: 6px; }
   .volt-bundle__price { font-family: var(--font-display); font-weight: 800; font-size: clamp(36px, 4vw, 56px); line-height: 1; margin: 4px 0; }
   .volt-bundle__savepill { display: inline-block; font-family: var(--font-mono); font-size: 12px; background: var(--color-acid); color: var(--color-ink); padding: 6px 12px; }
-  .volt-bundle__add { background: var(--color-acid); border: 0; color: var(--color-ink); font-family: var(--font-body); font-weight: 500; font-size: 14px; letter-spacing: .05em; text-transform: uppercase; padding: 18px 32px; cursor: pointer; }
+  .volt-bundle__add { background: var(--color-acid); border: 0; color: var(--color-ink); font-family: var(--font-body); font-weight: 500; font-size: 14px; letter-spacing: .05em; text-transform: uppercase; padding: 18px 32px; cursor: pointer; transition: filter var(--dur-fast) var(--ease), box-shadow var(--dur-fast) var(--ease); }
+  .volt-bundle__add:hover, .volt-bundle__add:focus-visible { filter: brightness(1.05); box-shadow: 0 0 0 4px var(--color-acid-10); transition-delay: .03s; }
   .volt-bundle__callouts { display: flex; justify-content: center; gap: 24px; flex-wrap: wrap; margin-top: 18px; font-family: var(--font-mono); font-size: 10px; letter-spacing: .08em; text-transform: uppercase; color: var(--color-mid); }
   .volt-bundle__callouts i { color: var(--color-acid); font-style: normal; }
   .volt-bundle__empty { text-align: center; color: var(--color-mid); padding: 40px 0; }

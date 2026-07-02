@@ -67,7 +67,8 @@
   .volt-ba__tag--before { left: 18px; background: rgba(13,12,11,.7); color: var(--color-bg); }
   .volt-ba__tag--after { right: 18px; background: var(--color-acid); color: var(--color-ink); }
   .volt-ba__handle { position: absolute; top: 0; bottom: 0; left: var(--pos); width: 2px; background: var(--color-acid); transform: translateX(-50%); pointer-events: none; }
-  .volt-ba__handle span { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); background: var(--color-acid); color: var(--color-ink); font-family: var(--font-mono); font-size: 12px; padding: 8px 12px; white-space: nowrap; font-weight: 500; }
+  .volt-ba__handle span { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); background: var(--color-acid); color: var(--color-ink); font-family: var(--font-mono); font-size: 12px; padding: 8px 12px; white-space: nowrap; font-weight: 500; transition: box-shadow var(--dur-fast) var(--ease); }
+  .volt-ba__viewer:hover .volt-ba__handle span { box-shadow: 0 0 0 4px var(--color-acid-10); transition-delay: .08s; }
   .volt-ba__range { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; opacity: 0; cursor: ew-resize; }
   .volt-ba__range:focus-visible { outline: 2px solid var(--color-acid); outline-offset: 2px; opacity: 1; }
   .volt-ba__story { display: flex; flex-direction: column; gap: 22px; }

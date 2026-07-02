@@ -27,7 +27,8 @@
     .volt-age-gate__body{ font-family: var(--font-body); font-size: 15px; line-height: 1.6; color: var(--color-mid); margin: 0; max-width: 36ch; }
     .volt-age-gate__actions{ display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; margin-top: 4px; }
     .volt-age-gate__legal{ font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.02em; line-height: 1.5; color: var(--color-mid); margin-top: 6px; }
-    .volt-age-gate__legal a{ color: var(--color-ink); text-decoration: underline; text-underline-offset: 2px; }
+    .volt-age-gate__legal a{ color: var(--color-ink); text-decoration: underline; text-underline-offset: 2px; transition: color var(--dur-fast) var(--ease); }
+    .volt-age-gate__legal a:hover, .volt-age-gate__legal a:focus-visible{ color: var(--color-mid); transition-delay: .03s; }
     @media (max-width: 480px){ .volt-age-gate__actions{ flex-direction: column; width: 100%; } .volt-age-gate__actions .btn{ width: 100%; } }
   {% endstylesheet %}
 

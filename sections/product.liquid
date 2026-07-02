@@ -41,6 +41,23 @@
   {% endform %}
 </div>
 
+{% stylesheet %}
+  .product-form select,
+  .product-form input[type="submit"] {
+    cursor: pointer;
+    transition: background var(--dur-fast) var(--ease), border-color var(--dur-fast) var(--ease);
+  }
+  .product-form select:hover {
+    border-color: var(--color-ink);
+    transition-delay: .03s;
+  }
+  .product-form input[type="submit"]:hover,
+  .product-form input[type="submit"]:focus-visible {
+    background: var(--color-ink-06);
+    transition-delay: .03s;
+  }
+{% endstylesheet %}
+
 {% schema %}
 {
   "name": "t:general.product",

@@ -3,7 +3,7 @@
   assign blog = blogs[section.settings.blog]
   assign posts = blog.articles
 -%}
-<section class="volt-journal" data-animate>
+<section class="volt-journal" data-animate data-tint="surface">
   <div class="volt-journal__inner">
     <div class="volt-journal__head">
       <div>
@@ -22,12 +22,12 @@
             assign read = words | divided_by: 200 | at_least: 1
             assign cat = article.tags.first | default: 'Training'
           -%}
-          <article class="volt-jcard" data-stagger-item>
+          <article class="volt-jcard" data-cat="{{ cat | handleize }}" data-stagger-item>
             <a href="{{ article.url }}" class="volt-jcard__media">
               {%- if article.image -%}{{ article.image | image_url: width: 700 | image_tag: loading: 'lazy', widths: '300, 500, 700', class: 'volt-jcard__img', alt: article.title | escape }}
               {%- else -%}{{ 'image' | placeholder_svg_tag: 'volt-jcard__img' }}{%- endif -%}
             </a>
-            <span class="volt-jcard__cat">{{ cat }}</span>
+            <span class="volt-jcard__cat" data-cat="{{ cat | handleize }}">{{ cat }}</span>
             <div class="volt-jcard__meta">{{ read }} MIN READ{% for tag in article.tags limit: 2 %} · {{ tag | upcase }}{% endfor %}</div>
             <h3 class="volt-jcard__title"><a href="{{ article.url }}">{{ article.title }}</a></h3>
             {%- if article.excerpt_or_content != blank -%}<p class="volt-jcard__excerpt">{{ article.excerpt_or_content | strip_html | truncatewords: 22 }}</p>{%- endif -%}
@@ -39,9 +39,9 @@
         {%- assign ph_meta = '8 MIN READ · STRENGTH · INTERMEDIATE|6 MIN READ · NUTRITION · ALL LEVELS|5 MIN READ · RECOVERY · BEGINNER' | split: '|' -%}
         {%- assign ph_ex = 'The data behind training readiness — and how to stop leaving PRs on the table.|What the research actually says about the anabolic window and daily targets.|How HRV and resting heart rate reveal whether you are actually recovering.' | split: '|' -%}
         {%- for i in (0..2) -%}
-          <article class="volt-jcard" data-stagger-item>
+          <article class="volt-jcard" data-cat="{{ ph_cats[i] | handleize }}" data-stagger-item>
             <span class="volt-jcard__media">{{ 'image' | placeholder_svg_tag: 'volt-jcard__img' }}</span>
-            <span class="volt-jcard__cat">{{ ph_cats[i] }}</span>
+            <span class="volt-jcard__cat" data-cat="{{ ph_cats[i] | handleize }}">{{ ph_cats[i] }}</span>
             <div class="volt-jcard__meta">{{ ph_meta[i] }}</div>
             <h3 class="volt-jcard__title">{{ ph_titles[i] }}</h3>
             <p class="volt-jcard__excerpt">{{ ph_ex[i] }}</p>
@@ -64,6 +64,15 @@
   .volt-jcard__media { display: block; aspect-ratio: 16 / 9; background: var(--color-bg); overflow: hidden; }
   .volt-jcard__img { width: 100%; height: 100%; object-fit: cover; }
   .volt-jcard__cat { align-self: flex-start; font-family: var(--font-mono); font-size: 9px; letter-spacing: .12em; text-transform: uppercase; background: var(--color-acid); color: var(--color-ink); padding: 4px 8px; margin: 16px 0 12px; }
+  /* Per-category visual identity — existing palette tokens only (Renaissance-Edition
+     per-feature-world principle, restrained). Unknown categories keep the acid default. */
+  .volt-jcard__cat[data-cat="nutrition"] { background: var(--color-ink); color: var(--color-bg); }
+  .volt-jcard__cat[data-cat="recovery"], .volt-jcard__cat[data-cat="sleep"] { background: var(--color-mid); color: var(--color-bg); }
+  .volt-jcard__cat[data-cat="mindset"], .volt-jcard__cat[data-cat="coaching"] { background: var(--color-bg); color: var(--color-ink); border: 1px solid var(--color-ink); }
+  .volt-jcard { border-top: 3px solid var(--color-acid); padding-top: 14px; }
+  .volt-jcard[data-cat="nutrition"] { border-top-color: var(--color-ink); }
+  .volt-jcard[data-cat="recovery"], .volt-jcard[data-cat="sleep"] { border-top-color: var(--color-mid); }
+  .volt-jcard[data-cat="mindset"], .volt-jcard[data-cat="coaching"] { border-top-color: var(--color-border); }
   .volt-jcard__meta { font-family: var(--font-mono); font-size: 10px; letter-spacing: .06em; color: var(--color-mid); }
   .volt-jcard__title { font-family: var(--font-display); font-weight: 700; font-size: 20px; line-height: 1.12; margin: 10px 0 8px; }
   .volt-jcard__title a { color: var(--color-ink); text-decoration: none; }

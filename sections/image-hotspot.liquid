@@ -83,13 +83,14 @@
   .volt-hs__popup::after { content: ""; position: absolute; top: 100%; left: 50%; transform: translateX(-50%); border: 7px solid transparent; border-top-color: var(--color-bg); filter: drop-shadow(0 1px 0 var(--color-border)); }
 
   .volt-hs__media { display: block; flex-shrink: 0; width: 64px; height: 64px; overflow: hidden; background: var(--color-surface); position: relative; }
-  .volt-hs__thumb { width: 100%; height: 100%; object-fit: cover; }
+  .volt-hs__thumb { width: 100%; height: 100%; object-fit: cover; transition: transform var(--dur-fast) var(--ease); }
+  .volt-hs__media:hover .volt-hs__thumb { transform: scale(1.04); transition-delay: .08s; }
   .volt-hs__body { display: flex; flex-direction: column; gap: 5px; min-width: 0; }
-  .volt-hs__ptitle { font-family: var(--font-display); font-weight: 700; font-size: 14px; line-height: 1.12; color: var(--color-ink); text-decoration: none; }
+  .volt-hs__ptitle { font-family: var(--font-display); font-weight: 700; font-size: 14px; line-height: 1.12; color: var(--color-ink); text-decoration: none; transition: color var(--dur-fast) var(--ease); }
   a.volt-hs__ptitle:hover { color: var(--color-mid); transition-delay: .03s; }
   .volt-hs__price { font-family: var(--font-mono); font-size: 13px; color: var(--color-ink); }
   .volt-hs__desc { font-family: var(--font-body); font-size: 12px; line-height: 1.5; color: var(--color-mid); margin: 0; }
-  .volt-hs__cta { font-family: var(--font-mono); font-size: 10px; letter-spacing: .1em; text-transform: uppercase; color: var(--color-ink); text-decoration: none; border-bottom: 2px solid var(--color-acid); padding-bottom: 3px; align-self: flex-start; margin-top: 2px; }
+  .volt-hs__cta { font-family: var(--font-mono); font-size: 10px; letter-spacing: .1em; text-transform: uppercase; color: var(--color-ink); text-decoration: none; border-bottom: 2px solid var(--color-acid); padding-bottom: 3px; align-self: flex-start; margin-top: 2px; transition: color var(--dur-fast) var(--ease); }
   .volt-hs__cta:hover { color: var(--color-mid); transition-delay: .03s; }
 
   @media (max-width: 600px) { .volt-hs__inner { padding: 56px 20px; } .volt-hs__popup { width: 210px; } }

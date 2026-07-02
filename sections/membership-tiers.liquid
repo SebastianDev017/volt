@@ -104,12 +104,13 @@
   .volt-tier__no { color: var(--color-mid); }
   .volt-tier--popular .volt-tier__no { color: rgba(240,238,234,.5); }
   .volt-tier__no span { font-size: 14px; }
-  .volt-tier__cta { display: block; text-align: center; font-family: var(--font-body); font-weight: 500; font-size: 13px; letter-spacing: .04em; text-transform: uppercase; padding: 15px; cursor: pointer; border: 1px solid var(--color-ink); background: transparent; color: var(--color-ink); text-decoration: none; transition: background var(--dur-med) var(--ease), color var(--dur-med) var(--ease); }
+  .volt-tier__cta { display: block; text-align: center; font-family: var(--font-body); font-weight: 500; font-size: 13px; letter-spacing: .04em; text-transform: uppercase; padding: 15px; cursor: pointer; border: 1px solid var(--color-ink); background: transparent; color: var(--color-ink); text-decoration: none; transition: background var(--dur-med) var(--ease), color var(--dur-med) var(--ease), filter var(--dur-fast) var(--ease); }
   .volt-tier__cta:hover { background: var(--color-ink); color: var(--color-bg); transition-delay: .03s; }
   .volt-tier--popular .volt-tier__cta { background: var(--color-acid); border-color: var(--color-acid); color: var(--color-ink); }
   .volt-tier--popular .volt-tier__cta:hover { filter: brightness(1.05); background: var(--color-acid); color: var(--color-ink); }
   .volt-tiers__foot { text-align: center; margin-top: 32px; }
-  .volt-tiers__dash { font-family: var(--font-mono); font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: var(--color-ink); text-decoration: none; border-bottom: 2px solid var(--color-acid); padding-bottom: 3px; }
+  .volt-tiers__dash { font-family: var(--font-mono); font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: var(--color-ink); text-decoration: none; border-bottom: 2px solid var(--color-acid); padding-bottom: 3px; transition: color var(--dur-fast) var(--ease); }
+  .volt-tiers__dash:hover, .volt-tiers__dash:focus-visible { color: var(--color-mid); transition-delay: .03s; }
 
   @media (max-width: 860px) {
     .volt-tiers__grid { grid-template-columns: 1fr; }

@@ -182,6 +182,7 @@
     "formulated_with": "Formulé avec",
     "notify_me": "Prévenez-moi",
     "notify_placeholder": "Adresse e-mail",
-    "notify_success": "Vous êtes sur la liste — nous vous écrirons dès son retour."
+    "notify_success": "Vous êtes sur la liste — nous vous écrirons dès son retour.",
+    "secure_checkout": "Paiement sécurisé"
   }
 }

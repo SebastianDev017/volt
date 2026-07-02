@@ -114,9 +114,10 @@
   .volt-quiz__opt[aria-pressed="true"] { border-color: var(--color-acid); background: var(--color-acid); color: var(--color-ink); }
   .volt-quiz__price { font-family: var(--font-mono); font-size: 11px; color: var(--color-acid); white-space: nowrap; }
   .volt-quiz__opt[aria-pressed="true"] .volt-quiz__price { color: var(--color-ink); }
-  .volt-quiz__cta { display: inline-flex; align-items: center; gap: 8px; margin-top: 22px; width: 100%; justify-content: center; background: var(--color-acid); color: var(--color-ink); font-family: var(--font-body); font-weight: 500; font-size: 13px; letter-spacing: .06em; text-transform: uppercase; padding: 15px 24px; text-decoration: none; }
+  .volt-quiz__cta { display: inline-flex; align-items: center; gap: 8px; margin-top: 22px; width: 100%; justify-content: center; background: var(--color-acid); color: var(--color-ink); font-family: var(--font-body); font-weight: 500; font-size: 13px; letter-spacing: .06em; text-transform: uppercase; padding: 15px 24px; text-decoration: none; transition: filter var(--dur-fast) var(--ease), box-shadow var(--dur-fast) var(--ease); }
+  .volt-quiz__cta:hover, .volt-quiz__cta:focus-visible { filter: brightness(1.05); box-shadow: 0 0 0 4px var(--color-acid-10); transition-delay: .03s; }
   .volt-quiz__nav { margin-top: 16px; min-height: 20px; }
-  .volt-quiz__back { background: none; border: 0; color: rgba(240,238,234,.6); font-family: var(--font-mono); font-size: 11px; letter-spacing: .08em; text-transform: uppercase; cursor: pointer; }
+  .volt-quiz__back { background: none; border: 0; color: rgba(240,238,234,.6); font-family: var(--font-mono); font-size: 11px; letter-spacing: .08em; text-transform: uppercase; cursor: pointer; transition: color var(--dur-fast) var(--ease); }
   .volt-quiz__back:hover { color: var(--color-bg); transition-delay: .03s; }
   .volt-quiz__back[hidden] { display: none; }
 
@@ -128,7 +129,8 @@
   .volt-diag__input { flex: 1 1 auto; min-width: 0; background: rgba(240,238,234,.06); border: 1px solid rgba(240,238,234,.25); color: var(--color-bg); font-family: var(--font-body); font-size: 15px; padding: 14px 16px; }
   .volt-diag__input::placeholder { color: rgba(240,238,234,.45); }
   .volt-diag__input:focus { outline: none; border-color: var(--color-acid); }
-  .volt-diag__submit { flex: 0 0 auto; background: var(--color-acid); color: var(--color-ink); border: 0; font-family: var(--font-body); font-weight: 500; font-size: 13px; letter-spacing: .06em; text-transform: uppercase; padding: 14px 22px; cursor: pointer; }
+  .volt-diag__submit { flex: 0 0 auto; background: var(--color-acid); color: var(--color-ink); border: 0; font-family: var(--font-body); font-weight: 500; font-size: 13px; letter-spacing: .06em; text-transform: uppercase; padding: 14px 22px; cursor: pointer; transition: filter var(--dur-fast) var(--ease), box-shadow var(--dur-fast) var(--ease); }
+  .volt-diag__submit:hover, .volt-diag__submit:focus-visible { filter: brightness(1.05); box-shadow: 0 0 0 4px var(--color-acid-10); transition-delay: .03s; }
   .volt-diag__success { font-family: var(--font-mono); font-size: 13px; color: var(--color-acid); }
   .volt-diag__error { font-family: var(--font-mono); font-size: 12px; color: var(--color-danger); margin-top: 10px; }
   .volt-diag__consent { font-family: var(--font-mono); font-size: 10px; letter-spacing: .04em; color: rgba(240,238,234,.4); margin-top: 14px; line-height: 1.6; }

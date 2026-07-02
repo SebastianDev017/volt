@@ -50,6 +50,23 @@
     display: flex;
     flex-direction: column;
     width: 100%;
+    overflow: hidden;
+  }
+  .collection-card .collection-card__image {
+    transition: transform var(--dur-fast) var(--ease);
+  }
+  .collection-card__content {
+    transition: color var(--dur-fast) var(--ease);
+  }
+  .collection-card:hover .collection-card__image,
+  .collection-card:focus-visible .collection-card__image {
+    transform: scale(1.04);
+    transition-delay: .08s;
+  }
+  .collection-card:hover .collection-card__content,
+  .collection-card:focus-visible .collection-card__content {
+    color: var(--color-mid);
+    transition-delay: .08s;
   }
 {% endstylesheet %}
 

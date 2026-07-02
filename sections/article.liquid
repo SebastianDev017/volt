@@ -6,10 +6,10 @@
   assign words = article.content | strip_html | split: ' ' | size
   assign read_time = words | divided_by: 200 | at_least: 1
 -%}
-<article class="volt-article" data-animate>
+<article class="volt-article" data-cat="{{ article.tags.first | handleize }}" data-animate>
   <header class="volt-article__head">
     {%- if article.tags.first != blank -%}
-      <span class="volt-article__pill">{{ article.tags.first }}</span>
+      <span class="volt-article__pill" data-cat="{{ article.tags.first | handleize }}">{{ article.tags.first }}</span>
     {%- endif -%}
     <h1 class="volt-article__title">{{ article.title }}</h1>
     <div class="volt-article__meta">
@@ -149,6 +149,16 @@
   .volt-article { display: block; }
   .volt-article__head { max-width: 760px; margin-inline: auto; padding: clamp(56px, 8vw, 96px) 28px clamp(28px, 4vw, 44px); text-align: center; }
   .volt-article__pill { display: inline-block; font-family: var(--font-mono); font-size: 9px; letter-spacing: .14em; text-transform: uppercase; background: var(--color-acid); color: var(--on-acid); padding: 5px 9px; border-radius: 0; margin-bottom: 20px; }
+  /* Per-category hero treatment — a subtle gradient wash behind the header keyed to the
+     article's first tag (Renaissance-Edition per-feature world), palette tokens only. */
+  .volt-article__head { position: relative; }
+  .volt-article__head::before { content: ""; position: absolute; inset: 0 -100vw 0 -100vw; z-index: -1; background: linear-gradient(to bottom, var(--color-acid-10), transparent 80%); }
+  .volt-article[data-cat="nutrition"] .volt-article__head::before { background: linear-gradient(to bottom, var(--color-ink-06), transparent 80%); }
+  .volt-article[data-cat="recovery"] .volt-article__head::before, .volt-article[data-cat="sleep"] .volt-article__head::before { background: linear-gradient(to bottom, var(--color-surface), transparent 80%); }
+  .volt-article[data-cat="mindset"] .volt-article__head::before, .volt-article[data-cat="coaching"] .volt-article__head::before { background: none; }
+  .volt-article__pill[data-cat="nutrition"] { background: var(--color-ink); color: var(--color-bg); }
+  .volt-article__pill[data-cat="recovery"], .volt-article__pill[data-cat="sleep"] { background: var(--color-mid); color: var(--color-bg); }
+  .volt-article__pill[data-cat="mindset"], .volt-article__pill[data-cat="coaching"] { background: var(--color-bg); color: var(--color-ink); border: 1px solid var(--color-ink); }
   .volt-article__title { font-family: var(--font-display); font-weight: 800; font-size: clamp(32px, 4vw, 56px); line-height: 1.02; letter-spacing: -.02em; margin: 0; }
   .volt-article__meta { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 10px; margin-top: 22px; font-family: var(--font-mono); font-size: 11px; letter-spacing: .06em; text-transform: uppercase; color: var(--color-mid); }
   .volt-article__dot { color: var(--color-border); }
@@ -189,17 +199,21 @@
   .volt-related__inner { max-width: var(--page-width); margin-inline: auto; padding: 84px 28px; }
   .volt-related__head { display: flex; align-items: flex-end; justify-content: space-between; flex-wrap: wrap; gap: 16px; margin-bottom: 40px; }
   .volt-related__title { font-family: var(--font-display); font-weight: 700; font-size: clamp(30px, 3vw, 46px); line-height: 1.02; letter-spacing: -.01em; margin: 0; }
-  .volt-related__all { font-family: var(--font-mono); font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: var(--color-ink); border-bottom: 2px solid var(--color-acid); padding-bottom: 3px; }
+  .volt-related__all { font-family: var(--font-mono); font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: var(--color-ink); border-bottom: 2px solid var(--color-acid); padding-bottom: 3px; transition: color var(--dur-fast) var(--ease); }
+  .volt-related__all:hover, .volt-related__all:focus-visible { color: var(--color-mid); transition-delay: .03s; }
   .volt-related__grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px; }
 
   .volt-jcard { display: flex; flex-direction: column; }
   .volt-jcard__media { display: block; aspect-ratio: 16 / 9; background: var(--color-bg); overflow: hidden; }
   .volt-jcard__img { width: 100%; height: 100%; object-fit: cover; }
+  .volt-related .volt-jcard__img { transition: transform var(--dur-slow) var(--ease); }
+  .volt-related .volt-jcard__media:hover .volt-jcard__img,
+  .volt-related .volt-jcard__media:focus-visible .volt-jcard__img { transform: scale(1.04); transition-delay: .08s; }
   .volt-jcard__cat { align-self: flex-start; font-family: var(--font-mono); font-size: 9px; letter-spacing: .12em; text-transform: uppercase; background: var(--color-acid); color: var(--color-ink); padding: 4px 8px; margin: 16px 0 12px; }
   .volt-jcard__meta { font-family: var(--font-mono); font-size: 10px; letter-spacing: .06em; color: var(--color-mid); }
   .volt-jcard__title { font-family: var(--font-display); font-weight: 700; font-size: 20px; line-height: 1.12; margin: 10px 0 8px; }
-  .volt-jcard__title a { color: var(--color-ink); }
-  .volt-jcard__title a:hover { color: var(--color-mid); }
+  .volt-jcard__title a { color: var(--color-ink); transition: color var(--dur-fast) var(--ease); }
+  .volt-jcard__title a:hover { color: var(--color-mid); transition-delay: .03s; }
   .volt-jcard__excerpt { font-size: 14px; line-height: 1.6; color: var(--color-mid); margin: 0; }
 
   @media (max-width: 860px) {

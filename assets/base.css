@@ -56,7 +56,8 @@
 * { margin: 0; }
 html{ -webkit-text-size-adjust: 100%; }
 body{
-  background: var(--color-bg, #F0EEEA);
+  /* --page-tint is set by VoltAnim.sectionTint() while a [data-tint] section is in view */
+  background: var(--page-tint, var(--color-bg, #F0EEEA));
   color: var(--color-ink, #0D0C0B);
   font-family: var(--font-body);
   font-weight: 400;
@@ -74,7 +75,7 @@ ul, ol{ list-style: none; padding: 0; }
 ::selection{ background: var(--color-acid); color: var(--on-acid); }
 
 /* page fade-in (JS only) */
-.js body{ opacity: 0; transition: opacity 0.6s var(--ease); }
+.js body{ opacity: 0; transition: opacity 0.6s var(--ease), background-color 0.9s var(--ease); }
 .js body.ready{ opacity: 1; }
 
 /* ---------- typography ---------- */

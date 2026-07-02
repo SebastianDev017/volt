@@ -61,6 +61,9 @@
 
   .volt-gallery__item { position: relative; }
   .volt-gallery__link { display: block; color: inherit; }
+  .volt-gallery__link .volt-gallery__img { transition: transform var(--dur-slow) var(--ease); }
+  .volt-gallery__link:hover .volt-gallery__img,
+  .volt-gallery__link:focus-visible .volt-gallery__img { transform: scale(1.04); transition-delay: .08s; }
   .volt-gallery__figure { position: relative; margin: 0; overflow: hidden; background: var(--color-surface); }
   .volt-gallery__img { width: 100%; height: auto; display: block; }
 

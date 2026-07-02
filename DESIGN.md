@@ -63,6 +63,25 @@ For ALL numeric data: metrics, stats, specs, batch numbers, prices. Load via CDN
 - Product grid: 4-col → 2-col tablet → 1-col mobile · gutter clamp(14px, 2vw, 26px)
 - Border radius: 0 on ALL cards/buttons/badges/inputs (editorial). Merchant can set 0-16px in settings.
 
+## HOMEPAGE SCROLL NARRATIVE (required default order — SPYLT scroll-as-narrative)
+The homepage is a single argument, not a stack of sections. `templates/index.json`
+MUST default to this sequence; merchants can deviate, but demos/listings ship it:
+
+1. **Diagnostic** — `hero-diagnostic` (the problem + the split identity, quiz CTA)
+2. **Proof** — `vitals-strip` (live institutional/member stats marquee)
+3. **Protocol** — `membership-tiers` (the core offer: choose your tier)
+4. **Products** — `product-grid` (gear the protocol)
+5. **Benefits** — `performance-stats` (outcomes in numbers, `data-tint="surface"`)
+6. **Testimony** — `before-after` (member transformation, dark panel)
+7. **Method** — `how-it-works` (pre/during/post phases + inline add-to-cart)
+8. **Journal** — `journal` (editorial depth, per-category treatment, `data-tint="surface"`)
+9. **Capture** — `newsletter-diagnostic` (quiz + email — the conversion floor)
+10. **Recall** — `recently-viewed` · **Trust floor** — `certification-strip` above the footer
+
+Background tint: sections marked `data-tint="surface"` nudge the page background
+one step within the preset palette while in view (`VoltAnim.sectionTint()`); never
+introduce colors outside the active preset.
+
 ## CONVERSION PRINCIPLES (Gymshark breakdown + Baymard 2025)
 1. Cross-sell AFTER add-to-cart, NOT before.
 2. Member pricing visible on product card without clicking.

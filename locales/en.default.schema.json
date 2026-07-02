@@ -402,6 +402,7 @@
       "availability_header": "Availability",
       "restock_estimate": "Restock estimate (sold out)",
       "restock_estimate_info": "Shown with a notify-me email capture when the product is sold out.",
+      "show_payment_icons": "Show payment icons near Add to Cart",
       "recs_header": "Recommendations",
       "recs_eyebrow": "Eyebrow",
       "recs_heading": "Heading",

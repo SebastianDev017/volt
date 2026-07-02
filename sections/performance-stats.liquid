@@ -1,5 +1,5 @@
 {% render 'section-style', section: section %}
-<section class="volt-stats" data-animate>
+<section class="volt-stats" data-animate data-tint="surface">
   <div class="volt-stats__inner">
     <div class="volt-stats__grid" {% render 'anim-attrs', value: section.settings.cards_animation, enabled: section.settings.enable_animations %}>
       {%- for block in section.blocks -%}

@@ -23,9 +23,10 @@
   .volt-announce[hidden] { display: none; }
   .volt-announce__inner { min-height: 44px; display: flex; align-items: center; justify-content: center; gap: 16px; flex-wrap: wrap; padding: 8px 44px; font-family: var(--font-mono); font-size: 12px; font-weight: 500; letter-spacing: .14em; text-transform: uppercase; }
   .volt-announce__cd [data-cd-display] { background: var(--color-ink); color: var(--color-acid); padding: 3px 8px; }
-  .volt-announce__cta { color: inherit; text-decoration: underline; text-underline-offset: 3px; }
-  .volt-announce__x { position: absolute; right: 14px; top: 50%; transform: translateY(-50%); background: none; border: 0; color: inherit; font-size: 14px; line-height: 1; padding: 4px; cursor: pointer; opacity: .65; }
-  .volt-announce__x:hover { opacity: 1; }
+  .volt-announce__cta { color: inherit; text-decoration: underline; text-underline-offset: 3px; transition: opacity var(--dur-fast) var(--ease); }
+  .volt-announce__cta:hover, .volt-announce__cta:focus-visible { opacity: .7; transition-delay: .03s; }
+  .volt-announce__x { position: absolute; right: 14px; top: 50%; transform: translateY(-50%); background: none; border: 0; color: inherit; font-size: 14px; line-height: 1; padding: 4px; cursor: pointer; opacity: .65; transition: opacity var(--dur-fast) var(--ease); }
+  .volt-announce__x:hover { opacity: 1; transition-delay: .03s; }
 {% endstylesheet %}
 
 <script>

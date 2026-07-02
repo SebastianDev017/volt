@@ -120,6 +120,16 @@
             </button>
           </div>
 
+          {%- comment -%} Express payment trust row — wallet badges above the fold (SPYLT prominence pattern, Shopify-native icons) {%- endcomment -%}
+          {%- if section.settings.show_payment_icons != false and p.available and shop.enabled_payment_types.size > 0 -%}
+            <div class="volt-pdp__paytypes">
+              <span class="volt-pdp__paylabel">{{ 'products.secure_checkout' | t: default: 'Secure checkout' }}</span>
+              {%- for type in shop.enabled_payment_types limit: 6 -%}
+                {{ type | payment_type_svg_tag: class: 'volt-pdp__payicon' }}
+              {%- endfor -%}
+            </div>
+          {%- endif -%}
+
           <div class="volt-pdp__trust">
             <span><i>&#9670;</i> Free shipping $75+</span><span><i>&#9670;</i> 30-day guarantee</span><span><i>&#9670;</i> NSF certified</span>
           </div>
@@ -416,6 +426,11 @@
     .volt-pdp__recgrid { grid-template-columns: 1fr 1fr; }
     .volt-pdp__sticky { display: flex; }
   }
+  /* ── Express payment trust row ── */
+  .volt-pdp__paytypes { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-top: 14px; }
+  .volt-pdp__paylabel { font-family: var(--font-mono); font-size: 9px; letter-spacing: .12em; text-transform: uppercase; color: var(--color-mid); margin-right: 6px; }
+  .volt-pdp__payicon { height: 22px; width: auto; opacity: .85; }
+
   /* ── Progressive disclosure — "See the science" (Oura pattern) ── */
   .volt-pdp__science { margin-top: 40px; border: 1px solid var(--color-border); background: var(--color-bg); }
   .volt-pdp__sciencehead { display: flex; align-items: center; justify-content: space-between; gap: 20px; flex-wrap: wrap; cursor: pointer; padding: 18px 22px; list-style: none; }
@@ -525,6 +540,7 @@
     { "type": "text", "id": "science_claim", "label": "t:sections.main_product.science_claim", "default": "NSF certified · every batch third-party tested" },
     { "type": "header", "content": "t:sections.main_product.availability_header" },
     { "type": "text", "id": "restock_estimate", "label": "t:sections.main_product.restock_estimate", "info": "t:sections.main_product.restock_estimate_info", "default": "Back in stock in 2–3 weeks" },
+    { "type": "checkbox", "id": "show_payment_icons", "label": "t:sections.main_product.show_payment_icons", "default": true },
     { "type": "header", "content": "t:sections.main_product.recs_header" },
     { "type": "text", "id": "recommendations_eyebrow", "label": "t:sections.main_product.recs_eyebrow", "default": "// Pairs Well With" },
     { "type": "text", "id": "recommendations_heading", "label": "t:sections.main_product.recs_heading", "default": "Complete your stack." },

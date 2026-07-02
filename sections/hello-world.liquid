@@ -127,6 +127,13 @@
     color: rgb(92, 95, 98);
     padding: 3px 10px 5px;
     text-decoration: none;
+    transition: background-color var(--dur-fast) var(--ease);
+  }
+
+  .highlight a:hover,
+  .highlight a:focus-visible {
+    background-color: var(--color-ink-06);
+    transition-delay: .03s;
   }
 {% endstylesheet %}
 

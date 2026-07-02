@@ -65,6 +65,7 @@
     VoltAnim.liquidCursor();
     VoltAnim.ctaPulse();
     VoltAnim.navScramble();
+    VoltAnim.sectionTint();
 
     reveal();
     // Lenis is initialised in volt-scroll.js, which loads before this file, so
@@ -611,6 +612,26 @@
       function reset() { stop(); clearTimeout(idle); idle = setTimeout(start, 4000); }
       ['mousemove', 'scroll', 'keydown', 'pointerdown', 'touchstart'].forEach(function (ev) { window.addEventListener(ev, reset, { passive: true }); });
       reset();
+    },
+
+    // ── Section background tint shift (SPYLT pattern, restrained) ──
+    // Sections marked data-tint="surface|bg" nudge the page background toward
+    // that existing token while in view; CSS transitions the change. Stays
+    // strictly within the preset palette — no new colors.
+    sectionTint: function () {
+      if (!window.ScrollTrigger) return;
+      var tinted = document.querySelectorAll('[data-tint]');
+      if (!tinted.length) return;
+      var clear = function () { document.body.style.removeProperty('--page-tint'); };
+      tinted.forEach(function (el) {
+        var token = el.dataset.tint === 'surface' ? 'var(--color-surface)' : 'var(--color-bg)';
+        ScrollTrigger.create({
+          trigger: el, start: 'top 55%', end: 'bottom 45%',
+          onEnter: function () { document.body.style.setProperty('--page-tint', token); },
+          onEnterBack: function () { document.body.style.setProperty('--page-tint', token); },
+          onLeave: clear, onLeaveBack: clear
+        });
+      });
     },
 
     // ── Header nav scramble-text hover (replaces the underline) ──

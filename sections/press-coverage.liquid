@@ -81,6 +81,8 @@
 
   .press[data-grayscale="true"] .press__logo { filter: grayscale(1); opacity: .5; }
   .press[data-grayscale="true"] .press__logo:hover { filter: none; opacity: 1; transition-delay: .08s; }
+  .press[data-grayscale="false"] .press__link:hover .press__logo,
+  .press[data-grayscale="false"] .press__link:focus-visible .press__logo { opacity: .6; transition-delay: .08s; }
 
   .press__marquee { overflow: hidden; width: 100%; }
   .press__track { display: flex; width: max-content; animation: press-marquee 38s linear infinite; }

@@ -182,6 +182,7 @@
     "formulated_with": "Formulado com",
     "notify_me": "Avise-me",
     "notify_placeholder": "E-mail",
-    "notify_success": "Você está na lista — enviaremos um e-mail quando voltar."
+    "notify_success": "Você está na lista — enviaremos um e-mail quando voltar.",
+    "secure_checkout": "Pagamento seguro"
   }
 }
